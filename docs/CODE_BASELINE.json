@@ -87,8 +87,8 @@
     },
     {
       "path": "tools/export-cloudflare.mjs",
-      "sha256": "1680b18c1f774c7351ab6e480d20ce5199d443e62f19537f0355143b7bc38ad8",
-      "bytes": 3172
+      "sha256": "268f2f2f02338f9e17f91fb330941b2069318279553f9bf2298039c50b1af34c",
+      "bytes": 3255
     },
     {
       "path": "tests/cloudflare.test.mjs",

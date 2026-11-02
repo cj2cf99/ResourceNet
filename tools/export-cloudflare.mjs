@@ -10,7 +10,7 @@ const out=resolve(root,'.integration/mynet');
 mkdirSync(resolve(out,'public'),{recursive:true});mkdirSync(resolve(out,'feature'),{recursive:true});
 const sha=body=>createHash('sha256').update(body).digest('hex');
 const copied=[];
-const manifest={module:'mynet',sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),apiBase:'/api/mynet',files:[]};
+const manifest={module:'mynet',repository:'https://github.com/cj2cf99/ResourceNet',sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),apiBase:'/api/mynet',files:[]};
 for(const file of ['starmap.html','manage.html','data.js','storage.js']){
   let content=readFileSync(resolve(root,file),'utf8');
   if(file.endsWith('.html'))content=content.replace(/<script src="storage.js\?v=([^"]+)"><\/script>/,'<script src="storage.js?v=$1" data-api-base="/api/mynet"></script>');
@@ -32,5 +32,5 @@ for(const [source,target] of [['cloudflare/routes.mjs','routes.mjs'],['lib/model
 copied.push({source:'data.js defaults()',target:'feature/seed.json',sha256:sha(JSON.stringify(seed))});
 const schema=readFileSync(resolve(root,'cloudflare/schema.sql'));writeFileSync(resolve(out,'schema.sql'),schema);copied.push({source:'cloudflare/schema.sql',target:'schema.sql',sha256:sha(schema)});
 writeFileSync(resolve(out,'feature/manifest.json'),JSON.stringify(manifest,null,2)+'\n');
-writeFileSync(resolve(out,'source.json'),JSON.stringify({sourceCommit:manifest.sourceCommit,files:copied},null,2)+'\n');
+writeFileSync(resolve(out,'source.json'),JSON.stringify({repository:manifest.repository,sourceCommit:manifest.sourceCommit,files:copied},null,2)+'\n');
 console.log('Cloudflare 集成包已生成：.integration/mynet（4 个白名单资源、D1 处理器及种子）；未改写主项目或数据库。');

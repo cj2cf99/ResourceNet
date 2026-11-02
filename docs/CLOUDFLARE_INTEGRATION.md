@@ -2,6 +2,8 @@
 
 日期：2026-11-02。用户要求：合并主项目，MyNet 不使用统一页头菜单，须有返回首页按钮。来源先开发测试，再同步主项目；当前为本地集成候选，未发布。
 
+用户指定来源仓库为 [cj2cf99/ResourceNet](https://github.com/cj2cf99/ResourceNet)，本地目录仍为 MyNet，应用名称保持 MyNet。已关联 origin 和 main，保留远端初始化 README 提交并合并本地历史；本轮未推送或部署。
+
 ## 页面与入口
 
 主站入口 `/mynet/` 展示原 Canvas 星图，`/mynet/manage.html` 展示管理台，两页保留 MyNet 独立页头、星域切换及页内导航，不经过主站 shell。两页的“← 首页”原生链接指向 `/`。主站首页与自身导航可提供 MyNet 入口，不表示给 MyNet 注入主站导航。
