@@ -1,0 +1,74 @@
+{
+  "recordedDate": "2026-11-02",
+  "version": "0.1.1",
+  "algorithm": "SHA-256",
+  "gitBaseline": null,
+  "scope": "Current fix code and config; local Git initialized; first fix commit is discoverable with git log; original 0.1.0 has only archived hashes",
+  "files": [
+    {
+      "path": "package.json",
+      "sha256": "811a80f4b4c643953f91fa29624d40e814657e1b9043fffa456c7cd556c5129d",
+      "bytes": 322
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "313322fc40f35c8b0bae9ad57e5b4505fcac95670c921ddb7316b4c94ad2d41a",
+      "bytes": 52
+    },
+    {
+      "path": "server.mjs",
+      "sha256": "f893ba7da63083a49e93ae519333280d81ee8d57efaebc72f9a3598095a32050",
+      "bytes": 7437
+    },
+    {
+      "path": "storage.js",
+      "sha256": "6e62663124366c97aae838081097c3f92caabe237085ad36f7a669c54489e7c6",
+      "bytes": 6085
+    },
+    {
+      "path": "lib/model.mjs",
+      "sha256": "a323145bd453037c7d8d6f9473c1e03b999496dde0cd1a986e14cdd4ea429d1c",
+      "bytes": 3626
+    },
+    {
+      "path": "manage.html",
+      "sha256": "999d1b9431b1f3b7ae0b05bf261726058eb88aea2a78c998bd29f9bd0b2a5fa8",
+      "bytes": 37402
+    },
+    {
+      "path": "starmap.html",
+      "sha256": "07fe249c626f37e3c260e292af8e23cb1742ff3976e7b975583cfa248d6508e4",
+      "bytes": 92536
+    },
+    {
+      "path": "data.js",
+      "sha256": "485de38c1456ab130a4f1fd83f08104f4f76cea047d80af9783ce6d7bad8c344",
+      "bytes": 57617
+    },
+    {
+      "path": "tools/validate-data.mjs",
+      "sha256": "9063979790241008239a1b157c6e8c1e3bcc23a99b739f7844094fe038afcc03",
+      "bytes": 6879
+    },
+    {
+      "path": "tools/restore-data.mjs",
+      "sha256": "bb00cadaf8779e594d36c9c73ef229419ff55f8110cab5139148486d8682f370",
+      "bytes": 1281
+    },
+    {
+      "path": "tests/app.test.mjs",
+      "sha256": "f06eea79bfb932352b3ee6082d3c3a6febfcc5cebeea62070c95a539cff84ad1",
+      "bytes": 6676
+    },
+    {
+      "path": "tests/regression.browser.mjs",
+      "sha256": "a317bfc66804f3ecf5125f822e94aa2524d4b23a7f0de3da9ff59bb411bb67cd",
+      "bytes": 10004
+    },
+    {
+      "path": ".claude/launch.json",
+      "sha256": "a1f7afab363ceadc9982016929879177c353a49eb6918733ce3f5106eaafff05",
+      "bytes": 184
+    }
+  ]
+}

@@ -1,0 +1,2534 @@
+{
+  "exportedAt": "2026-11-02T06:08:09.664Z",
+  "storageKey": "mynet.data.v3",
+  "domains": {
+    "skill": {
+      "name": "技能管理星域",
+      "short": "技能",
+      "en": "SKILLS",
+      "focus": "s_web",
+      "labels": {
+        "root": "核心技能",
+        "node": "子技能",
+        "attr": "技能场景"
+      },
+      "relColors": {
+        "帮助": "#5cf2ff",
+        "促进": "#6dff9c",
+        "诱发": "#ff6bd5"
+      },
+      "elements": [
+        {
+          "id": "s_web",
+          "name": "全栈 Web 开发",
+          "parent": null,
+          "state": "node",
+          "desc": "零构建网页、Node.js 本地服务与图形可视化，是各子项目的共同基础。",
+          "fn": "构建并维护各个人站点与工具页面"
+        },
+        {
+          "id": "s_web_js",
+          "name": "原生 JavaScript",
+          "parent": "s_web",
+          "state": "node",
+          "desc": "ES Modules、无框架单页应用。",
+          "fn": "不依赖框架编写浏览器端交互"
+        },
+        {
+          "id": "s_web_js_idb",
+          "name": "离线队列与 IndexedDB",
+          "parent": "s_web_js",
+          "state": "attr",
+          "desc": "保存队列、幂等重试与离线草稿副本（知序考证）。",
+          "fn": "断网时暂存数据，恢复后可靠重传"
+        },
+        {
+          "id": "s_web_node",
+          "name": "Node.js 服务端",
+          "parent": "s_web",
+          "state": "node",
+          "desc": "本地 HTTP 服务、node:sqlite 兼容层、esbuild 打包。",
+          "fn": "用 Node.js 提供本地服务、数据库与打包"
+        },
+        {
+          "id": "s_web_viz",
+          "name": "图形与可视化",
+          "parent": "s_web",
+          "state": "node",
+          "desc": "Canvas、WebGL2 与 SVG 图表。",
+          "fn": "把数据与角色绘制成图表和动画"
+        },
+        {
+          "id": "s_web_viz_resp",
+          "name": "响应式验收",
+          "parent": "s_web_viz",
+          "state": "attr",
+          "desc": "1366 / 768 / 375 等宽度无横向溢出。",
+          "fn": "确保页面在桌面、平板、手机上都可用"
+        },
+        {
+          "id": "s_csharp",
+          "name": "C# 开发",
+          "parent": null,
+          "state": "node",
+          "desc": "此前从事 C# 开发 5 年以上（用户自述，2026-11-02）；具体框架、业务方向与当前熟练程度尚未细化。",
+          "fn": "使用 C# 开发软件"
+        },
+        {
+          "id": "s_cf",
+          "name": "Cloudflare 平台开发",
+          "parent": null,
+          "state": "node",
+          "desc": "Workers、D1、KV、R2 与 Access 组成的个人工作台。",
+          "fn": "在 Cloudflare 上搭建与运维个人工作台"
+        },
+        {
+          "id": "s_cf_worker",
+          "name": "Workers 开发",
+          "parent": "s_cf",
+          "state": "node",
+          "desc": "路由、定时任务与静态资源绑定。",
+          "fn": "编写运行在边缘的页面与 API"
+        },
+        {
+          "id": "s_cf_db",
+          "name": "D1 / SQLite 数据库",
+          "parent": "s_cf",
+          "state": "node",
+          "desc": "结构同步、迁移、补偿 SQL 与快照留痕。",
+          "fn": "设计、迁移并安全变更业务数据库"
+        },
+        {
+          "id": "s_cf_access",
+          "name": "Access 鉴权接入",
+          "parent": "s_cf",
+          "state": "attr",
+          "desc": "访问边界与身份校验。",
+          "fn": "为站点加上登录保护与身份校验"
+        },
+        {
+          "id": "s_data",
+          "name": "数据工程",
+          "parent": null,
+          "state": "node",
+          "desc": "定时采集、同步与发布的数据管线。",
+          "fn": "让数据定时、可靠地流动和归档"
+        },
+        {
+          "id": "s_data_pipe",
+          "name": "采集流水线",
+          "parent": "s_data",
+          "state": "node",
+          "desc": "GitHub Actions 定时采集，白名单后发布公开镜像。",
+          "fn": "定时抓取行情并发布为可读数据"
+        },
+        {
+          "id": "s_data_py",
+          "name": "Python 数据处理",
+          "parent": "s_data",
+          "state": "node",
+          "desc": "采集、估值构建脚本与 pytest 测试。",
+          "fn": "用 Python 编写采集与计算脚本"
+        },
+        {
+          "id": "s_data_sf",
+          "name": "Salesforce 集成",
+          "parent": "s_data",
+          "state": "node",
+          "desc": "以只读方式把消费记录同步到工作台。",
+          "fn": "把 Salesforce 账本只读同步到工作台"
+        },
+        {
+          "id": "s_inv",
+          "name": "投资研究",
+          "parent": null,
+          "state": "node",
+          "desc": "个股估值与长期市场指标。",
+          "fn": "研究个股价值与市场长期位置"
+        },
+        {
+          "id": "s_inv_val",
+          "name": "估值建模",
+          "parent": "s_inv",
+          "state": "node",
+          "desc": "四情景 DCF 与 PE Band。",
+          "fn": "用 DCF 与 PE 区间估算个股价值"
+        },
+        {
+          "id": "s_inv_macro",
+          "name": "长期指标分析",
+          "parent": "s_inv",
+          "state": "node",
+          "desc": "巴菲特指数、标普 500、日经 225 的去趋势与 Z-score。",
+          "fn": "判断大盘相对长期趋势的高低"
+        },
+        {
+          "id": "s_eng",
+          "name": "软件工程流程",
+          "parent": null,
+          "state": "node",
+          "desc": "测试、发布审核与 AI 协作开发。",
+          "fn": "保证改动可验证、可审核、可回溯"
+        },
+        {
+          "id": "s_eng_test",
+          "name": "自动化测试",
+          "parent": "s_eng",
+          "state": "node",
+          "desc": "单元测试与 Playwright 浏览器回归。",
+          "fn": "用自动测试守住功能与界面"
+        },
+        {
+          "id": "s_eng_rel",
+          "name": "发布审核",
+          "parent": "s_eng",
+          "state": "node",
+          "desc": "RELEASE_REVIEW 记录、本次部署确认、可追溯提交与推送。",
+          "fn": "在部署前记录变更并取得确认"
+        },
+        {
+          "id": "s_eng_ai",
+          "name": "AI 协作开发",
+          "parent": "s_eng",
+          "state": "node",
+          "desc": "Codex 开发、Claude 审核、人工确认的分工与交接文档。",
+          "fn": "让多个 AI 分工开发、审核与交接"
+        },
+        {
+          "id": "s_jp",
+          "name": "日语",
+          "parent": null,
+          "state": "node",
+          "desc": "生活与职场场景中的日语表达。",
+          "fn": "在日本生活与工作中用日语沟通"
+        },
+        {
+          "id": "s_jp_conv",
+          "name": "情景会话",
+          "parent": "s_jp",
+          "state": "node",
+          "desc": "做客、同事协作、客户活动安排等情景。",
+          "fn": "应对做客、协作、客户安排等场景"
+        },
+        {
+          "id": "s_jp_level",
+          "name": "N2 / N1 表达",
+          "parent": "s_jp",
+          "state": "attr",
+          "desc": "练习默认 N2，可选 N1。",
+          "fn": "按 N2 / N1 难度组织表达"
+        },
+        {
+          "id": "s_english",
+          "name": "英语",
+          "parent": null,
+          "state": "node",
+          "desc": "会英语（用户自述，2026-11-02）；具体使用场景与熟练程度尚未细化。",
+          "fn": "使用英语理解与表达"
+        },
+        {
+          "id": "s_anim",
+          "name": "2D 角色动画",
+          "parent": null,
+          "state": "node",
+          "desc": "参数化动作与简单角色扮演。",
+          "fn": "制作可参数化控制的 2D 角色动作"
+        },
+        {
+          "id": "s_anim_rig",
+          "name": "骨骼绑定与 IK",
+          "parent": "s_anim",
+          "state": "node",
+          "desc": "Rigby2D 绑定、时间轴与裙摆网格。",
+          "fn": "给角色拆层、绑骨并驱动关节"
+        },
+        {
+          "id": "s_piano",
+          "name": "钢琴",
+          "parent": null,
+          "state": "node",
+          "desc": "自学过一点钢琴，记录少量自学经历（用户自述，2026-11-02）。",
+          "fn": "学习钢琴演奏"
+        },
+        {
+          "id": "s_violin",
+          "name": "小提琴",
+          "parent": null,
+          "state": "node",
+          "desc": "自学过一点小提琴，记录少量自学经历（用户自述，2026-11-02）。",
+          "fn": "学习小提琴演奏"
+        },
+        {
+          "id": "s_web_js_conflict",
+          "name": "版本冲突保护",
+          "parent": "s_web_js",
+          "state": "attr",
+          "desc": "项目实践场景：工作台日记以内容版本避免旧编辑覆盖新内容；记录代码使用场景，不评价个人熟练度。",
+          "fn": "避免旧编辑覆盖新版内容"
+        },
+        {
+          "id": "s_data_pipe_contract",
+          "name": "行情消费契约",
+          "parent": "s_data_pipe",
+          "state": "attr",
+          "desc": "项目实践场景：区分静态研究快照与动态行情，按证券身份、数据来源和时间字段消费；不把采集时间当成交时间。",
+          "fn": "按身份与时间契约消费行情"
+        },
+        {
+          "id": "s_eng_test_data",
+          "name": "结构与脱敏校验",
+          "parent": "s_eng_test",
+          "state": "attr",
+          "desc": "项目实践场景：MyNet 校验唯一隶属、关系目标、重复连线、功能简述和常见敏感信息；不代表其他项目已通过同样检查。",
+          "fn": "校验内容结构并拦截敏感信息"
+        },
+        {
+          "id": "s_inv_macro_window",
+          "name": "指标独立更新窗口",
+          "parent": "s_inv_macro",
+          "state": "attr",
+          "desc": "长期指标文档中的维护场景：巴菲特与标普使用独立近期窗口和审计，更新历史数据需显式采纳；不记录个人投资结论。",
+          "fn": "按独立窗口维护长期指标"
+        }
+      ],
+      "relations": [
+        {
+          "from": "s_data_py",
+          "type": "帮助",
+          "to": "s_inv_val",
+          "id": "skill_r0"
+        },
+        {
+          "from": "s_inv_val",
+          "type": "诱发",
+          "to": "s_data_pipe",
+          "id": "skill_r1"
+        },
+        {
+          "from": "s_web_viz",
+          "type": "帮助",
+          "to": "s_inv_macro",
+          "id": "skill_r2"
+        },
+        {
+          "from": "s_cf_db",
+          "type": "帮助",
+          "to": "s_data_sf",
+          "id": "skill_r3"
+        },
+        {
+          "from": "s_cf_worker",
+          "type": "帮助",
+          "to": "s_data_pipe",
+          "id": "skill_r4"
+        },
+        {
+          "from": "s_eng_test",
+          "type": "促进",
+          "to": "s_eng_rel",
+          "id": "skill_r5"
+        },
+        {
+          "from": "s_eng_ai",
+          "type": "促进",
+          "to": "s_web",
+          "id": "skill_r6"
+        },
+        {
+          "from": "s_web_viz_resp",
+          "type": "帮助",
+          "to": "s_eng_test",
+          "id": "skill_r7"
+        },
+        {
+          "from": "s_anim_rig",
+          "type": "诱发",
+          "to": "s_jp_conv",
+          "id": "skill_r8"
+        },
+        {
+          "from": "s_eng_test_data",
+          "type": "促进",
+          "to": "s_eng_rel",
+          "id": "skill_r9"
+        }
+      ]
+    },
+    "idea": {
+      "name": "创意管理星域",
+      "short": "创意",
+      "en": "IDEAS",
+      "focus": "i_quote",
+      "labels": {
+        "root": "核心创意",
+        "node": "子创意",
+        "attr": "应用场景"
+      },
+      "relColors": {
+        "引发": "#ff6bd5",
+        "启发": "#ffe066",
+        "参考": "#5cf2ff"
+      },
+      "elements": [
+        {
+          "id": "i_quote",
+          "name": "主站同源行情 API",
+          "parent": null,
+          "state": "node",
+          "desc": "计划由工作台读取公开行情镜像并提供同源只读接口；据行情交接仍待接入与真实链路验收，本次未核验生产状态。",
+          "fn": "让工作台直接提供只读行情数据"
+        },
+        {
+          "id": "i_quote_latest",
+          "name": "最新数据分区接入",
+          "parent": "i_quote",
+          "state": "node",
+          "desc": "最新分区在采集项目本地实现但未发布；Cloudflare 定时或手动同步及页面接入仍待实现。",
+          "fn": "把最新行情分区同步进工作台页面"
+        },
+        {
+          "id": "i_quote_list",
+          "name": "名单自动同步打通",
+          "parent": "i_quote",
+          "state": "attr",
+          "desc": "补齐私库读取授权，让 StockCheck 名单增删自动生效。",
+          "fn": "让个股名单变化自动进入采集"
+        },
+        {
+          "id": "i_lang_ai",
+          "name": "语言练习接入 AI",
+          "parent": null,
+          "state": "node",
+          "desc": "真实模型接入与工作台上线仍待实施；当前语言练习为本地 mock 与离线模式，角色动画暂停决定保持不变。",
+          "fn": "用真实 AI 生成点评与对话"
+        },
+        {
+          "id": "i_lang_ai_free",
+          "name": "免费模型优先",
+          "parent": "i_lang_ai",
+          "state": "node",
+          "desc": "候选包括 Gemini、Groq、Workers AI、OpenRouter、Mistral；需逐家复核官方免费条件及计费风险，尚未接入。",
+          "fn": "先用免费模型控制成本"
+        },
+        {
+          "id": "i_lang_ai_deploy",
+          "name": "上线工作台",
+          "parent": "i_lang_ai",
+          "state": "node",
+          "desc": "Worker / D1、Access 保护、正式安全测试与学习数据迁移。",
+          "fn": "把语言练习部署到工作台并加保护"
+        },
+        {
+          "id": "i_lang_ai_offline",
+          "name": "额度耗尽离线重演",
+          "parent": "i_lang_ai",
+          "state": "attr",
+          "desc": "模型额度用完时自动切到离线重演。",
+          "fn": "额度用完时改用离线重演"
+        },
+        {
+          "id": "i_plan",
+          "name": "计划中心联动",
+          "parent": null,
+          "state": "node",
+          "desc": "学习类项目把目标与结果交给长期计划中心统一安排。",
+          "fn": "用计划中心统一安排各类学习目标"
+        },
+        {
+          "id": "i_plan_lang",
+          "name": "练习结果接口",
+          "parent": "i_plan",
+          "state": "node",
+          "desc": "语言练习只暴露练习目标、训练结果与完成情况。",
+          "fn": "把练习目标与结果提供给计划中心"
+        },
+        {
+          "id": "i_plan_exam",
+          "name": "题库达标联动",
+          "parent": "i_plan",
+          "state": "attr",
+          "desc": "考证题库的达标进度进入长期计划。",
+          "fn": "让题库达标进度进入长期计划"
+        },
+        {
+          "id": "i_holiday",
+          "name": "假期与生日设置",
+          "parent": null,
+          "state": "node",
+          "desc": "连续休假、生日等设置进入日历；需求已归档，界面原型已交接。",
+          "fn": "在日历中管理连续休假与生日"
+        },
+        {
+          "id": "i_health",
+          "name": "身体手记并入工作台",
+          "parent": null,
+          "state": "node",
+          "desc": "按主站数据库变更流程迁入 D1，统一入口并受 Access 保护。",
+          "fn": "把身体手记纳入工作台统一入口"
+        },
+        {
+          "id": "i_mynet",
+          "name": "MyNet 星图扩展",
+          "parent": null,
+          "state": "node",
+          "desc": "在现有结构规则上继续扩展。",
+          "fn": "继续扩展星图的管理方向与规则"
+        },
+        {
+          "id": "i_mynet_people",
+          "name": "人际关系星域",
+          "parent": "i_mynet",
+          "state": "node",
+          "desc": "节点命名、属性模板与关系类型尚未定义。",
+          "fn": "用星图管理人际关系"
+        },
+        {
+          "id": "i_mynet_cross",
+          "name": "跨星域参照",
+          "parent": "i_mynet",
+          "state": "attr",
+          "desc": "范围、导航方式与跨方向移动规则待定。",
+          "fn": "允许不同星域之间互相参照"
+        },
+        {
+          "id": "i_mynet_trash",
+          "name": "删除与回收站规则",
+          "parent": "i_mynet",
+          "state": "attr",
+          "desc": "删除、撤销、恢复与手动降格的具体行为待定。",
+          "fn": "定义删除、撤销与恢复的行为"
+        },
+        {
+          "id": "i_garden",
+          "name": "数字生态花园",
+          "parent": null,
+          "state": "node",
+          "desc": "待调查与待设计（2026-11-02）：以花园表达资源拓扑和真实状态。MyNet 是用户指定的直接实现；当前原型已展示拓扑，真实监控尚未接入。",
+          "fn": "把云资源监控变成可交互的花园"
+        },
+        {
+          "id": "i_garden_meta",
+          "name": "拓扑隐喻",
+          "parent": "i_garden",
+          "state": "node",
+          "desc": "用自然物表达平台、服务、采集与同步关系。",
+          "fn": "用花、蜜蜂、蚂蚁表达资源拓扑"
+        },
+        {
+          "id": "i_garden_meta_flower",
+          "name": "花簇与花朵",
+          "parent": "i_garden_meta",
+          "state": "attr",
+          "desc": "一簇花 = 云平台，单朵花 = 服务，开合与萎蔫 = 健康状态。",
+          "fn": "表示平台、服务及其健康状态"
+        },
+        {
+          "id": "i_garden_meta_bee",
+          "name": "蜜蜂",
+          "parent": "i_garden_meta",
+          "state": "attr",
+          "desc": "爬虫或 API 采集任务；灌木 = 外部 API、网站与数据源。",
+          "fn": "表示采集任务与外部数据源"
+        },
+        {
+          "id": "i_garden_meta_ant",
+          "name": "蚂蚁与蚁路",
+          "parent": "i_garden_meta",
+          "state": "attr",
+          "desc": "持续存储与数据同步关系。",
+          "fn": "表示存储与数据同步关系"
+        },
+        {
+          "id": "i_garden_event",
+          "name": "真实事件驱动",
+          "parent": "i_garden",
+          "state": "attr",
+          "desc": "动画依据真实事件；未知或监控失联不得误报故障，装饰动画不得伪装成实时事件。",
+          "fn": "只按真实事件改变画面状态"
+        },
+        {
+          "id": "i_garden_table",
+          "name": "排障表格视图",
+          "parent": "i_garden",
+          "state": "attr",
+          "desc": "保留精确的普通监控表格。",
+          "fn": "提供精确的表格用于排障"
+        },
+        {
+          "id": "i_garden_impl",
+          "name": "实现：MyNet 星图",
+          "parent": "i_garden",
+          "state": "attr",
+          "desc": "项目星域中的「MyNet 星图」是这个创意的直接实现。",
+          "fn": "由 MyNet 星图直接实现"
+        },
+        {
+          "id": "i_graph",
+          "name": "个人属性知识图谱",
+          "parent": null,
+          "state": "node",
+          "desc": "待调查与待设计（2026-11-02）：以实体、属性和有类型的关系组织内容。MyNet 兼顾此方向，时间轴、关系权重及路径分析不视为已实现。",
+          "fn": "以实体和带属性的关系组织个人知识"
+        },
+        {
+          "id": "i_graph_identity",
+          "name": "身份与位置分离",
+          "parent": "i_graph",
+          "state": "attr",
+          "desc": "同一节点可出现在多个视图中，实体身份与画布位置分离。",
+          "fn": "同一实体可出现在多个视图中"
+        },
+        {
+          "id": "i_graph_views",
+          "name": "多视图",
+          "parent": "i_graph",
+          "state": "attr",
+          "desc": "关系图、树状图、表格、时间轴。",
+          "fn": "在关系图、树、表格、时间轴间切换"
+        },
+        {
+          "id": "i_graph_query",
+          "name": "路径与结构分析",
+          "parent": "i_graph",
+          "state": "attr",
+          "desc": "路径查询、孤立节点与循环依赖分析。",
+          "fn": "查询路径并发现孤立节点与循环"
+        },
+        {
+          "id": "i_graph_tech",
+          "name": "待评估技术",
+          "parent": "i_graph",
+          "state": "attr",
+          "desc": "React Flow、Cytoscape.js、AntV G6、D1/SQLite、JSON Schema，不预先锁定。",
+          "fn": "列出待评估的图谱技术方案"
+        },
+        {
+          "id": "i_ops",
+          "name": "简易项目管理与运维中心",
+          "parent": null,
+          "state": "node",
+          "desc": "待调查与待设计（2026-11-02）：项目状态、GitHub 变更、部署和故障管理。MyNet 兼顾此方向，实时同步和监控尚未接入。",
+          "fn": "一处查看项目进度、部署与故障"
+        },
+        {
+          "id": "i_ops_gh",
+          "name": "只读 GitHub 同步",
+          "parent": "i_ops",
+          "state": "attr",
+          "desc": "第一版以只读同步和本地任务记录为主，支持非 GitHub 项目手工登记。",
+          "fn": "只读同步 GitHub 提交、PR 与发布"
+        },
+        {
+          "id": "i_ops_flow",
+          "name": "开发审核工作流",
+          "parent": "i_ops",
+          "state": "attr",
+          "desc": "可表达 Codex 开发 → Claude 审核 → 人工确认 → 部署。",
+          "fn": "表达开发、审核、确认、部署的流程"
+        },
+        {
+          "id": "i_sub",
+          "name": "个人会员与订阅管理中心",
+          "parent": null,
+          "state": "node",
+          "desc": "待调查与待设计（2026-11-02）：结合消费记录与支付通知识别周期扣款；与 sfpaylogandbi 相关，原始流水保持不变。",
+          "fn": "管理所有会员订阅与续费"
+        },
+        {
+          "id": "i_sub_detect",
+          "name": "周期扣款识别",
+          "parent": "i_sub",
+          "state": "attr",
+          "desc": "不确定的匹配需人工确认，避免重复记账。",
+          "fn": "从消费记录中找出周期扣款"
+        },
+        {
+          "id": "i_sub_ledger",
+          "name": "订阅台账",
+          "parent": "i_sub",
+          "state": "attr",
+          "desc": "服务、套餐、币种、金额、周期、支付方式、续费日、取消入口、试用期限。",
+          "fn": "记录每项订阅的套餐、金额与续费日"
+        },
+        {
+          "id": "i_sub_alert",
+          "name": "续费与异常提醒",
+          "parent": "i_sub",
+          "state": "attr",
+          "desc": "续费 / 试用到期、重复扣款、涨价、长期闲置。",
+          "fn": "提醒续费、试用到期与异常扣款"
+        },
+        {
+          "id": "i_sub_raw",
+          "name": "原始流水不变",
+          "parent": "i_sub",
+          "state": "attr",
+          "desc": "订阅模型独立存储；数据来源与权限待设计。",
+          "fn": "订阅数据独立存放，不改原始流水"
+        },
+        {
+          "id": "i_lab",
+          "name": "三大云交互式考试训练实验室",
+          "parent": null,
+          "state": "node",
+          "desc": "待调查与待设计（2026-11-02）：模拟云控制台配置与考点训练；与知序题库相关，默认虚拟，不创建真实云资源。",
+          "fn": "在虚拟控制台中练习云认证考点"
+        },
+        {
+          "id": "i_lab_train",
+          "name": "虚拟控制台训练",
+          "parent": "i_lab",
+          "state": "node",
+          "desc": "教官提出需求 → 亲手配置 → 规则引擎验收 → 分级提示 → 修改重试。",
+          "fn": "按教官需求亲手配置并自动验收"
+        },
+        {
+          "id": "i_lab_train_exam",
+          "name": "覆盖考试",
+          "parent": "i_lab_train",
+          "state": "attr",
+          "desc": "AWS CLF / SAA、Azure AZ-900 / AZ-104、Google Cloud Digital Leader / ACE。",
+          "fn": "覆盖 AWS、Azure、GCP 认证考试"
+        },
+        {
+          "id": "i_lab_train_virtual",
+          "name": "默认全部虚拟",
+          "parent": "i_lab_train",
+          "state": "attr",
+          "desc": "不创建真实云资源；标记模拟可信度。",
+          "fn": "只模拟，不创建真实云资源"
+        },
+        {
+          "id": "i_lab_sim",
+          "name": "模拟器调研",
+          "parent": "i_lab",
+          "state": "node",
+          "desc": "核实许可证、维护状态、控制台 UI、API / CLI 与验收覆盖度。",
+          "fn": "挑选可复用的云模拟器"
+        },
+        {
+          "id": "i_lab_sim_aws",
+          "name": "AWS 候选待核验",
+          "parent": "i_lab_sim",
+          "state": "attr",
+          "desc": "已列出若干开源 / 在线模拟器候选。",
+          "fn": "核验 AWS 模拟器候选"
+        },
+        {
+          "id": "i_lab_sim_other",
+          "name": "Azure / Google Cloud 待调查",
+          "parent": "i_lab_sim",
+          "state": "attr",
+          "desc": "不预设已找到等价项目。",
+          "fn": "寻找 Azure 与 GCP 的模拟器"
+        },
+        {
+          "id": "i_maic",
+          "name": "语言学习改进候选：OpenMAIC",
+          "parent": null,
+          "state": "node",
+          "desc": "待调查与待设计（2026-11-02）：参考多智能体课堂改善语言学习辅助页；不表示已接入，也不恢复暂停的角色动画。",
+          "fn": "借鉴多智能体课堂改进语言练习"
+        },
+        {
+          "id": "i_maic_role",
+          "name": "教学角色交互",
+          "parent": "i_maic",
+          "state": "attr",
+          "desc": "课程 / 场景生成、测验、项目式学习与教学反馈，不必复制完整架构。",
+          "fn": "让 AI 扮演教师与同学参与对话"
+        },
+        {
+          "id": "i_maic_rule",
+          "name": "保持现有约束",
+          "parent": "i_maic",
+          "state": "attr",
+          "desc": "保留最终手动输入规则与免费 API 成本约束；已暂停的双角色动画不因此恢复。",
+          "fn": "不破坏手动输入与免费成本约束"
+        },
+        {
+          "id": "i_feed",
+          "name": "信息源转换器与 RSS 爬虫调度",
+          "parent": null,
+          "state": "node",
+          "desc": "待调查与待设计（2026-11-02）：把信息源转换为 Feed 并驱动采集；按用户说明关联 StockCheck 与 BuffettChart，尚未实施。",
+          "fn": "把各类信息源变成 Feed 并驱动采集"
+        },
+        {
+          "id": "i_feed_conv",
+          "name": "信息源转换器",
+          "parent": "i_feed",
+          "state": "node",
+          "desc": "网页特定内容、JSON / API、邮件订阅 → RSS / Atom / JSON Feed。",
+          "fn": "把网页、API、邮件转成订阅 Feed"
+        },
+        {
+          "id": "i_feed_sched",
+          "name": "RSS 驱动调度",
+          "parent": "i_feed",
+          "state": "node",
+          "desc": "GitHub Actions 轮询 RSS → 判重 → 任务登记 → 按目标触发爬虫 → 统一 API 归档。",
+          "fn": "发现新条目后触发对应爬虫"
+        },
+        {
+          "id": "i_feed_sched_once",
+          "name": "共享 Feed 只轮询一次",
+          "parent": "i_feed_sched",
+          "state": "attr",
+          "desc": "降低重复访问；关键数据源仍定期核对。",
+          "fn": "多目标共用 Feed，只抓一次"
+        },
+        {
+          "id": "i_feed_sched_retry",
+          "name": "可靠重试",
+          "parent": "i_feed_sched",
+          "state": "attr",
+          "desc": "Webhook / 队列通知，游标、幂等 ID、有限重试与缺口标记。",
+          "fn": "失败可重试且不重复处理"
+        },
+        {
+          "id": "i_feed_bus",
+          "name": "个人事件总线（后续）",
+          "parent": "i_feed",
+          "state": "attr",
+          "desc": "可扩展，但不是首期必须实现的基础设施。",
+          "fn": "后续统一分发个人事件"
+        },
+        {
+          "id": "i_capital",
+          "name": "全球资本流动地图",
+          "parent": null,
+          "state": "node",
+          "desc": "待调查与待设计（2026-11-02）：展示市场状态及有证据支持的资金流向，支持历史回放；数据来源与再分发条件尚待核验。",
+          "fn": "在世界地图上展示资金流动"
+        },
+        {
+          "id": "i_capital_layer",
+          "name": "数据分层",
+          "parent": "i_capital",
+          "state": "attr",
+          "desc": "L1 市场状态、L2 资金流代理、L3 可核实的跨境证券投资流量。",
+          "fn": "按可信度分层组织市场与资金数据"
+        },
+        {
+          "id": "i_capital_rule",
+          "name": "不冒充真实流向",
+          "parent": "i_capital",
+          "state": "attr",
+          "desc": "箭头需有来源、方向、口径、周期与可信度；公开来源与再分发许可待调查。",
+          "fn": "只画有证据支持的流向"
+        },
+        {
+          "id": "i_timeline",
+          "name": "个人时光轴",
+          "parent": null,
+          "state": "node",
+          "desc": "待调查与待设计（2026-11-02）：整理人生事件、人物、地点与成就，支持筛选回顾；本星图不录入实际日记或个人经历正文。",
+          "fn": "把人生经历整理成可缩放时间轴"
+        },
+        {
+          "id": "i_timeline_filter",
+          "name": "筛选与回顾",
+          "parent": "i_timeline",
+          "state": "attr",
+          "desc": "年份 / 主题 / 事件类型筛选、搜索与年度回顾。",
+          "fn": "按年份、主题筛选并做年度回顾"
+        },
+        {
+          "id": "i_timeline_privacy",
+          "name": "隐私与备份",
+          "parent": "i_timeline",
+          "state": "attr",
+          "desc": "不强制依附日历或日记；重视长期导出与备份。",
+          "fn": "保护隐私并支持长期导出备份"
+        },
+        {
+          "id": "i_pool",
+          "name": "免费 AI API 资源池",
+          "parent": null,
+          "state": "node",
+          "desc": "需求登记，待验证（2026-11-02）：为语言练习统一接入候选模型，按质量、配额与健康选路；未注册或启用新服务。",
+          "fn": "统一管理语言练习的模型接口"
+        },
+        {
+          "id": "i_pool_candidates",
+          "name": "供应商候选核验",
+          "parent": "i_pool",
+          "state": "node",
+          "desc": "待调查（2026-11-02）：逐家核对官方免费条件、地区、结构化输出、日语质量与计费风险；未核验不得启用。",
+          "fn": "核验模型供应商的使用条件"
+        },
+        {
+          "id": "i_pool_candidates_first",
+          "name": "首批模型候选",
+          "parent": "i_pool_candidates",
+          "state": "attr",
+          "desc": "待核验：Gemini、GroqCloud、Workers AI、OpenRouter 免费模型、Mistral；这里只登记候选名称，不宣称免费政策已确认。",
+          "fn": "登记首批模型候选"
+        },
+        {
+          "id": "i_pool_candidates_next",
+          "name": "扩展模型候选",
+          "parent": "i_pool_candidates",
+          "state": "attr",
+          "desc": "待核验：SambaNova、Z.AI、Cohere、Ollama Cloud、OVHcloud AI Endpoints、Hugging Face Inference Providers、Typhoon。",
+          "fn": "登记扩展模型候选"
+        },
+        {
+          "id": "i_pool_adapter",
+          "name": "统一模型适配",
+          "parent": "i_pool",
+          "state": "node",
+          "desc": "待设计（2026-11-02）：供应商适配器统一输入输出契约，浏览器不持有模型凭据。",
+          "fn": "统一不同模型的输入输出"
+        },
+        {
+          "id": "i_pool_adapter_round",
+          "name": "单次生成教学结果",
+          "parent": "i_pool_adapter",
+          "state": "attr",
+          "desc": "待设计：每轮尽可能一次生成对话、教师解释、评分与下一题，前端教学角色不分别发起专用模型请求。",
+          "fn": "合并一轮对话与教学反馈"
+        },
+        {
+          "id": "i_pool_route",
+          "name": "配额与健康选路",
+          "parent": "i_pool",
+          "state": "node",
+          "desc": "待设计（2026-11-02）：结合教学质量、健康状态、用量与冷却选路；配额未知不能视作无限。",
+          "fn": "按质量与可用配额选择模型"
+        },
+        {
+          "id": "i_pool_route_retry",
+          "name": "有界故障切换",
+          "parent": "i_pool_route",
+          "state": "attr",
+          "desc": "待设计：遇限流、超时、服务错误或无效结构化输出时有限重试与切换，并保留教学上下文。",
+          "fn": "限制失败重试并切换模型"
+        },
+        {
+          "id": "i_pool_route_free",
+          "name": "禁止付费回退",
+          "parent": "i_pool_route",
+          "state": "attr",
+          "desc": "已登记约束：只启用经核验的免费模型；全部不可用时暂停或明确失败，不自动切换付费服务。",
+          "fn": "在免费资源不可用时停止调用"
+        },
+        {
+          "id": "i_pool_privacy",
+          "name": "最小化日志内容",
+          "parent": "i_pool",
+          "state": "attr",
+          "desc": "待设计：日志默认不记录完整练习输入、凭据或敏感内容，启用前核对供应商数据使用政策。",
+          "fn": "减少调用日志中的私人内容"
+        },
+        {
+          "id": "i_distributed",
+          "name": "跨平台免费资源协作",
+          "parent": null,
+          "state": "node",
+          "desc": "资源线索与架构设想登记，待考察（2026-11-02）；不代表已开通新平台或确认免费额度。",
+          "fn": "规划跨平台的功能协作"
+        },
+        {
+          "id": "i_distributed_contract",
+          "name": "版本化协作契约",
+          "parent": "i_distributed",
+          "state": "attr",
+          "desc": "待设计：模块以版本化 REST、JSON Schema、任务标识、幂等写入和有限重试协作。",
+          "fn": "约定模块间的数据交换规则"
+        },
+        {
+          "id": "i_distributed_owner",
+          "name": "权威写入端",
+          "parent": "i_distributed",
+          "state": "attr",
+          "desc": "待设计：保留统一入口与身份验证，由明确的权威写入端维护敏感业务数据，公共镜像仅接收非敏感快照。",
+          "fn": "明确各类数据的权威写入端"
+        },
+        {
+          "id": "i_distributed_candidates",
+          "name": "平台候选分类",
+          "parent": "i_distributed",
+          "state": "attr",
+          "desc": "待考察：计算托管、数据库与对象存储、队列调度、监控通知分开登记；按实际瓶颈验证，不将候选写成已用资源。",
+          "fn": "分类登记待考察的平台能力"
+        },
+        {
+          "id": "i_distributed_cost",
+          "name": "免费条件与费用边界",
+          "parent": "i_distributed",
+          "state": "attr",
+          "desc": "待核验：配额归属、是否绑卡、超额计费与硬停机能力；预算提醒不能替代费用硬上限。",
+          "fn": "核对免费条件和超额行为"
+        },
+        {
+          "id": "i_crawl",
+          "name": "分布式免费采集集群",
+          "parent": null,
+          "state": "node",
+          "desc": "需求与架构设想登记，尚未实施（2026-11-02）：按数据源及计算能力分配采集任务，统一汇入权威数据层。",
+          "fn": "协调多个节点执行采集任务"
+        },
+        {
+          "id": "i_crawl_dispatch",
+          "name": "按任务能力分配",
+          "parent": "i_crawl",
+          "state": "attr",
+          "desc": "待设计：依据轻量请求或浏览器渲染需求、运行资源、剩余额度与成功率分配任务。",
+          "fn": "匹配采集任务与执行节点"
+        },
+        {
+          "id": "i_crawl_ingest",
+          "name": "统一接收与校验",
+          "parent": "i_crawl",
+          "state": "node",
+          "desc": "待设计（2026-11-02）：通过认证接收数据，校验结构、时间、单位、完整性、异常与重复，再统一入库。",
+          "fn": "校验采集结果并统一入库"
+        },
+        {
+          "id": "i_crawl_ingest_trace",
+          "name": "来源与幂等追踪",
+          "parent": "i_crawl_ingest",
+          "state": "attr",
+          "desc": "待设计：保留来源、任务标识、抓取时间和内容哈希，实施去重、有限重试与退避。",
+          "fn": "追踪采集来源并避免重复处理"
+        },
+        {
+          "id": "i_crawl_storage",
+          "name": "原始与标准化分层",
+          "parent": "i_crawl",
+          "state": "attr",
+          "desc": "待设计：原始材料进入私有对象存储，标准化结果与任务状态进入数据库，白名单快照再进入公共镜像。",
+          "fn": "分开保存原始材料与标准化结果"
+        },
+        {
+          "id": "i_crawl_rollout",
+          "name": "分阶段验证",
+          "parent": "i_crawl",
+          "state": "attr",
+          "desc": "待实施：先验证数据契约和统一接收，再复用现有采集链路；有实际瓶颈后才评估额外计算节点。",
+          "fn": "按验证结果逐步扩展采集节点"
+        },
+        {
+          "id": "i_cloud",
+          "name": "个人云资源中心",
+          "parent": null,
+          "state": "node",
+          "desc": "跨项目运维模块需求登记，待规划（2026-11-02）：统一资源台账、监控、配额与依赖展示；未创建页面、数据库或监控任务。",
+          "fn": "集中登记云资源与运行状态"
+        },
+        {
+          "id": "i_cloud_ledger",
+          "name": "资源与配额台账",
+          "parent": "i_cloud",
+          "state": "node",
+          "desc": "待设计（2026-11-02）：记录用途、关联模块、免费条件、状态与有效期；秘密只保留受控引用，不展示原值。",
+          "fn": "登记资源用途及使用条件"
+        },
+        {
+          "id": "i_cloud_ledger_measure",
+          "name": "测量可信等级",
+          "parent": "i_cloud_ledger",
+          "state": "attr",
+          "desc": "待设计：明确区分官方精确值、本地估算与未知，并记录采样时间和统计延迟；不展示伪精确额度。",
+          "fn": "区分官方用量与本地估算"
+        },
+        {
+          "id": "i_cloud_ledger_cost",
+          "name": "费用风险提示",
+          "parent": "i_cloud_ledger",
+          "state": "attr",
+          "desc": "待核验：是否自动计费、能否硬停止以及续期条件；现有数据不填未经核实的套餐、金额或额度。",
+          "fn": "提示资源使用的费用边界"
+        },
+        {
+          "id": "i_cloud_monitor",
+          "name": "独立主备监控",
+          "parent": "i_cloud",
+          "state": "node",
+          "desc": "待设计（2026-11-02）：GitHub Actions 主监控与独立平台看门狗分工，Cloudflare 接收与展示结果；不宣称已实现高可用。",
+          "fn": "用独立节点监测资源状态"
+        },
+        {
+          "id": "i_cloud_monitor_lease",
+          "name": "接管与补传",
+          "parent": "i_cloud_monitor",
+          "state": "attr",
+          "desc": "待设计：用租约、唯一任务和幂等写入控制接管；接收端不可用时暂存结果，恢复后补传。",
+          "fn": "控制监控接管并补传结果"
+        },
+        {
+          "id": "i_cloud_monitor_state",
+          "name": "区分失联与故障",
+          "parent": "i_cloud_monitor",
+          "state": "attr",
+          "desc": "待设计：分别记录监控心跳、资源最近成功与数据观测时间，区分资源异常、监控失联、额度未知和数据过期。",
+          "fn": "区分监控失联与资源故障"
+        },
+        {
+          "id": "i_cloud_readonly",
+          "name": "只读状态展示",
+          "parent": "i_cloud",
+          "state": "attr",
+          "desc": "待设计：页面读取已有快照或缓存，不在打开页面时同步遍历第三方服务。",
+          "fn": "从已采集快照展示资源状态"
+        },
+        {
+          "id": "i_cloud_alert",
+          "name": "提醒联动",
+          "parent": "i_cloud",
+          "state": "attr",
+          "desc": "待设计：用量、有效期、连续失败与数据过期可与已有提醒和日历联动，尚未配置任务或通知。",
+          "fn": "提醒资源到期及连续异常"
+        }
+      ],
+      "relations": [
+        {
+          "from": "i_lang_ai",
+          "type": "引发",
+          "to": "i_plan",
+          "id": "idea_r0"
+        },
+        {
+          "from": "i_holiday",
+          "type": "启发",
+          "to": "i_plan",
+          "id": "idea_r1"
+        },
+        {
+          "from": "i_health",
+          "type": "参考",
+          "to": "i_lang_ai_deploy",
+          "id": "idea_r2"
+        },
+        {
+          "from": "i_quote_list",
+          "type": "参考",
+          "to": "i_quote_latest",
+          "id": "idea_r3"
+        },
+        {
+          "from": "i_mynet",
+          "type": "参考",
+          "to": "i_garden",
+          "id": "idea_r4"
+        },
+        {
+          "from": "i_mynet",
+          "type": "参考",
+          "to": "i_graph",
+          "id": "idea_r5"
+        },
+        {
+          "from": "i_mynet",
+          "type": "参考",
+          "to": "i_ops",
+          "id": "idea_r6"
+        },
+        {
+          "from": "i_ops",
+          "type": "参考",
+          "to": "i_garden",
+          "id": "idea_r7"
+        },
+        {
+          "from": "i_maic",
+          "type": "参考",
+          "to": "i_lang_ai",
+          "id": "idea_r8"
+        },
+        {
+          "from": "i_feed_sched",
+          "type": "启发",
+          "to": "i_quote",
+          "id": "idea_r9"
+        },
+        {
+          "from": "i_lang_ai_free",
+          "type": "参考",
+          "to": "i_pool",
+          "id": "idea_r10"
+        },
+        {
+          "from": "i_crawl",
+          "type": "参考",
+          "to": "i_distributed",
+          "id": "idea_r11"
+        },
+        {
+          "from": "i_cloud",
+          "type": "参考",
+          "to": "i_distributed",
+          "id": "idea_r12"
+        },
+        {
+          "from": "i_garden",
+          "type": "参考",
+          "to": "i_cloud",
+          "id": "idea_r13"
+        },
+        {
+          "from": "i_ops",
+          "type": "参考",
+          "to": "i_cloud",
+          "id": "idea_r14"
+        }
+      ]
+    },
+    "res": {
+      "name": "网络资源管理星域",
+      "short": "资源",
+      "en": "RESOURCES",
+      "focus": "cf",
+      "labels": {
+        "root": "平台",
+        "node": "服务",
+        "attr": "能力"
+      },
+      "relColors": {
+        "读取自": "#5cf2ff",
+        "写入": "#6dff9c",
+        "提供接口给": "#b98cff",
+        "调用": "#ff6bd5",
+        "依赖": "#ffb547",
+        "保护": "#ffe066"
+      },
+      "elements": [
+        {
+          "id": "cf",
+          "name": "Cloudflare",
+          "parent": null,
+          "state": "node",
+          "desc": "个人工作台 myapp 的运行平台：Worker、D1、KV、R2 与访问控制。",
+          "fn": "托管个人工作台的云平台"
+        },
+        {
+          "id": "cf_worker",
+          "name": "Worker · myapp",
+          "parent": "cf",
+          "state": "node",
+          "desc": "个人工作台：页面、业务 API、子项目集成路由与静态展示包的统一入口。",
+          "fn": "运行工作台的页面与业务 API"
+        },
+        {
+          "id": "cf_worker_cron",
+          "name": "定时触发",
+          "parent": "cf_worker",
+          "state": "attr",
+          "desc": "每小时及每日数次：消费同步、缴费提醒回填、读取 PE 版本等。",
+          "fn": "按计划自动执行同步与提醒"
+        },
+        {
+          "id": "cf_worker_assets",
+          "name": "静态资源绑定",
+          "parent": "cf_worker",
+          "state": "attr",
+          "desc": "导入的 StockCheck 研究包、长期指标页等只读展示内容。",
+          "fn": "提供导入的静态展示页面"
+        },
+        {
+          "id": "cf_worker_logs",
+          "name": "可观测日志",
+          "parent": "cf_worker",
+          "state": "attr",
+          "desc": "请求日志持久化，用于发布后核验。",
+          "fn": "记录请求日志以便核验"
+        },
+        {
+          "id": "cf_d1",
+          "name": "D1 · 工作台主库",
+          "parent": "cf",
+          "state": "node",
+          "desc": "正式业务记录：待办与处理记录、提醒、日记、消费快照等。",
+          "fn": "保存工作台的正式业务数据"
+        },
+        {
+          "id": "cf_kv",
+          "name": "KV",
+          "parent": "cf",
+          "state": "node",
+          "desc": "日记草稿、图表偏好等轻量键值。",
+          "fn": "保存草稿与偏好等小数据"
+        },
+        {
+          "id": "cf_r2",
+          "name": "R2 · 对象存储",
+          "parent": "cf",
+          "state": "node",
+          "desc": "PE 版本等私有传输对象，由工作台定时读取。",
+          "fn": "存放私有传输的数据文件"
+        },
+        {
+          "id": "cf_access",
+          "name": "Access 访问控制",
+          "parent": "cf",
+          "state": "node",
+          "desc": "保护整个工作台的登录与鉴权。",
+          "fn": "只允许本人登录访问工作台"
+        },
+        {
+          "id": "gh",
+          "name": "GitHub",
+          "parent": null,
+          "state": "node",
+          "desc": "代码托管与自动化。",
+          "fn": "托管代码并运行自动化任务"
+        },
+        {
+          "id": "gh_private",
+          "name": "私有仓库",
+          "parent": "gh",
+          "state": "node",
+          "desc": "cloudflaremyapp、stockcheck、catchStockData、BuffettChart 等源码与数据。",
+          "fn": "保存不公开的源码与数据"
+        },
+        {
+          "id": "gh_actions",
+          "name": "Actions",
+          "parent": "gh",
+          "state": "node",
+          "desc": "定时采集、同步与发布任务。",
+          "fn": "按计划运行采集、同步与发布"
+        },
+        {
+          "id": "gh_act_quote",
+          "name": "行情采集任务",
+          "parent": "gh_actions",
+          "state": "attr",
+          "desc": "据 2026-10-31 行情交接：个股与板块指标分任务、按市场时段调度；采集时刻不等于已确认成交或收盘时刻。",
+          "fn": "按市场任务采集报价与指标"
+        },
+        {
+          "id": "gh_act_list",
+          "name": "名单同步任务",
+          "parent": "gh_actions",
+          "state": "attr",
+          "desc": "下载 StockCheck 名单并提取 watchlist；私库读取授权待补，失败时保留旧名单。",
+          "fn": "同步最新的个股监察名单"
+        },
+        {
+          "id": "gh_act_mirror",
+          "name": "镜像发布任务",
+          "parent": "gh_actions",
+          "state": "attr",
+          "desc": "把白名单后的最新行情推送到公开镜像。",
+          "fn": "把行情发布到公开镜像"
+        },
+        {
+          "id": "gh_act_pe",
+          "name": "PE 每周重算",
+          "parent": "gh_actions",
+          "state": "attr",
+          "desc": "StockCheck 每周日重算 PE，写入私有传输。",
+          "fn": "每周重算 PE 并写入私有传输"
+        },
+        {
+          "id": "gh_mirror",
+          "name": "公开行情镜像",
+          "parent": "gh",
+          "state": "node",
+          "desc": "可匿名读取的最新行情 JSON；不含持仓、估值与审批。",
+          "fn": "对外提供可匿名读取的最新行情"
+        },
+        {
+          "id": "gg",
+          "name": "自用谷歌服务",
+          "parent": null,
+          "state": "node",
+          "desc": "邮件通知与历史资料来源。",
+          "fn": "提供邮件与云盘服务"
+        },
+        {
+          "id": "gg_gmail",
+          "name": "Gmail",
+          "parent": "gg",
+          "state": "node",
+          "desc": "日股 / 美股自动日报的收件通道。",
+          "fn": "接收自动行情日报"
+        },
+        {
+          "id": "gg_drive",
+          "name": "Google Drive",
+          "parent": "gg",
+          "state": "node",
+          "desc": "StockCheck、BuffettChart 原始资料的历史来源；已迁移为本地维护，未自动写回。",
+          "fn": "保存早期原始资料"
+        },
+        {
+          "id": "sf",
+          "name": "Salesforce",
+          "parent": null,
+          "state": "node",
+          "desc": "消费记录的原始账本，工作台只读同步。",
+          "fn": "记录消费原始账本"
+        },
+        {
+          "id": "sf_api",
+          "name": "消费记录只读接口",
+          "parent": "sf",
+          "state": "attr",
+          "desc": "每天单向同步到工作台 D1 快照。",
+          "fn": "向工作台提供只读消费记录"
+        },
+        {
+          "id": "mk",
+          "name": "行情数据源",
+          "parent": null,
+          "state": "node",
+          "desc": "外部市场数据，仅由采集任务读取。",
+          "fn": "提供外部市场行情"
+        },
+        {
+          "id": "mk_tv",
+          "name": "TradingView",
+          "parent": "mk",
+          "state": "node",
+          "desc": "个股与板块行情来源。",
+          "fn": "提供个股与板块行情"
+        },
+        {
+          "id": "mk_jpx",
+          "name": "JPX 日本交易所",
+          "parent": "mk",
+          "state": "node",
+          "desc": "日股相关公开数据来源。",
+          "fn": "提供日股公开数据"
+        },
+        {
+          "id": "ai",
+          "name": "AI 开发助手",
+          "parent": null,
+          "state": "node",
+          "desc": "参与开发、审核与交接的 AI 工具。",
+          "fn": "协助编写、审核与交接代码"
+        },
+        {
+          "id": "ai_claude",
+          "name": "Claude Code",
+          "parent": "ai",
+          "state": "node",
+          "desc": "开发与审核助手。",
+          "fn": "协助开发与审核改动"
+        },
+        {
+          "id": "ai_codex",
+          "name": "Codex",
+          "parent": "ai",
+          "state": "node",
+          "desc": "编码与交接。",
+          "fn": "协助编码与整理交接"
+        },
+        {
+          "id": "ai_models",
+          "name": "语言练习候选模型",
+          "parent": "ai",
+          "state": "attr",
+          "desc": "Gemini、Groq、Workers AI、OpenRouter、Mistral 等仅为语言练习候选；未接入，免费条件和额度须在启用前核验。",
+          "fn": "语言练习可选用的 AI 模型"
+        },
+        {
+          "id": "dev",
+          "name": "本机开发环境",
+          "parent": null,
+          "state": "node",
+          "desc": "各项目本地开发、测试与发布工具。",
+          "fn": "在本机开发、测试与部署"
+        },
+        {
+          "id": "dev_node",
+          "name": "Node.js 24",
+          "parent": "dev",
+          "state": "attr",
+          "desc": "各子项目本地运行与测试。",
+          "fn": "运行各项目的本地服务与测试"
+        },
+        {
+          "id": "dev_python",
+          "name": "Python",
+          "parent": "dev",
+          "state": "attr",
+          "desc": "行情采集与估值构建脚本。",
+          "fn": "运行采集与估值脚本"
+        },
+        {
+          "id": "dev_wrangler",
+          "name": "Wrangler CLI",
+          "parent": "dev",
+          "state": "attr",
+          "desc": "构建检查、D1 结构同步，以及确认后的部署。",
+          "fn": "检查、同步并部署 Cloudflare 项目"
+        },
+        {
+          "id": "dev_playwright",
+          "name": "Playwright",
+          "parent": "dev",
+          "state": "attr",
+          "desc": "多宽度浏览器回归测试。",
+          "fn": "在真实浏览器中自动回归页面"
+        },
+        {
+          "id": "cf_worker_assets_scope",
+          "name": "静态资源白名单",
+          "parent": "cf_worker",
+          "state": "attr",
+          "desc": "架构文档登记：浏览器资源显式登记，研究展示包独立分发；后端脚本、设计文档和内部路径不作为公开资源。",
+          "fn": "按白名单分发浏览器资源"
+        },
+        {
+          "id": "cf_kv_drafts",
+          "name": "日记草稿暂存",
+          "parent": "cf_kv",
+          "state": "attr",
+          "desc": "存储契约登记：草稿与正式日记分开；正式保存后按草稿修订版本清理，避免删除较新的草稿。",
+          "fn": "暂存并恢复未正式保存的日记"
+        },
+        {
+          "id": "cf_kv_prefs",
+          "name": "界面偏好",
+          "parent": "cf_kv",
+          "state": "attr",
+          "desc": "存储文档登记：保存图表等界面偏好；此处不记录实际用户偏好值。",
+          "fn": "保存图表等界面偏好"
+        },
+        {
+          "id": "gh_mirror_scope",
+          "name": "公开字段白名单",
+          "parent": "gh_mirror",
+          "state": "attr",
+          "desc": "行情交接文档登记：公开镜像只发布白名单行情；私有研究、审批、持有信息与原始归档不进入镜像。",
+          "fn": "限定公共镜像的发布字段"
+        },
+        {
+          "id": "gh_mirror_time",
+          "name": "采集时间边界",
+          "parent": "gh_mirror",
+          "state": "attr",
+          "desc": "据 2026-10-31 行情交接：采集时间与成交时间分开，解析完整不代表确认收盘；本次未核验线上数据。",
+          "fn": "保留行情时间与可信度边界"
+        },
+        {
+          "id": "mk_multpl",
+          "name": "Multpl 与 Shiller",
+          "parent": "mk",
+          "state": "node",
+          "desc": "长期指标文档登记的标普月均历史来源，不表示即时行情接口；实际使用范围以指标维护文档为准。",
+          "fn": "提供标普月均历史资料"
+        },
+        {
+          "id": "mk_ecb",
+          "name": "ECB 与 DataStream",
+          "parent": "mk",
+          "state": "node",
+          "desc": "长期指标文档登记的日经月均历史来源；文档限定受控个人工作台使用，来源与许可需随实际使用复核。",
+          "fn": "提供日经月均历史资料"
+        }
+      ],
+      "relations": [
+        {
+          "from": "cf_worker",
+          "type": "读取自",
+          "to": "cf_d1",
+          "id": "res_r0"
+        },
+        {
+          "from": "cf_worker",
+          "type": "读取自",
+          "to": "cf_kv",
+          "id": "res_r1"
+        },
+        {
+          "from": "cf_worker_cron",
+          "type": "读取自",
+          "to": "cf_r2",
+          "id": "res_r2"
+        },
+        {
+          "from": "cf_access",
+          "type": "保护",
+          "to": "cf_worker",
+          "id": "res_r3"
+        },
+        {
+          "from": "sf_api",
+          "type": "提供接口给",
+          "to": "cf_worker",
+          "id": "res_r4"
+        },
+        {
+          "from": "gh_act_pe",
+          "type": "写入",
+          "to": "cf_r2",
+          "id": "res_r5"
+        },
+        {
+          "from": "gh_act_mirror",
+          "type": "写入",
+          "to": "gh_mirror",
+          "id": "res_r6"
+        },
+        {
+          "from": "gh_act_list",
+          "type": "读取自",
+          "to": "gh_private",
+          "id": "res_r7"
+        },
+        {
+          "from": "gh_act_quote",
+          "type": "读取自",
+          "to": "mk_tv",
+          "id": "res_r8"
+        },
+        {
+          "from": "gh_act_quote",
+          "type": "读取自",
+          "to": "mk_jpx",
+          "id": "res_r9"
+        },
+        {
+          "from": "gg_gmail",
+          "type": "读取自",
+          "to": "gh_mirror",
+          "id": "res_r10"
+        },
+        {
+          "from": "dev_wrangler",
+          "type": "调用",
+          "to": "cf_worker",
+          "id": "res_r11"
+        },
+        {
+          "from": "cf_worker",
+          "type": "写入",
+          "to": "cf_d1",
+          "id": "res_r12"
+        },
+        {
+          "from": "cf_worker",
+          "type": "写入",
+          "to": "cf_kv",
+          "id": "res_r13"
+        }
+      ]
+    },
+    "proj": {
+      "name": "项目管理星域",
+      "short": "项目",
+      "en": "PROJECTS",
+      "focus": "p_myapp",
+      "labels": {
+        "root": "项目",
+        "node": "功能",
+        "attr": "特征"
+      },
+      "relColors": {
+        "集成": "#ffb547",
+        "使用": "#6dff9c",
+        "读取": "#5cf2ff",
+        "参考": "#b98cff"
+      },
+      "elements": [
+        {
+          "id": "p_myapp",
+          "name": "个人工作台 myapp",
+          "parent": null,
+          "state": "node",
+          "desc": "cloudflaremyapp：负责导航、访问边界、D1/KV 与最终部署；业务功能在子项目开发后合并。",
+          "fn": "个人工作台：统一入口、登录与部署"
+        },
+        {
+          "id": "p_myapp_aim",
+          "name": "待办与处理记录",
+          "parent": "p_myapp",
+          "state": "node",
+          "desc": "三状态待办与阶段处理记录。",
+          "fn": "管理待办及其处理过程"
+        },
+        {
+          "id": "p_myapp_rem",
+          "name": "事项提醒",
+          "parent": "p_myapp",
+          "state": "node",
+          "desc": "提醒与事项面板：循环规则、置顶、改期。",
+          "fn": "提醒到期事项并支持改期"
+        },
+        {
+          "id": "p_myapp_diary",
+          "name": "日记与草稿",
+          "parent": "p_myapp",
+          "state": "node",
+          "desc": "日记入 D1，草稿暂存 KV。",
+          "fn": "书写并保存日记"
+        },
+        {
+          "id": "p_myapp_int",
+          "name": "集成与发布",
+          "parent": "p_myapp",
+          "state": "node",
+          "desc": "子项目合并、展示包导入、路由白名单与发布审核。",
+          "fn": "接入子项目并安全发布"
+        },
+        {
+          "id": "p_myapp_int_flow",
+          "name": "发布流程",
+          "parent": "p_myapp_int",
+          "state": "attr",
+          "desc": "子项目开发检测 → 合并主站验证 → 本次部署确认 → 部署 → 提交推送。",
+          "fn": "规定从开发到部署的步骤"
+        },
+        {
+          "id": "p_myapp_int_review",
+          "name": "发布审核记录",
+          "parent": "p_myapp_int",
+          "state": "attr",
+          "desc": "每次部署前在项目根目录更新 RELEASE_REVIEW.md。",
+          "fn": "为每次发布留下可审核记录"
+        },
+        {
+          "id": "p_rem",
+          "name": "事项提醒子项目",
+          "parent": null,
+          "state": "node",
+          "desc": "reminders-app：提醒模块的独立开发仓库，不独立部署，完成后同步到主站。",
+          "fn": "独立开发提醒模块后同步主站"
+        },
+        {
+          "id": "p_rem_drag",
+          "name": "拖拽改期",
+          "parent": "p_rem",
+          "state": "attr",
+          "desc": "桌面拖拽与触屏 / 键盘按钮，今天 / 明天立即改期。",
+          "fn": "拖动提醒即可改到今天或明天"
+        },
+        {
+          "id": "p_sc",
+          "name": "StockCheck 个股监察",
+          "parent": null,
+          "state": "node",
+          "desc": "个股名单、财报、估值与研究审核的权威来源；导出只读研究包到工作台。",
+          "fn": "监察个股并给出估值研究"
+        },
+        {
+          "id": "p_sc_list",
+          "name": "监察名单",
+          "parent": "p_sc",
+          "state": "node",
+          "desc": "证券身份与 scope 的权威名单（2026-10-31：正式 watchlist 122 条，JP 67 / US 54 / DE 1）。",
+          "fn": "维护需要监察的证券名单"
+        },
+        {
+          "id": "p_sc_val",
+          "name": "四情景估值",
+          "parent": "p_sc",
+          "state": "node",
+          "desc": "四档估值、研究版本与采纳记录。",
+          "fn": "按四种情景估算个股价值"
+        },
+        {
+          "id": "p_sc_val_dcf",
+          "name": "DCF",
+          "parent": "p_sc_val",
+          "state": "attr",
+          "desc": "四情景现金流折现。",
+          "fn": "用现金流折现估值"
+        },
+        {
+          "id": "p_sc_val_pe",
+          "name": "PE Band",
+          "parent": "p_sc_val",
+          "state": "attr",
+          "desc": "正式与近似 PE 均可绘制，近似明确标记风险。",
+          "fn": "用历史 PE 区间判断估值高低"
+        },
+        {
+          "id": "p_sc_pe",
+          "name": "PE 每周刷新",
+          "parent": "p_sc",
+          "state": "node",
+          "desc": "周日重算，经私有传输供工作台每日读取（2026-10-31 已部署）。",
+          "fn": "每周更新 PE 数据供页面读取"
+        },
+        {
+          "id": "p_sc_pkg",
+          "name": "研究展示包",
+          "parent": "p_sc",
+          "state": "node",
+          "desc": "白名单导出的网页与研究摘要，排除持仓与审批原话。",
+          "fn": "把研究结果打包给工作台展示"
+        },
+        {
+          "id": "p_sc_idea",
+          "name": "相关创意：信息转换器与 RSS 爬虫",
+          "parent": "p_sc",
+          "state": "attr",
+          "desc": "以 RSS 驱动的采集调度补充个股页面数据。",
+          "fn": "用 RSS 驱动的采集补充个股数据"
+        },
+        {
+          "id": "p_cs",
+          "name": "catchStockData 行情采集",
+          "parent": null,
+          "state": "node",
+          "desc": "日美德个股行情与板块 / 宏观采集，生成公开镜像。",
+          "fn": "自动采集行情并发布公开镜像"
+        },
+        {
+          "id": "p_cs_quote",
+          "name": "行情采集",
+          "parent": "p_cs",
+          "state": "node",
+          "desc": "据 2026-10-31 行情交接：按各市场时段采集名单内报价；休市与提前收盘过滤尚待补充，本次未重新核验线上任务。",
+          "fn": "按市场时段采集名单内报价"
+        },
+        {
+          "id": "p_cs_sync",
+          "name": "名单同步",
+          "parent": "p_cs",
+          "state": "node",
+          "desc": "从 StockCheck 下载名单提取 watchlist；私库读取授权待补，失败保留旧名单。",
+          "fn": "从 StockCheck 获取最新名单"
+        },
+        {
+          "id": "p_cs_mirror",
+          "name": "公开镜像发布",
+          "parent": "p_cs",
+          "state": "node",
+          "desc": "最新行情 JSON 推送到公开仓库。",
+          "fn": "把最新行情推送到公开仓库"
+        },
+        {
+          "id": "p_cs_latest",
+          "name": "最新数据分区",
+          "parent": "p_cs",
+          "state": "attr",
+          "desc": "新增 updates JSON（本地实现，未发布）；工作台同步与页面接入待实现。",
+          "fn": "提供最新数据的分区读取"
+        },
+        {
+          "id": "p_cs_mail",
+          "name": "日报邮件消费",
+          "parent": "p_cs",
+          "state": "attr",
+          "desc": "据 2026-10-31 交接：独立日报任务读取按市场保留的私有收盘候选并核验交易日；周月报尚未统一契约，持续运行仍待验收。",
+          "fn": "用镜像数据生成每日行情邮件"
+        },
+        {
+          "id": "p_bc",
+          "name": "BuffettChart 长期指标",
+          "parent": null,
+          "state": "node",
+          "desc": "巴菲特指数、标普 500、日经 225 的长期价格与去趋势图。",
+          "fn": "展示大盘长期估值指标"
+        },
+        {
+          "id": "p_bc_buffett",
+          "name": "巴菲特指数",
+          "parent": "p_bc",
+          "state": "node",
+          "desc": "标准指数、去趋势偏离与 Z-score。",
+          "fn": "用市值与 GDP 之比看整体估值"
+        },
+        {
+          "id": "p_bc_sp",
+          "name": "标普 500",
+          "parent": "p_bc",
+          "state": "node",
+          "desc": "月度数据与独立模型。",
+          "fn": "展示标普 500 长期趋势与偏离"
+        },
+        {
+          "id": "p_bc_nk",
+          "name": "日经 225",
+          "parent": "p_bc",
+          "state": "node",
+          "desc": "月度数据与独立模型。",
+          "fn": "展示日经 225 长期趋势与偏离"
+        },
+        {
+          "id": "p_bc_build",
+          "name": "构建与集成",
+          "parent": "p_bc",
+          "state": "node",
+          "desc": "生成发布清单与哈希资源，由工作台校验接入。",
+          "fn": "构建图表页面并接入工作台"
+        },
+        {
+          "id": "p_bc_idea",
+          "name": "相关创意：信息转换器与 RSS 爬虫",
+          "parent": "p_bc",
+          "state": "attr",
+          "desc": "以 RSS 驱动的采集调度补充长期指标页数据。",
+          "fn": "用 RSS 驱动的采集补充指标数据"
+        },
+        {
+          "id": "p_sf",
+          "name": "sfpaylogandbi 消费记录",
+          "parent": null,
+          "state": "node",
+          "desc": "消费记录、消费 Dashboard 与周期缴费监控；最终合并进工作台。",
+          "fn": "记录消费并监控周期缴费"
+        },
+        {
+          "id": "p_sf_sync",
+          "name": "消费同步",
+          "parent": "p_sf",
+          "state": "node",
+          "desc": "Salesforce 每天单向只读同步到 D1 快照。",
+          "fn": "每天把 Salesforce 消费同步进来"
+        },
+        {
+          "id": "p_sf_dash",
+          "name": "消费 Dashboard",
+          "parent": "p_sf",
+          "state": "node",
+          "desc": "消费图表，偏好保存在 KV。",
+          "fn": "用图表查看消费结构与趋势"
+        },
+        {
+          "id": "p_sf_bill",
+          "name": "周期缴费监控",
+          "parent": "p_sf",
+          "state": "node",
+          "desc": "缴费计划与状态，提前 3 个日本自然日写入已有事项。",
+          "fn": "跟踪周期缴费并提前提醒"
+        },
+        {
+          "id": "p_sf_idea",
+          "name": "相关创意：会员与订阅",
+          "parent": "p_sf",
+          "state": "attr",
+          "desc": "个人会员与订阅管理中心，识别周期扣款。",
+          "fn": "扩展为会员与订阅管理"
+        },
+        {
+          "id": "p_cal",
+          "name": "日历与长期计划中心",
+          "parent": null,
+          "state": "node",
+          "desc": "calendarAndPlanner：P1 日历、P2 长期计划；已集成主站源码，尚未执行生产迁移与部署。",
+          "fn": "管理日程与长期计划"
+        },
+        {
+          "id": "p_cal_p1",
+          "name": "P1 日历",
+          "parent": "p_cal",
+          "state": "node",
+          "desc": "日历与首页日程卡。",
+          "fn": "查看与安排日程"
+        },
+        {
+          "id": "p_cal_p2",
+          "name": "P2 长期计划",
+          "parent": "p_cal",
+          "state": "node",
+          "desc": "计划、阶段、任务、里程碑独立存储，提醒复用既有功能。",
+          "fn": "拆解长期计划并跟踪执行"
+        },
+        {
+          "id": "p_cal_p2_gantt",
+          "name": "甘特 / 依赖 / 基线",
+          "parent": "p_cal_p2",
+          "state": "attr",
+          "desc": "含实际记录与执行时间块。",
+          "fn": "用甘特图管理依赖与基线"
+        },
+        {
+          "id": "p_cal_p2_cap",
+          "name": "全局容量与重排预览",
+          "parent": "p_cal_p2",
+          "state": "attr",
+          "desc": "重排需预览确认。",
+          "fn": "按可用时间重排计划"
+        },
+        {
+          "id": "p_cal_p2_exam",
+          "name": "题库达标快照",
+          "parent": "p_cal_p2",
+          "state": "attr",
+          "desc": "计划中显示题库达标进度。",
+          "fn": "在计划中显示题库达标进度"
+        },
+        {
+          "id": "p_cal_holiday",
+          "name": "假期与生日设置",
+          "parent": "p_cal",
+          "state": "attr",
+          "desc": "需求归档与界面原型交接（2026-11-02）。",
+          "fn": "设置休假与生日"
+        },
+        {
+          "id": "p_exam",
+          "name": "知序 · 考证学习",
+          "parent": null,
+          "state": "node",
+          "desc": "selfexamsystem：多题库刷题与模拟考，v0.1 本地可运行；提供 Worker + D1 入口，未部署。",
+          "fn": "备考刷题与模拟考试"
+        },
+        {
+          "id": "p_exam_bank",
+          "name": "题库管理",
+          "parent": "p_exam",
+          "state": "node",
+          "desc": "多题库、两级标签、手工录题与 JSON / ZIP 导入。",
+          "fn": "录入、分类并导入试题"
+        },
+        {
+          "id": "p_exam_mock",
+          "name": "模拟考试",
+          "parent": "p_exam",
+          "state": "node",
+          "desc": "60 分钟、随机最多 70 题、90% 合格线，服务端判分。",
+          "fn": "限时模拟正式考试并判分"
+        },
+        {
+          "id": "p_exam_master",
+          "name": "错题与掌握",
+          "parent": "p_exam",
+          "state": "node",
+          "desc": "不同轮次连续正确 3 次视为掌握。",
+          "fn": "跟踪错题直到真正掌握"
+        },
+        {
+          "id": "p_exam_img",
+          "name": "图片引用",
+          "parent": "p_exam",
+          "state": "attr",
+          "desc": "登记 Git / Drive / R2 图片引用。",
+          "fn": "登记题目图片的存放位置"
+        },
+        {
+          "id": "p_exam_idea",
+          "name": "相关创意：云交互试验室",
+          "parent": "p_exam",
+          "state": "attr",
+          "desc": "三大云交互式考试训练实验室。",
+          "fn": "扩展为云认证交互实验室"
+        },
+        {
+          "id": "p_health",
+          "name": "身体手记",
+          "parent": null,
+          "state": "node",
+          "desc": "私人身体状况记录：用人体定位与症状按钮减少输入；计划集成到工作台。",
+          "fn": "记录身体状况与变化"
+        },
+        {
+          "id": "p_health_sym",
+          "name": "症状登记",
+          "parent": "p_health",
+          "state": "node",
+          "desc": "一次登记多个病痛，分别描述并回看变化。",
+          "fn": "快速登记多处不适"
+        },
+        {
+          "id": "p_health_body",
+          "name": "体重与腰围",
+          "parent": "p_health",
+          "state": "node",
+          "desc": "核心关注项，独立快速登记并查看趋势。",
+          "fn": "记录体重与腰围并看趋势"
+        },
+        {
+          "id": "p_lang",
+          "name": "LanguageStudy 语言练习",
+          "parent": null,
+          "state": "node",
+          "desc": "日语情景对话练习；本地 mock 版，未连接真实 AI，未部署。",
+          "fn": "练习日语情景对话"
+        },
+        {
+          "id": "p_lang_bank",
+          "name": "情景题库",
+          "parent": "p_lang",
+          "state": "node",
+          "desc": "13 类、35 主题、44 场景、512 题。",
+          "fn": "提供分类的情景对话题目"
+        },
+        {
+          "id": "p_lang_mode",
+          "name": "应对方式",
+          "parent": "p_lang",
+          "state": "node",
+          "desc": "拼词组句（默认 N2，可选 N1）与自由应对。",
+          "fn": "用拼词或自由回答应对对话"
+        },
+        {
+          "id": "p_lang_char",
+          "name": "角色动作",
+          "parent": "p_lang",
+          "state": "node",
+          "desc": "双角色动画子模块，目前已暂停开发。",
+          "fn": "用角色动画演示对话情景"
+        },
+        {
+          "id": "p_lang_plan",
+          "name": "计划中心接口（预留）",
+          "parent": "p_lang",
+          "state": "attr",
+          "desc": "只暴露练习目标、训练结果与完成情况。",
+          "fn": "向计划中心提供练习结果"
+        },
+        {
+          "id": "p_lang_ai",
+          "name": "教师点评",
+          "parent": "p_lang",
+          "state": "attr",
+          "desc": "当前为本地模拟教师点评与日语例句；真实 AI 未接入，额度或服务不可用时采用离线重演方案。",
+          "fn": "点评回答并给出日语例句"
+        },
+        {
+          "id": "p_lang_idea",
+          "name": "改进候选：OpenMAIC",
+          "parent": "p_lang",
+          "state": "attr",
+          "desc": "多智能体互动课堂，作为语言学习辅助页的改进参考。",
+          "fn": "参考多智能体课堂改进练习"
+        },
+        {
+          "id": "p_wc",
+          "name": "WebCharacter 网页角色",
+          "parent": null,
+          "state": "node",
+          "desc": "零构建 2D 角色原型：Rigby2D、WebGL2 与 Canvas。",
+          "fn": "制作网页中的 2D 角色动画"
+        },
+        {
+          "id": "p_wc_rig",
+          "name": "绑定与 IK",
+          "parent": "p_wc",
+          "state": "node",
+          "desc": "时间轴、IK、裙摆网格与绑定生成器。",
+          "fn": "为角色绑骨并驱动动作"
+        },
+        {
+          "id": "p_wc_apple",
+          "name": "苹果小剧场",
+          "parent": "p_wc",
+          "state": "attr",
+          "desc": "双角色递苹果的动作演示。",
+          "fn": "演示双角色递苹果"
+        },
+        {
+          "id": "p_wc_magic",
+          "name": "魔法书与扫帚",
+          "parent": "p_wc",
+          "state": "attr",
+          "desc": "拾书、收纳、侧坐飞走的动作演示。",
+          "fn": "演示拾书骑扫帚飞走"
+        },
+        {
+          "id": "p_mynet",
+          "name": "MyNet 星图",
+          "parent": null,
+          "state": "node",
+          "desc": "数字生态花园的直接实现，兼顾个人属性知识图谱与简易项目运维管理：星图展示与管理台。",
+          "fn": "以星图组织并管理个人内容"
+        },
+        {
+          "id": "p_mynet_map",
+          "name": "星图展示",
+          "parent": "p_mynet",
+          "state": "node",
+          "desc": "顶级总览、星团总览与焦点星图。",
+          "fn": "以焦点和距离探索内容关系"
+        },
+        {
+          "id": "p_mynet_mgr",
+          "name": "管理台",
+          "parent": "p_mynet",
+          "state": "node",
+          "desc": "表格查找与编辑，遵循单一隶属与自动升格规则。",
+          "fn": "用表格查找并编辑内容"
+        },
+        {
+          "id": "p_mynet_data",
+          "name": "共享数据层",
+          "parent": "p_mynet",
+          "state": "node",
+          "desc": "两页共用，保存在浏览器本地。",
+          "fn": "让星图与管理台共用同一份数据"
+        },
+        {
+          "id": "p_mynet_idea",
+          "name": "实现的创意",
+          "parent": "p_mynet",
+          "state": "attr",
+          "desc": "数字生态花园（直接实现）、个人属性知识图谱、简易项目管理与运维中心。",
+          "fn": "实现数字花园、知识图谱与运维中心"
+        },
+        {
+          "id": "p_myapp_home",
+          "name": "首页总览",
+          "parent": "p_myapp",
+          "state": "node",
+          "desc": "页面文档登记：只读汇总待办状态和近期提醒摘要，快捷入口复用原模块；本次未重新验收生产页面。",
+          "fn": "汇总待办与近期提醒"
+        },
+        {
+          "id": "p_myapp_nav",
+          "name": "共享导航",
+          "parent": "p_myapp",
+          "state": "attr",
+          "desc": "页面文档登记：统一生成本地模块与研究页面入口，窄屏使用可展开导航。",
+          "fn": "统一各模块的页面入口"
+        },
+        {
+          "id": "p_myapp_diary_draft",
+          "name": "草稿恢复",
+          "parent": "p_myapp_diary",
+          "state": "attr",
+          "desc": "页面文档登记：暂存与正式日记分开；恢复前确认，正式保存后仅清理匹配的草稿版本。",
+          "fn": "暂存并恢复未完成的日记"
+        },
+        {
+          "id": "p_myapp_diary_version",
+          "name": "乐观锁保护",
+          "parent": "p_myapp_diary",
+          "state": "attr",
+          "desc": "页面文档登记：保存和删除携带读取版本；冲突保留当前输入，先暂存再处理合并。",
+          "fn": "阻止旧版本覆盖新日记"
+        },
+        {
+          "id": "p_myapp_study",
+          "name": "考证模块接线",
+          "parent": "p_myapp",
+          "state": "node",
+          "desc": "据当前页面文档：学习页面与接口已在本地接入主站路由；结构迁移待应用，候选数据导入仍阻断，不能视为已上线。",
+          "fn": "接入考证页面与业务接口"
+        },
+        {
+          "id": "p_rem_cycle",
+          "name": "循环与分组",
+          "parent": "p_rem",
+          "state": "attr",
+          "desc": "主站页面文档登记：循环提醒支持间隔、相对定时与年度日期，按状态分组并提供列表和看板。",
+          "fn": "按循环规则与状态组织提醒"
+        },
+        {
+          "id": "p_rem_guard",
+          "name": "改期写入边界",
+          "parent": "p_rem",
+          "state": "attr",
+          "desc": "子项目回执登记（2026-10-31）：同日期操作不写入，旧记录冲突拒绝，已完成事项禁止拖拽；本次未执行线上改期。",
+          "fn": "避免无效改期和旧记录覆盖"
+        },
+        {
+          "id": "p_sc_fin",
+          "name": "季度财报归档",
+          "parent": "p_sc",
+          "state": "node",
+          "desc": "项目文档登记：按公司与期间保存独立财报、来源与附件，保留币种和单位；录入财报不自动改写估值。",
+          "fn": "归档季度财报与原始附件"
+        },
+        {
+          "id": "p_sc_fin_import",
+          "name": "报表去重与修订",
+          "parent": "p_sc_fin",
+          "state": "attr",
+          "desc": "相同内容导入返回既有对象；更正报表新增版本并指向旧记录，不覆盖历史报表。",
+          "fn": "去重财报并保留修订历史"
+        },
+        {
+          "id": "p_sc_fin_parse",
+          "name": "下载与解析分离",
+          "parent": "p_sc_fin",
+          "state": "attr",
+          "desc": "文档登记：官方披露获取与财务指标解析分开；已登记的获取能力不代表所有公司自动更新，也不等于财务审计完成。",
+          "fn": "区分附件获取与指标解析"
+        },
+        {
+          "id": "p_sc_compare",
+          "name": "逐股情景对比",
+          "parent": "p_sc",
+          "state": "attr",
+          "desc": "页面文档登记：每行使用独立价格轴，缺档不补点；报价变化不自动重估，也不构成交易指令。",
+          "fn": "对比逐股情景值与报价"
+        },
+        {
+          "id": "p_cs_quote_time",
+          "name": "行情可信度",
+          "parent": "p_cs_quote",
+          "state": "attr",
+          "desc": "据 2026-10-31 交接：解析完整性与确认收盘分开，保留各市场上次有效采集时间；休市及提前收盘过滤仍待补充。",
+          "fn": "区分采集成功与收盘确认"
+        },
+        {
+          "id": "p_bc_buffett_cycle",
+          "name": "维护周期",
+          "parent": "p_bc_buffett",
+          "state": "attr",
+          "desc": "指标文档登记：每六个月维护，提前三十天进入提醒窗口；构建不会重置数据日期。",
+          "fn": "按维护周期提醒更新巴菲特指标"
+        },
+        {
+          "id": "p_bc_sp_window",
+          "name": "月度更新窗口",
+          "parent": "p_bc_sp",
+          "state": "attr",
+          "desc": "指标文档登记：最近二十四个月作为更新窗口，旧月移入固定历史；修订需显式采纳及原因。",
+          "fn": "维护标普近期窗口与固定历史"
+        },
+        {
+          "id": "p_bc_sp_cycle",
+          "name": "维护周期",
+          "parent": "p_bc_sp",
+          "state": "attr",
+          "desc": "指标文档登记：每两个月维护，提前十四天提醒；提醒按来源项目规定的日历日期计算。",
+          "fn": "按维护周期提醒更新标普指标"
+        },
+        {
+          "id": "p_bc_nk_cycle",
+          "name": "维护周期",
+          "parent": "p_bc_nk",
+          "state": "attr",
+          "desc": "指标文档登记：每两个月维护，提前十四天提醒；保持独立月均序列及全历史模型。",
+          "fn": "按维护周期提醒更新日经指标"
+        },
+        {
+          "id": "p_bc_nk_scope",
+          "name": "来源使用边界",
+          "parent": "p_bc_nk",
+          "state": "attr",
+          "desc": "指标文档限定当前受控个人工作台使用；不将第三方历史序列自动公开再分发。",
+          "fn": "保留日经来源的使用边界"
+        },
+        {
+          "id": "p_bc_export",
+          "name": "图表与快照下载",
+          "parent": "p_bc",
+          "state": "attr",
+          "desc": "指标文档登记：分别下载各指标的两张 SVG 与完整快照，读取失败互不阻塞，不自动上传云盘。",
+          "fn": "导出指标图表与数据快照"
+        },
+        {
+          "id": "p_exam_import",
+          "name": "题库导入预览",
+          "parent": "p_exam",
+          "state": "node",
+          "desc": "本地初版已实现（据 README）：JSON 或 ZIP 预览逐行错误和重复差异，显式导入有效行，并支持分批续传。",
+          "fn": "预览题库差异并分批导入"
+        },
+        {
+          "id": "p_exam_session",
+          "name": "会话与保存屏障",
+          "parent": "p_exam",
+          "state": "node",
+          "desc": "本地初版已实现（据 README）：唯一活跃会话、暂停恢复、服务端判分与跨页保存屏障；远端竞争仍待验证。",
+          "fn": "保护考试会话与作答保存"
+        },
+        {
+          "id": "p_exam_session_queue",
+          "name": "离线保存队列",
+          "parent": "p_exam_session",
+          "state": "attr",
+          "desc": "本地实现使用 IndexedDB 队列、幂等重试和版本校验；不等于已完成完全离线首次开站。",
+          "fn": "暂存作答并可靠重试保存"
+        },
+        {
+          "id": "p_exam_review",
+          "name": "统计与考后复盘",
+          "parent": "p_exam",
+          "state": "node",
+          "desc": "本地初版已实现（据 README）：首答、近期、考试及重复统计，父标签去重，并保留历史成绩与考后复盘。",
+          "fn": "统计学习表现并回顾考试"
+        },
+        {
+          "id": "p_exam_ai",
+          "name": "外部 AI 资料交换",
+          "parent": "p_exam",
+          "state": "node",
+          "desc": "本地初版提供资料模板、分析包和 Markdown 报告回存；项目本身不调用模型，缺失图片的分析包会标为不完整。",
+          "fn": "导出分析资料并接收外部报告"
+        },
+        {
+          "id": "p_exam_backup",
+          "name": "结构化备份恢复",
+          "parent": "p_exam",
+          "state": "node",
+          "desc": "本地初版支持结构化备份及恢复到新数据库文件；在线替换恢复尚未提供，本次未读取任何用户题库或作答数据。",
+          "fn": "备份学习数据并恢复到新库"
+        },
+        {
+          "id": "p_lang_mode_hand",
+          "name": "最终完整手打",
+          "parent": "p_lang_mode",
+          "state": "attr",
+          "desc": "既有学习约束：词块排序保留参考，最终答案必须完整手动输入，不以点击、拖动或粘贴替代。",
+          "fn": "通过完整手打提交最终答案"
+        },
+        {
+          "id": "p_lang_offline",
+          "name": "本地离线训练",
+          "parent": "p_lang",
+          "state": "attr",
+          "desc": "README 登记本地离线情景训练，不依赖外部模型；本地服务仍需运行，未接入真实 AI 或部署。",
+          "fn": "在无外部模型时练习情景对话"
+        },
+        {
+          "id": "p_lang_resume",
+          "name": "中断恢复与记录交换",
+          "parent": "p_lang",
+          "state": "attr",
+          "desc": "README 登记：刷新或关闭练习后可继续或结束结算，练习记录支持本地 JSON 导入导出。",
+          "fn": "恢复中断练习并交换本地记录"
+        },
+        {
+          "id": "p_mynet_map_distance",
+          "name": "焦点距离探索",
+          "parent": "p_mynet_map",
+          "state": "attr",
+          "desc": "当前原型：无向最短路径，范围一至五；属性与所属节点同距离，边界提示未展开的邻居。",
+          "fn": "按焦点距离逐步探索关系"
+        },
+        {
+          "id": "p_mynet_map_layers",
+          "name": "三层总览过渡",
+          "parent": "p_mynet_map",
+          "state": "attr",
+          "desc": "当前原型：星域总览、星团总览、焦点视图以连续相机过渡连接；总览是导航层，局部探索使用焦点。",
+          "fn": "在总览与焦点之间连续导航"
+        },
+        {
+          "id": "p_mynet_mgr_promote",
+          "name": "自动升格与防环",
+          "parent": "p_mynet_mgr",
+          "state": "attr",
+          "desc": "当前原型：属性被引用或添加下级时自动升格；移动隶属排除自身与后代，并在提交前校验。",
+          "fn": "升格内容并防止隶属成环"
+        },
+        {
+          "id": "p_mynet_data_validate",
+          "name": "数据校验与清单",
+          "parent": "p_mynet_data",
+          "state": "attr",
+          "desc": "当前工具校验结构、端点、关系用词及常见敏感信息，并生成清单和快照；不能替代人工事实核对。",
+          "fn": "校验初始数据并生成交接清单"
+        },
+        {
+          "id": "p_mynet_data_local",
+          "name": "本地编辑优先",
+          "parent": "p_mynet_data",
+          "state": "attr",
+          "desc": "当前原型优先读取浏览器已保存数据；更新初始数据不覆盖本地编辑，未提供服务端同步。",
+          "fn": "保留浏览器中的已有编辑"
+        }
+      ],
+      "relations": [
+        {
+          "from": "p_myapp_rem",
+          "type": "集成",
+          "to": "p_rem",
+          "id": "proj_r0"
+        },
+        {
+          "from": "p_myapp_int",
+          "type": "集成",
+          "to": "p_sc_pkg",
+          "id": "proj_r1"
+        },
+        {
+          "from": "p_myapp_int",
+          "type": "集成",
+          "to": "p_bc_build",
+          "id": "proj_r2"
+        },
+        {
+          "from": "p_myapp",
+          "type": "集成",
+          "to": "p_cal",
+          "id": "proj_r3"
+        },
+        {
+          "from": "p_myapp",
+          "type": "集成",
+          "to": "p_sf",
+          "id": "proj_r4"
+        },
+        {
+          "from": "p_myapp",
+          "type": "集成",
+          "to": "p_health",
+          "id": "proj_r5"
+        },
+        {
+          "from": "p_cs_sync",
+          "type": "读取",
+          "to": "p_sc_list",
+          "id": "proj_r6"
+        },
+        {
+          "from": "p_cs_mail",
+          "type": "读取",
+          "to": "p_cs_mirror",
+          "id": "proj_r7"
+        },
+        {
+          "from": "p_sf_bill",
+          "type": "使用",
+          "to": "p_myapp_rem",
+          "id": "proj_r8"
+        },
+        {
+          "from": "p_lang_plan",
+          "type": "参考",
+          "to": "p_cal",
+          "id": "proj_r9"
+        },
+        {
+          "from": "p_lang_char",
+          "type": "使用",
+          "to": "p_wc",
+          "id": "proj_r10"
+        },
+        {
+          "from": "p_myapp_study",
+          "type": "集成",
+          "to": "p_exam",
+          "id": "proj_r11"
+        },
+        {
+          "from": "p_sc_val",
+          "type": "读取",
+          "to": "p_sc_fin",
+          "id": "proj_r12"
+        },
+        {
+          "from": "p_exam_import",
+          "type": "使用",
+          "to": "p_exam_bank",
+          "id": "proj_r13"
+        },
+        {
+          "from": "p_exam_ai",
+          "type": "读取",
+          "to": "p_exam_bank",
+          "id": "proj_r14"
+        },
+        {
+          "from": "p_mynet_mgr",
+          "type": "使用",
+          "to": "p_mynet_data",
+          "id": "proj_r15"
+        },
+        {
+          "from": "p_mynet_map",
+          "type": "使用",
+          "to": "p_mynet_data",
+          "id": "proj_r16"
+        },
+        {
+          "from": "p_myapp_home",
+          "type": "使用",
+          "to": "p_myapp_rem",
+          "id": "proj_r17"
+        },
+        {
+          "from": "p_myapp_home",
+          "type": "使用",
+          "to": "p_myapp_aim",
+          "id": "proj_r18"
+        }
+      ]
+    }
+  }
+}

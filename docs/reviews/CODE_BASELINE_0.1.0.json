@@ -1,0 +1,64 @@
+{
+  "recordedDate": "2026-11-02",
+  "version": "0.1.0",
+  "algorithm": "SHA-256",
+  "gitBaseline": null,
+  "scope": "Application code, configuration and repository tests; documentation excluded to avoid recursive hashes",
+  "files": [
+    {
+      "path": "package.json",
+      "sha256": "24e75fb27dde886a2fbdbb1f86cb4719672d15cdedbdfd836534eb6b272c62da",
+      "bytes": 265
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "35e040f16e876bc4213756da9b37b2b3d02da1744141b39a3cb9dd1730d9f0e6",
+      "bytes": 28
+    },
+    {
+      "path": "server.mjs",
+      "sha256": "2885b0027df38373dbd547e29a4b31a644e01b5d02ebacb13069685d61faac23",
+      "bytes": 4371
+    },
+    {
+      "path": "storage.js",
+      "sha256": "e3d919ecbd7e281ca7ab494ce5191b14ba965bd8f44a227363c507f6dcb0ff0d",
+      "bytes": 3708
+    },
+    {
+      "path": "lib/model.mjs",
+      "sha256": "23b26558150edcafc1d92938287da894d1be528ed6833c414485df5c5beda43f",
+      "bytes": 2809
+    },
+    {
+      "path": "manage.html",
+      "sha256": "6fb3a68aee83a32f955a6505f28810eb9fc1f4d46b4b135b299b323c01b38658",
+      "bytes": 36696
+    },
+    {
+      "path": "starmap.html",
+      "sha256": "2cc169bd11c2712c54892484c909d6da2d66d42e14afedf775de95b8d34ddcae",
+      "bytes": 92467
+    },
+    {
+      "path": "data.js",
+      "sha256": "485de38c1456ab130a4f1fd83f08104f4f76cea047d80af9783ce6d7bad8c344",
+      "bytes": 57617
+    },
+    {
+      "path": "tools/validate-data.mjs",
+      "sha256": "9063979790241008239a1b157c6e8c1e3bcc23a99b739f7844094fe038afcc03",
+      "bytes": 6879
+    },
+    {
+      "path": "tools/restore-data.mjs",
+      "sha256": "cd24f6a04b7da40dc4e5b0277388a0cf9bc7d061d7ef31d2bb830b154673dea9",
+      "bytes": 975
+    },
+    {
+      "path": "tests/app.test.mjs",
+      "sha256": "5905933027162f0bcf8a4240718d89f9a6fedd55998790bcb3525a7bc189193a",
+      "bytes": 3937
+    }
+  ]
+}

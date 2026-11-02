@@ -1,0 +1,1353 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>星图 · 关系展示原型</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cyan:#5cf2ff; --amber:#ffb547; --ink:#dff6ff; --mute:#7f9bb3;
+  --panel:rgba(6,14,30,.62); --line:rgba(92,242,255,.22); --line2:rgba(92,242,255,.45);
+  --cn:"Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif;
+  --mono:"Share Tech Mono",ui-monospace,monospace;
+  --disp:"Orbitron","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#01030b;color:var(--ink);font-family:var(--cn)}
+canvas{position:fixed;inset:0;display:block;cursor:grab}
+canvas.drag{cursor:grabbing}
+canvas.pointer{cursor:pointer}
+button{font:inherit;color:inherit}
+
+.panel{position:fixed;background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-radius:4px;box-shadow:0 0 0 1px rgba(0,0,0,.4),0 0 30px rgba(92,242,255,.06) inset}
+.panel::before,.panel::after{content:"";position:absolute;width:12px;height:12px;border:2px solid var(--cyan);opacity:.8;pointer-events:none}
+.panel::before{top:-2px;left:-2px;border-right:none;border-bottom:none}
+.panel::after{bottom:-2px;right:-2px;border-left:none;border-top:none}
+.lbl{font-family:var(--disp);font-size:10px;letter-spacing:.22em;color:var(--cyan);opacity:.85}
+
+.brand{position:fixed;top:18px;left:20px;display:flex;align-items:baseline;gap:10px;cursor:pointer;user-select:none}
+.brand:hover b{color:var(--cyan);text-shadow:0 0 24px rgba(92,242,255,1)}
+.brand:hover span{color:var(--ink)}
+.brand b{font-family:var(--disp);font-weight:900;font-size:22px;letter-spacing:.28em;color:#fff;text-shadow:0 0 18px rgba(92,242,255,.8)}
+.brand span{font-size:13px;color:var(--mute);letter-spacing:.3em}
+#domains{position:fixed;top:56px;left:20px;display:flex;gap:6px}
+#domains button{background:rgba(6,14,30,.55);border:1px solid var(--line);padding:6px 12px 6px 10px;cursor:pointer;border-radius:3px;
+  display:flex;flex-direction:column;align-items:flex-start;min-width:76px;transition:.2s}
+#domains button small{font-family:var(--disp);font-size:8.5px;letter-spacing:.2em;color:var(--mute)}
+#domains button span{font-size:13px}
+#domains button:hover{border-color:var(--line2)}
+#domains button.on{border-color:var(--cyan);background:rgba(92,242,255,.12);box-shadow:0 0 16px rgba(92,242,255,.25)}
+#domains button.on small{color:var(--cyan)}
+
+.hud{top:18px;left:50%;transform:translateX(-50%);display:flex;align-items:stretch;padding:0}
+.hud>div{padding:10px 18px;display:flex;flex-direction:column;justify-content:center;gap:3px}
+.hud>div+div{border-left:1px solid var(--line)}
+.hud-focus b{font-size:18px;letter-spacing:.04em;text-shadow:0 0 12px rgba(92,242,255,.6);white-space:nowrap}
+.hud-focus small{font-size:11px;color:var(--mute);white-space:nowrap}
+.hud-focus small a{color:var(--ink);cursor:pointer;border-bottom:1px dashed rgba(92,242,255,.45)}
+.hud-focus small a:hover{color:var(--cyan)}
+.rctl{display:flex;align-items:center;gap:8px}
+.rctl button{width:24px;height:24px;border:1px solid var(--line2);background:transparent;cursor:pointer;border-radius:2px;line-height:1}
+.rctl button:hover{background:rgba(92,242,255,.15)}
+#rDots{display:flex;gap:4px}
+#rDots i{width:18px;height:10px;border:1px solid var(--line2);cursor:pointer;transform:skewX(-20deg);transition:.2s}
+#rDots i.on{background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+#rNum{font-family:var(--disp);font-size:18px;color:#fff;min-width:16px;text-align:center}
+.hud-stats{font-family:var(--mono);font-size:12px;color:var(--mute);white-space:nowrap}
+.hud-stats em{font-style:normal;color:var(--ink)}
+
+.left{top:118px;left:20px;width:250px;max-height:calc(100vh - 380px);display:flex;flex-direction:column;padding:12px}
+.search{position:relative;margin:6px 0 10px}
+.search input{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--line);color:var(--ink);padding:8px 10px 8px 30px;font:13px var(--cn);border-radius:2px;outline:none}
+.search input:focus{border-color:var(--cyan);box-shadow:0 0 12px rgba(92,242,255,.25)}
+.search::before{content:"⌕";position:absolute;left:10px;top:6px;color:var(--cyan);font-size:16px}
+#results{overflow:auto;margin-bottom:6px}
+.list{overflow:auto;flex:1;min-height:60px}
+.item{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:2px;cursor:pointer;font-size:13px;border:1px solid transparent}
+.item:hover{background:rgba(92,242,255,.08);border-color:var(--line)}
+.item.on{background:rgba(92,242,255,.12);border-color:var(--line2)}
+.item .dot{width:9px;height:9px;border-radius:50%;flex:none;box-shadow:0 0 8px currentColor;background:currentColor}
+.item .dot.attr{width:5px;height:5px;margin:0 2px}
+.item .meta{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--mute);white-space:nowrap}
+.item .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.right{top:118px;right:20px;width:310px;max-height:calc(100vh - 140px);overflow:auto;padding:16px 16px 18px}
+.right h2{margin:6px 0 4px;font-size:22px;font-weight:600;letter-spacing:.02em}
+.kick{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.tag{font-size:10.5px;padding:2px 7px;border:1px solid currentColor;border-radius:2px;letter-spacing:.06em}
+.desc{color:#b8cbe0;font-size:13px;line-height:1.6;margin:6px 0 12px}
+.fn{font-size:14px;color:#eaf6ff;line-height:1.55;margin:10px 0 4px;padding:6px 10px;border-left:2px solid var(--cyan);background:rgba(92,242,255,.07)}
+.fn::before{content:"功能";font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--cyan);margin-right:8px}
+#tip .t4{color:#eaf6ff;margin-top:4px}
+.kv{display:grid;grid-template-columns:72px 1fr;gap:4px 10px;font-size:12.5px;margin-bottom:12px}
+.kv span{color:var(--mute)}
+.kv a,.lnk{color:var(--ink);cursor:pointer;text-decoration:none;border-bottom:1px dashed rgba(92,242,255,.4)}
+.kv a:hover,.lnk:hover{color:var(--cyan)}
+.btn{display:inline-flex;align-items:center;gap:6px;background:rgba(92,242,255,.1);border:1px solid var(--cyan);color:var(--cyan);padding:7px 14px;cursor:pointer;
+  font-family:var(--disp);font-size:11px;letter-spacing:.18em;border-radius:2px;margin-bottom:6px}
+.btn:hover{background:rgba(92,242,255,.22);box-shadow:0 0 14px rgba(92,242,255,.35)}
+.btn[disabled]{opacity:.4;cursor:default;box-shadow:none}
+.sec{margin-top:14px}
+.sec h3{margin:0 0 6px;font-family:var(--disp);font-weight:500;font-size:10px;letter-spacing:.22em;color:var(--cyan);display:flex;justify-content:space-between;
+  border-bottom:1px solid var(--line);padding-bottom:4px}
+.row{font-size:12.5px;padding:5px 2px;line-height:1.55;border-bottom:1px dashed rgba(92,242,255,.08)}
+.rel{font-family:var(--mono);font-size:11px;padding:0 6px;border-radius:2px;margin:0 3px;white-space:nowrap}
+.via{color:var(--mute);font-size:11px}
+.note{font-size:11.5px;color:var(--mute);line-height:1.6;border-left:2px solid var(--amber);padding:6px 9px;background:rgba(255,181,71,.06);margin-top:12px}
+.empty{color:var(--mute);font-size:12px;padding:4px 2px}
+
+.legend{left:20px;bottom:20px;width:250px;padding:12px 14px;font-size:12px}
+.legend .lg{display:flex;align-items:center;gap:10px;margin:5px 0;color:#c6d6e6}
+.legend svg{flex:none}
+.legend .grp{margin-top:10px}
+
+.tools{right:20px;bottom:20px;display:flex;gap:2px;padding:4px}
+.tools button{background:transparent;border:1px solid transparent;padding:6px 10px;font-size:12px;cursor:pointer;color:var(--mute);border-radius:2px;white-space:nowrap}
+.tools button.on{color:var(--cyan);border-color:var(--line)}
+.tools button:hover{color:var(--ink)}
+.tools button.acc{color:var(--amber);border-color:rgba(255,181,71,.4)}
+.hint{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;color:rgba(127,155,179,.75);letter-spacing:.06em;pointer-events:none;white-space:nowrap}
+
+#tip{position:fixed;pointer-events:none;background:rgba(4,10,22,.92);border:1px solid var(--line2);padding:8px 10px;font-size:12px;max-width:260px;
+  border-radius:3px;opacity:0;transition:opacity .12s;z-index:9}
+#tip b{font-size:13px}
+#tip .t2{color:var(--mute);font-size:11px;margin-top:2px}
+#tip .t3{color:#b8cbe0;margin-top:4px;line-height:1.5}
+
+.scan{position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0 1px,transparent 1px 3px);mix-blend-mode:overlay}
+.vign{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.6))}
+/* 面板收起 / 沉浸模式 */
+.ph{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.right .ph{margin-bottom:6px}.legend .ph{margin-bottom:2px}
+.pbtn{flex:none;width:20px;height:20px;padding:0;border:1px solid var(--line);background:rgba(0,0,0,.25);color:var(--cyan);cursor:pointer;border-radius:2px;font:12px/18px var(--mono)}
+.pbtn:hover{border-color:var(--cyan);background:rgba(92,242,255,.15)}
+.panel.collapsed>:not(.ph):not(.hud-focus):not(.hud-btn){display:none!important}
+.panel.collapsed{width:auto!important;max-height:none!important;padding:8px 10px!important;overflow:visible!important}
+.hud.collapsed{padding:0!important}
+.hud.collapsed .hud-focus{padding:6px 12px}
+.hud.collapsed #hudSub{display:none}
+.hud-btn{justify-content:flex-start!important;padding:10px 10px!important}
+.brand,#domains,.panel,.hint{transition:opacity .45s}
+body.immersive .brand,body.immersive #domains,body.immersive .panel,body.immersive .hint,body.immersive .views{opacity:0;pointer-events:none}
+#immBack{position:fixed;top:14px;left:16px;z-index:8;opacity:0;pointer-events:none;transition:opacity .45s;background:rgba(6,14,30,.5);
+  border:1px solid var(--line);color:var(--ink);padding:6px 12px;border-radius:3px;cursor:pointer;font-size:12px}
+body.immersive #immBack.can{opacity:.35;pointer-events:auto}
+body.immersive #immBack:hover{opacity:1;border-color:var(--cyan)}
+#immCap a{color:rgba(220,240,255,.8);cursor:pointer;border-bottom:1px dashed rgba(92,242,255,.4);pointer-events:auto}
+#immCap a:hover{color:var(--cyan)}
+body:not(.immersive) #immCap a{pointer-events:none}
+.views{position:fixed;top:18px;right:20px;display:flex;border:1px solid var(--line);border-radius:3px;overflow:hidden;background:rgba(6,14,30,.6);transition:opacity .45s;z-index:5}
+.views a{padding:7px 14px;font-size:12px;color:var(--mute);text-decoration:none;letter-spacing:.1em;display:flex;gap:6px;align-items:center}
+.views a.on{color:var(--cyan);background:rgba(92,242,255,.12)}
+.views a:not(.on):hover{color:var(--ink);background:rgba(92,242,255,.06)}
+a.btn{text-decoration:none}
+.btn.ghost{background:transparent;border-color:var(--line2);color:var(--ink);margin-left:6px}
+.btn.ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+#syncToast{position:fixed;left:50%;top:96px;transform:translateX(-50%);z-index:9;display:none;background:rgba(4,10,22,.94);border:1px solid var(--amber);
+  color:var(--ink);padding:8px 14px;border-radius:3px;font-size:12.5px;box-shadow:0 0 20px rgba(255,181,71,.25)}
+#syncToast button{margin-left:10px;background:transparent;border:1px solid var(--amber);color:var(--amber);padding:3px 10px;border-radius:2px;cursor:pointer}
+@media (max-width:1380px){.views a{padding:6px 10px}}
+body.immersive .vign{background:radial-gradient(ellipse at center,transparent 62%,rgba(0,0,0,.45))}
+#immExit{position:fixed;top:14px;right:16px;z-index:8;opacity:0;pointer-events:none;transition:opacity .45s;background:rgba(6,14,30,.5);
+  border:1px solid var(--line);color:var(--ink);padding:6px 12px;border-radius:3px;cursor:pointer;font-size:12px}
+body.immersive #immExit{opacity:.3;pointer-events:auto}
+body.immersive #immExit:hover{opacity:1;border-color:var(--cyan)}
+#immCap{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);font:12px var(--mono);letter-spacing:.2em;color:rgba(220,240,255,.5);
+  opacity:0;pointer-events:none;transition:opacity .6s;white-space:nowrap}
+body.immersive #immCap{opacity:1}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:rgba(92,242,255,.25);border-radius:3px}
+
+@media (max-width:1380px){ .hud{left:300px;transform:none} .hud-stats{display:none!important}
+  #domains button{min-width:0;padding:5px 9px} #domains button small{font-size:7.5px;letter-spacing:.1em} }
+@media (max-width:1180px){ .left{width:210px} .legend{width:210px} .right{width:270px} .hint{display:none} .hud{left:290px} .hud>div{padding:8px 12px} }
+@media (max-width:860px){
+  .left,.legend,.hint{display:none}
+  .hud{top:104px;left:16px;right:16px;transform:none;flex-wrap:wrap}
+  #domains{left:16px;right:16px;overflow-x:auto}
+  .brand{left:16px}
+  .right{top:auto;bottom:64px;left:16px;right:16px;width:auto;max-height:38vh}
+  .tools{left:16px;right:16px;justify-content:center;flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="vign"></div>
+<div class="scan"></div>
+
+<div class="brand" title="进入顶级总览"><b>STARMAP</b><span>星图 · 关系展示</span></div>
+<nav id="domains"></nav>
+
+<div class="hud panel" id="hud">
+  <div class="hud-focus">
+    <span class="lbl" id="hudLbl">FOCUS · 焦点</span>
+    <b id="hudName">—</b>
+    <small id="hudSub"></small>
+  </div>
+  <div id="hudRange">
+    <span class="lbl">RANGE · 展示范围</span>
+    <div class="rctl">
+      <button id="rMinus" title="缩小范围 ( - )">−</button>
+      <div id="rDots"></div>
+      <button id="rPlus" title="扩大范围 ( + )">＋</button>
+      <span id="rNum">1</span>
+    </div>
+  </div>
+  <div class="hud-stats" id="hudStats"></div>
+  <div class="hud-btn"><button class="pbtn" data-panel="hud">—</button></div>
+</div>
+
+<aside class="left panel" id="left">
+  <div class="ph"><span class="lbl">SEARCH · 搜索要素</span><button class="pbtn" data-panel="left">—</button></div>
+  <div class="search"><input id="q" placeholder="名称、属性…" autocomplete="off"></div>
+  <div id="results"></div>
+  <span class="lbl" style="margin-top:4px" id="listLbl">GALAXIES · 星系</span>
+  <div class="list" id="galaxies" style="margin-top:6px"></div>
+</aside>
+
+<aside class="right panel" id="rightP">
+  <div class="ph"><span class="lbl">INFO · 信息</span><button class="pbtn" data-panel="rightP">—</button></div>
+  <div id="detail"></div>
+</aside>
+<div class="legend panel" id="legendP">
+  <div class="ph"><span class="lbl">LEGEND · 图例</span><button class="pbtn" data-panel="legendP">—</button></div>
+  <div id="legend"></div>
+</div>
+
+<div class="tools panel">
+  <button id="toOverview" class="acc">◂ 星团总览</button>
+  <button data-opt="attrLabels" class="on">属性标签</button>
+  <button data-opt="relLabels" class="on">关系标签</button>
+  <button data-opt="fnLabels" class="on" title="在星体下方显示功能简述">功能文字</button>
+  <button data-opt="flow" class="on">流动</button>
+  <button data-opt="spin" class="on">自转</button>
+  <button id="recenter">⌖ 重置视角</button>
+  <button id="immBtn" title="隐藏全部面板（H）">⛶ 沉浸</button>
+</div>
+<div class="hint" id="hint"></div>
+<button id="immExit" title="退出沉浸（H）">⛶ 退出沉浸 · H</button>
+<button id="immBack" title="返回上一层（Esc）">◂ 上一层 · Esc</button>
+<nav class="views"><a class="on" title="当前：星图">◉ 星图</a><a id="toManage" href="manage.html" title="到管理台（保留当前星域与选中对象）">▤ 管理</a></nav>
+<div id="syncToast">管理台修改了数据<button id="syncReload">刷新星图</button></div>
+<div id="immCap"></div>
+<div id="tip"></div>
+
+<script src="data.js?v=2026-11-02e"></script>
+<script src="storage.js?v=2026-11-02b"></script>
+<script>
+(async()=>{
+await MyNet.ready;
+const DOMAINS=MyNet.load();   // 数据来自共享数据层 data.js（管理台修改后这里同步）
+
+const PALETTE=MyNet.PALETTE;   // 与管理台一致
+const GAP=250, MAXR=5, PITCH0=.95, FL=1700;
+const FONT='"Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif';
+const MONO='"Share Tech Mono",ui-monospace,monospace';
+const $=s=>document.querySelector(s);
+const rgb=hex=>{const n=parseInt(hex.slice(1),16);return [n>>16&255,n>>8&255,n&255]};
+const rgba=(hex,a)=>`rgba(${rgb(hex)},${a})`;
+const mix=(hex,t,to=[255,255,255])=>rgb(hex).map((v,i)=>Math.round(v+(to[i]-v)*t));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const hash=s=>{let h=2166136261;for(const c of s)h=Math.imul(h^c.charCodeAt(0),16777619);return (h>>>0)/4294967296};
+const gauss=()=>(Math.random()+Math.random()+Math.random()-1.5)/1.5;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const clip=(s,n)=>s&&s.length>n?s.slice(0,n-1)+'…':(s||'');
+
+/* ============================================================ 状态 */
+const S={dk:'res',mode:'overview',focus:null,range:1,sel:null,hover:null,
+  opts:{attrLabels:true,relLabels:true,flow:true,spin:true,fnLabels:true}};
+let D,els,rels,gColor,GAL=new Map(),cross=[];
+const sim=new Map();           // nodeId -> {x,y,h,vx,vy,a,ta,dist,ph}
+let view={vis:new Set(),dist:new Map(),subs:[],rels:[],boundary:new Map()};
+const cam={x:0,y:0,z:.6,yaw:.5,pitch:PITCH0,tx:0,ty:0,tz:.6,tyaw:.5,tpitch:PITCH0,uz:1};
+let follow=true,warp=0,T=0,trans=null,hits=[];
+let VX=0,VY=24,tVX=0,tVY=24;   // 画面中心相对窗口中心的偏移（避开展开的面板）
+
+const get=id=>els.get(id);
+const ownerId=id=>{const e=get(id);return e.state==='attr'?e.parent:e.id};
+const rootOf=e=>{while(e.parent)e=get(e.parent);return e};
+const pathOf=e=>{const p=[];while(e){p.unshift(e);e=e.parent?get(e.parent):null}return p};
+const attrsOf=id=>[...els.values()].filter(e=>e.parent===id&&e.state==='attr');
+const kidsOf=id=>[...els.values()].filter(e=>e.parent===id&&e.state==='node');
+const membersOf=rid=>[...els.values()].filter(e=>e.id!==rid&&rootOf(e).id===rid);
+const colorOf=e=>gColor.get(rootOf(e).id);
+const kindOf=e=>e.state==='attr'?D.labels.attr:(e.parent?D.labels.node:D.labels.root);
+const relColor=t=>D.relColors[t]||'#9fb4c8';
+const nodeR=id=>{const e=get(id);return (e.parent?11:17)+(id===S.focus?4:0)};
+const orbitR=id=>nodeR(id)+26+Math.min(12,attrsOf(id).length*1.8);
+
+/* ============================================================ 星域装载 + 星团总览数据 */
+const DCOL={skill:'#5cf2ff',idea:'#ff6bd5',res:'#ffb547',proj:'#6dff9c'};
+const PACKS={};
+const isDom=id=>typeof id==='string'&&id.startsWith('dom:');
+function usePack(k){S.dk=k;D=DOMAINS[k];({els,rels,gColor,GAL,cross}=PACKS[k])}
+function initPacks(){
+  const keys=Object.keys(DOMAINS);
+  keys.forEach(k=>{
+    D=DOMAINS[k];
+    els=new Map(D.elements.map(e=>[e.id,{...e}]));
+    rels=D.relations.map((r,i)=>({...r,id:'r'+i}));
+    gColor=new Map();let i=0;
+    for(const e of els.values()) if(!e.parent) gColor.set(e.id,PALETTE[i++%PALETTE.length]);
+    buildCluster();
+    const gs=[...GAL.values()],n=gs.length||1,cx=gs.reduce((s,g)=>s+g.x,0)/n,cy=gs.reduce((s,g)=>s+g.y,0)/n;
+    gs.forEach(g=>{g.x-=cx;g.y-=cy});
+    const nNode=[...els.values()].filter(e=>e.state==='node').length;
+    PACKS[k]={k,els,rels,gColor,GAL,cross,col:DCOL[k],cx:0,cy:0,nNode,nAttr:els.size-nNode,
+      ext:Math.max(300,...gs.map(g=>Math.hypot(g.x,g.y)+g.r+120))};
+  });
+  // 星域在顶级平面上环形排布
+  const E=Math.max(...keys.map(k=>PACKS[k].ext)),Rc=E*2.05;
+  keys.forEach((k,i)=>{const a=i/keys.length*Math.PI*2-Math.PI*.75,pk=PACKS[k];
+    pk.cx=Math.cos(a)*Rc;pk.cy=Math.sin(a)*Rc;pk.GAL.forEach(g=>{g.x+=pk.cx;g.y+=pk.cy})});
+}
+
+function buildCluster(){
+  GAL=new Map();
+  const roots=[...els.values()].filter(e=>!e.parent);
+  // 跨星系关联（按 起点星系 → 终点星系 聚合）
+  const cm=new Map();
+  rels.forEach(r=>{const a=rootOf(get(r.from)).id,b=rootOf(get(r.to)).id;if(a===b)return;
+    const k=a+'>'+b;if(!cm.has(k))cm.set(k,{a,b,count:0,types:new Map()});
+    const c=cm.get(k);c.count++;c.types.set(r.type,(c.types.get(r.type)||0)+1)});
+  cross=[...cm.values()];
+  const n=roots.length;
+  roots.forEach((r,i)=>{
+    const mem=membersOf(r.id),col=gColor.get(r.id),ang=i/n*Math.PI*2;
+    const g={id:r.id,col,r:115+24*Math.sqrt(mem.length+1),inc:0,phi:hash(r.id+'φ')*6.28,
+      arms:2+(hash(r.id+'a')>.55?1:0),x:Math.cos(ang)*(160+110*n),y:Math.sin(ang)*(160+110*n),parts:[],
+      mem:mem.filter(e=>e.state==='node'),nAttr:mem.filter(e=>e.state==='attr').length};
+    g.styles=[mix(col,.08),mix(col,.4),mix(col,.75),[255,150,210]].flatMap(c=>[`rgba(${c},.4)`,`rgba(${c},.85)`]);
+    const cnt=Math.min(1500,700+mem.length*35);   // 星系多时控制粒子总量
+    for(let k=0;k<cnt;k++){
+      const u=Math.pow(Math.random(),.75),rr=u*g.r,arm=k%g.arms;
+      const th=arm*Math.PI*2/g.arms+u*3.8+gauss()*(.6*(1-u)+.16);
+      // 颜色分 4 档 × 透明度 2 档，绘制时按档批量填充
+      const coreT=Math.max(0,1-u/.32),tier=Math.random()<.05?3:coreT>.45?2:(coreT>0||Math.random()<.3)?1:0;
+      g.parts.push({rr,th,lh:gauss()*12*(1-u),w:.11*(1.25-u*.7),b:tier*2+(u>.7||Math.random()<.45?0:1),
+        sz:(.8+Math.random()*1.6)*(Math.random()<.04?2.4:1)});
+    }
+    buildMini(g);
+    GAL.set(r.id,g);
+  });
+  // 星系间的简单布局：互斥 + 跨星系关联拉近
+  const gs=[...GAL.values()];
+  for(let it=0;it<600;it++){
+    for(let a=0;a<gs.length;a++)for(let b=a+1;b<gs.length;b++){
+      const A_=gs[a],B_=gs[b];let dx=B_.x-A_.x,dy=B_.y-A_.y,d=Math.hypot(dx,dy)||1;const m=A_.r+B_.r+240;
+      if(d<m){const f=(m-d)*.2;A_.x-=dx/d*f;A_.y-=dy/d*f;B_.x+=dx/d*f;B_.y+=dy/d*f}}
+    cross.forEach(c=>{const A_=GAL.get(c.a),B_=GAL.get(c.b),dx=B_.x-A_.x,dy=B_.y-A_.y,d=Math.hypot(dx,dy)||1,f=(d-(A_.r+B_.r+300))*.01;
+      A_.x+=dx/d*f;A_.y+=dy/d*f;B_.x-=dx/d*f;B_.y-=dy/d*f});
+    gs.forEach(g=>{g.x*=.999;g.y*=.999});
+  }
+}
+
+// 缩微结构：根节点居中，按隶属层级排成同心轨道（最多 3 级，节点多时减少层级）
+const KM=1.3;
+function buildMini(g){
+  const dep=new Map([[g.id,0]]),order=[g.id];
+  for(let i=0;i<order.length;i++)for(const k of kidsOf(order[i])){dep.set(k.id,dep.get(order[i])+1);order.push(k.id)}
+  let L=Math.min(3,Math.max(1,...dep.values()));const cnt=l=>order.filter(id=>dep.get(id)<=l).length-1;
+  while(L>1&&cnt(L)>30)L--;
+  const kids=id=>kidsOf(id).filter(k=>dep.get(k.id)<=L);
+  const wt=id=>{const ks=kids(id);return ks.length?ks.reduce((s,k)=>s+wt(k.id),0):1};
+  g.mini=new Map();g.L=L;
+  const place=(id,a0,a1)=>{g.mini.set(id,{lev:dep.get(id),ang:(a0+a1)/2});
+    const ks=kids(id),tot=ks.reduce((s,k)=>s+wt(k.id),0);let a=a0;
+    ks.forEach(k=>{const sp=(a1-a0)*wt(k.id)/tot;place(k.id,a,a+sp);a+=sp})};
+  const a0=hash(g.id)*6.28;place(g.id,a0,a0+Math.PI*2);
+  g.shown=g.mini.size-1;
+}
+const miniR=(g,lev)=>lev?g.r*(.36+.24*(lev-1)):0;
+// 节点在星团总览中的缩微位置；未显示的层级取最近的已显示祖先
+function miniAt(g,m){const r=miniR(g,m.lev),a=m.ang+T*.05;return {x:g.x+Math.cos(a)*r,y:g.y+Math.sin(a)*r,h:40}}
+function miniPos(id){
+  let e=get(id);const g=GAL.get(rootOf(e).id);
+  while(!g.mini.has(e.id))e=get(e.parent);
+  return {...miniAt(g,g.mini.get(e.id)),exact:e.id===id};
+}
+
+/* ============================================================ 焦点距离计算 */
+function recompute(){
+  const nodes=[...els.values()].filter(e=>e.state==='node');
+  const adj=new Map(nodes.map(n=>[n.id,new Set()]));
+  const link=(a,b)=>{if(a!==b){adj.get(a).add(b);adj.get(b).add(a)}};
+  nodes.forEach(n=>{if(n.parent)link(n.id,n.parent)});        // 隶属：+1
+  rels.forEach(r=>link(ownerId(r.from),r.to));                 // 非隶属：+1（属性与所属节点距离 0）
+  const dist=new Map([[S.focus,0]]),pred=new Map(),q=[S.focus];
+  while(q.length){const u=q.shift(),d=dist.get(u);
+    for(const v of adj.get(u)) if(!dist.has(v)){dist.set(v,d+1);pred.set(v,u);q.push(v)}}
+  const vis=new Set([...dist].filter(([,d])=>d<=S.range).map(([id])=>id));
+  const boundary=new Map();
+  for(const id of vis) if(dist.get(id)===S.range){
+    const n=[...adj.get(id)].filter(v=>!vis.has(v)).length; if(n) boundary.set(id,n)}
+  const subs=nodes.filter(n=>n.parent&&vis.has(n.id)&&vis.has(n.parent)).map(n=>[n.parent,n.id]);
+  const vr=rels.filter(r=>vis.has(ownerId(r.from))&&vis.has(r.to));
+  view={vis,dist,subs,rels:vr,boundary,adj};heat=1;
+  for(const id of vis){
+    let s=sim.get(id);
+    if(!s){const p=sim.get(pred.get(id))||{x:0,y:0,h:60},a=Math.random()*Math.PI*2;
+      s={x:p.x+Math.cos(a)*70,y:p.y+Math.sin(a)*70,h:p.h,vx:0,vy:0,a:0,k:1,ph:Math.random()*6.28,inc:.25+hash(id)*.5};sim.set(id,s)}
+    s.ta=1;s.dist=dist.get(id);
+  }
+  for(const [id,s] of sim) if(!vis.has(id)) s.ta=0;
+}
+
+function setFocus(id,keepSel){
+  if(S.mode!=='focus'){enterGalaxy(rootOf(get(id)).id,id,keepSel?S.sel:null);return}
+  S.focus=id;recompute();
+  if(!keepSel) S.sel=id;
+  follow=true;renderAll();
+}
+function setRange(r){
+  r=clamp(r,1,MAXR);if(r===S.range||S.mode!=='focus')return;
+  S.range=r;recompute();follow=true;renderHUD();renderDetail();
+}
+
+/* ============================================================ 模式切换（星团总览 ⇄ 焦点星图） */
+const ease=t=>t*t*(3-2*t);
+function enterGalaxy(rid,focusId=rid,selId=null){
+  if(trans)return;
+  if(S.mode==='focus'){setFocus(focusId);if(selId)select(selId);return}
+  S.mode='focus';sim.clear();S.focus=focusId;
+  const m0=miniPos(focusId);S.anchor={x:m0.x,y:m0.y};
+  recompute();
+  // 从总览中的缩微位置出发展开；其他星系的节点从各自星系飞来
+  for(const [id,s] of sim){const m=miniPos(id);
+    s.x=m.x+(m.exact?0:(Math.random()-.5)*16);s.y=m.y+(m.exact?0:(Math.random()-.5)*16);s.h=40;s.k=KM;s.a=m.exact?1:0}
+  S.sel=selId||focusId;S.hover=null;follow=true;cam.uz=1;
+  trans={kind:'in',t:0,rid};showTip(null);renderAll();
+}
+function goOverview(){
+  if(trans||S.mode==='overview')return;
+  trans={kind:'out',t:0,rid:rootOf(get(S.focus)).id};
+  follow=true;cam.uz=1;S.hover=null;showTip(null);
+}
+function finishTrans(){
+  const t=trans;trans=null;
+  if(t.kind==='out'){S.mode='overview';sim.clear();S.focus=null;S.sel=t.rid}
+  renderAll();
+  if(t.next==='up')goUniverse();
+}
+// 顶级总览 → 某个星域的星团总览：相机直接飞过去（四个星域在同一平面上）
+function enterDomain(k){
+  if(trans)return;
+  if(S.mode==='focus'){sim.clear();S.focus=null}
+  usePack(k);S.mode='overview';S.sel=null;S.hover=null;follow=true;cam.uz=1;
+  trans={kind:'down',t:0};showTip(null);$('#q').value='';renderResults();renderAll();
+}
+function goUniverse(){
+  if(trans||S.mode==='universe')return;
+  if(S.mode==='focus'){goOverview();if(trans)trans.next='up';return}
+  S.mode='universe';S.sel='dom:'+S.dk;S.hover=null;follow=true;cam.uz=1;
+  trans={kind:'up',t:0};showTip(null);renderAll();
+}
+function go2(k,id){
+  if(trans)return;
+  if(S.mode==='focus'){sim.clear();S.focus=null}
+  usePack(k);S.mode='overview';S.sel=null;renderAll();go(id);
+}
+
+/* ============================================================ 力导布局（以焦点为中心的环形分层） */
+let heat=1;
+function step(dt){
+  if(trans&&trans.kind==='out'){const k=Math.min(1,dt*3.5);
+    for(const [id,s] of sim){const m=miniPos(id);s.x+=(m.x-s.x)*k;s.y+=(m.y-s.y)*k;s.h+=(m.h-s.h)*k;s.k+=(KM-s.k)*k;if(!m.exact)s.a+=(0-s.a)*k}
+    return}
+  heat=Math.max(.12,heat-dt*.18);
+  const act=[...sim.entries()].filter(([,s])=>s.ta>0);
+  const fs=sim.get(S.focus);
+  const F=new Map(act.map(([id])=>[id,{x:0,y:0}]));
+  for(let i=0;i<act.length;i++){const [ia,a]=act[i],ra=orbitR(ia)+34;
+    for(let j=i+1;j<act.length;j++){const [ib,b]=act[j],rb=orbitR(ib)+34;
+      let dx=b.x-a.x,dy=b.y-a.y,d2=dx*dx+dy*dy;if(d2<1){dx=Math.random();dy=Math.random();d2=1}
+      const d=Math.sqrt(d2);let f=20000/d2;
+      if(d<ra+rb) f+=(ra+rb-d)*.25;
+      const fx=dx/d*f,fy=dy/d*f;
+      // 同一距离环上的星体沿环切向互相推开，使其在环上均匀散布
+      if(fs&&a.dist===b.dist&&a.dist>0){
+        const aa=Math.atan2(a.y-fs.y,a.x-fs.x),ab=Math.atan2(b.y-fs.y,b.x-fs.x);
+        let dl=ab-aa;dl=Math.atan2(Math.sin(dl),Math.cos(dl));
+        const t=Math.sign(dl||1)*3.2/(Math.abs(dl)+.3);
+        F.get(ia).x-=-Math.sin(aa)*t;F.get(ia).y-=Math.cos(aa)*t;
+        F.get(ib).x+=-Math.sin(ab)*t;F.get(ib).y+=Math.cos(ab)*t}
+      F.get(ia).x-=fx;F.get(ia).y-=fy;F.get(ib).x+=fx;F.get(ib).y+=fy}}
+  const spring=(p,c,L,k)=>{const a=sim.get(p),b=sim.get(c);if(!a||!b||!F.has(p)||!F.has(c))return;
+    const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,f=(d-L)*k;
+    F.get(p).x+=dx/d*f;F.get(p).y+=dy/d*f;F.get(c).x-=dx/d*f;F.get(c).y-=dy/d*f};
+  view.subs.forEach(([p,c])=>spring(p,c,170,.02));
+  view.rels.forEach(r=>spring(ownerId(r.from),r.to,210,.012));
+  for(const [id,s] of act){const f=F.get(id);if(id===S.focus){f.x+=(S.anchor.x-s.x)*.12;f.y+=(S.anchor.y-s.y)*.12}}
+  for(const [id,s] of sim){
+    const f=F.get(id)||{x:0,y:0};
+    s.vx=(s.vx+f.x*heat)*.74;s.vy=(s.vy+f.y*heat)*.74;
+    const v=Math.hypot(s.vx,s.vy);if(v>28){s.vx*=28/v;s.vy*=28/v}
+    s.x+=s.vx*dt*30;s.y+=s.vy*dt*30;
+    // 位置约束：把星体收拢到它所在的距离环上
+    if(s.ta>0&&fs&&id!==S.focus){const dx=s.x-fs.x,dy=s.y-fs.y,d=Math.hypot(dx,dy)||1,k=1+(s.dist*GAP-d)/d*Math.min(1,dt*4);
+      s.x=fs.x+dx*k;s.y=fs.y+dy*k}
+    const th=id===S.focus?95:45+hash(id)*55;
+    s.h+=(th-s.h)*Math.min(1,dt*2);
+    s.a+=(s.ta-s.a)*Math.min(1,dt*3.5);s.k+=(1-s.k)*Math.min(1,dt*1.6);
+    if(S.hover!==id && !(S.hover && get(S.hover).parent===id && get(S.hover).state==='attr')) s.ph+=dt*.16;
+    if(s.ta===0&&s.a<.02) sim.delete(id);
+  }
+}
+
+/* ============================================================ 相机与投影（倾斜的全息星图平面） */
+let cy_,sy_,cp_,sp_;
+function camPrep(){cy_=Math.cos(cam.yaw);sy_=Math.sin(cam.yaw);cp_=Math.cos(cam.pitch);sp_=Math.sin(cam.pitch)}
+function P3(x,y,h){
+  const dx=x-cam.x,dy=y-cam.y,rx=dx*cy_-dy*sy_,ry=dx*sy_+dy*cy_;
+  const sy=ry*cp_-h*sp_,d=-ry*sp_-h*cp_,k=FL/Math.max(300,FL+d*cam.z)*cam.z;  // 透视强度按屏幕尺度计算，远景与近景一致
+  return {x:W/2+VX+rx*k,y:H/2+VY+sy*k,s:k,d};
+}
+function autoCam(force){
+  let pts;
+  if(S.mode==='universe')pts=Object.values(PACKS).flatMap(pk=>[...pk.GAL.values()].map(g=>({x:g.x,y:g.y,r:g.r+110})));
+  else if(S.mode==='overview'||(trans&&trans.kind==='out'))pts=[...GAL.values()].map(g=>({x:g.x,y:g.y,r:g.r+70}));
+  else if(trans){const R0=S.range*GAP+150;pts=[0,1,2,3,4,5,6,7].map(i=>({x:S.anchor.x+Math.cos(i*Math.PI/4)*R0,y:S.anchor.y+Math.sin(i*Math.PI/4)*R0,r:0}))}
+  else pts=[...sim].filter(([,s])=>s.ta>0).map(([id,s])=>({x:s.x,y:s.y,r:orbitR(id)+60}));
+  if(!pts.length)return;
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  pts.forEach(p=>{x0=Math.min(x0,p.x-p.r);x1=Math.max(x1,p.x+p.r);y0=Math.min(y0,p.y-p.r);y1=Math.max(y1,p.y+p.r)});
+  const cx=(x0+x1)/2,cy=(y0+y1)/2;
+  if(follow){cam.tx=cx;cam.ty=cy}
+  // 以目标视角投影包围点，按屏幕上的实际占用迭代求缩放
+  const sv=[cam.x,cam.y,cam.z,cam.yaw,cam.pitch];
+  const vb=viewBox(),w=W-vb.l-vb.r-30,h=H-vb.t-vb.b;
+  tVX=(vb.l-vb.r)/2;tVY=(vb.t-vb.b)/2+10;
+  let z=clamp(cam.tz/cam.uz,.01,3.5);
+  cam.x=cam.tx;cam.y=cam.ty;cam.yaw=cam.tyaw;cam.pitch=cam.tpitch;camPrep();
+  for(let it=0;it<3;it++){
+    cam.z=z;let mx=1,my=1;
+    pts.forEach(p=>{for(let k=0;k<8;k++){const a=k*Math.PI/4;for(const hh of [0,100]){const q=P3(p.x+Math.cos(a)*p.r,p.y+Math.sin(a)*p.r,hh);
+      mx=Math.max(mx,Math.abs(q.x-W/2-VX));my=Math.max(my,Math.abs(q.y-H/2-VY))}}});
+    z=clamp(z*Math.min(w/2/mx,h/2/my),.01,3.5);
+  }
+  [cam.x,cam.y,cam.z,cam.yaw,cam.pitch]=sv;camPrep();
+  cam.tz=clamp(z*cam.uz,.01,3.5);
+}
+
+/* ============================================================ 精灵贴图 */
+const SPR=new Map();
+function mkC(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return c}
+function sprite(kind,col){
+  const key=kind+col;if(SPR.has(key))return SPR.get(key);
+  const [r,g,b]=rgb(col);let c,x;
+  let sd=Math.floor(hash(key)*2147483646)+1;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647;
+  if(kind==='glow'){c=mkC(256,256);x=c.getContext('2d');const gr=x.createRadialGradient(128,128,0,128,128,128);
+    gr.addColorStop(0,`rgba(${r},${g},${b},1)`);gr.addColorStop(.08,`rgba(${r},${g},${b},.6)`);gr.addColorStop(.25,`rgba(${r},${g},${b},.18)`);
+    gr.addColorStop(.6,`rgba(${r},${g},${b},.04)`);gr.addColorStop(1,`rgba(${r},${g},${b},0)`);x.fillStyle=gr;x.fillRect(0,0,256,256)}
+  else if(kind==='core'){c=mkC(128,128);x=c.getContext('2d');const gr=x.createRadialGradient(64,64,0,64,64,64);
+    gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(.22,'rgba(255,255,255,.9)');gr.addColorStop(.45,`rgba(${mix(col,.5)},.5)`);gr.addColorStop(1,`rgba(${r},${g},${b},0)`);
+    x.fillStyle=gr;x.fillRect(0,0,128,128)}
+  else if(kind==='corona1'||kind==='corona2'){c=mkC(512,512);x=c.getContext('2d');x.globalCompositeOperation='lighter';
+    for(let i=0;i<190;i++){const a=rnd()*6.283,L=256*(.28+.72*Math.pow(rnd(),2.2)),w=.5+rnd()*2.4,ex=256+Math.cos(a)*L,ey=256+Math.sin(a)*L;
+      const lg=x.createLinearGradient(256,256,ex,ey);lg.addColorStop(0,'rgba(255,255,255,0)');lg.addColorStop(.1,'rgba(255,248,230,.5)');
+      lg.addColorStop(.38,`rgba(${r},${g},${b},.28)`);lg.addColorStop(1,`rgba(${r},${g},${b},0)`);
+      x.strokeStyle=lg;x.lineWidth=w;x.beginPath();x.moveTo(256,256);x.lineTo(ex,ey);x.stroke()}}
+  else if(kind==='band'){c=mkC(256,128);x=c.getContext('2d');
+    x.fillStyle=`rgb(${mix(col,.55,[4,8,24])})`;x.fillRect(0,0,256,128);
+    for(let i=0;i<26;i++){const y=rnd()*128,hh=2+rnd()*13,t=rnd(),amp=rnd()*5,ph=rnd()*6.28,k=1+Math.floor(rnd()*3);
+      const cc=rnd()<.55?mix(col,t*.65):mix(col,.3+t*.5,[6,10,30]);x.fillStyle=`rgba(${cc},${.25+rnd()*.5})`;
+      x.beginPath();x.moveTo(0,y);for(let X=0;X<=256;X+=8)x.lineTo(X,y+Math.sin(X/256*6.283*k+ph)*amp);
+      for(let X=256;X>=0;X-=8)x.lineTo(X,y+hh+Math.sin(X/256*6.283*k+ph+1)*amp);x.fill()}}
+  SPR.set(key,c);return c;
+}
+function spr(img,x,y,size,a,rot){
+  if(a<=0||size<=0)return;ctx.globalAlpha=Math.min(1,a);
+  if(rot){ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.drawImage(img,-size/2,-size/2,size,size);ctx.restore()}
+  else ctx.drawImage(img,x-size/2,y-size/2,size,size);
+  ctx.globalAlpha=1;
+}
+
+/* ============================================================ 绘制：背景 */
+const cvs=$('#c'),ctx=cvs.getContext('2d');
+let W,H,DPR,stars=[],neb,meteors=[];
+function resize(){
+  DPR=Math.min(2,devicePixelRatio||1);W=Math.max(1,innerWidth);H=Math.max(1,innerHeight);
+  cvs.width=W*DPR;cvs.height=H*DPR;cvs.style.width=W+'px';cvs.style.height=H+'px';
+  stars=[];
+  [[.015,.7,W*H/2600],[.05,1.1,W*H/8000],[.12,1.7,W*H/30000]].forEach(([p,s,n])=>{
+    for(let i=0;i<n;i++){const r=Math.random();
+      stars.push({x:Math.random()*W,y:Math.random()*H,p,s:s*(.5+Math.random()),tw:Math.random()*6.28,ts:.6+Math.random()*2.4,
+        c:r<.1?'255,214,170':r<.22?'170,200,255':'255,255,255'})}});
+  neb=mkC(W*1.6,H*1.6);
+  const n=neb.getContext('2d');
+  [[.25,.3,'120,60,220',.16],[.7,.55,'20,140,220',.14],[.5,.8,'220,60,160',.08],[.85,.2,'40,200,200',.09],[.15,.75,'60,90,255',.1],[.55,.35,'150,90,255',.07]]
+  .forEach(([x,y,c,a])=>{const cx=x*neb.width,cy=y*neb.height,r=Math.max(neb.width,neb.height)*(.25+Math.random()*.2);
+    const g=n.createRadialGradient(cx,cy,0,cx,cy,r);g.addColorStop(0,`rgba(${c},${a})`);g.addColorStop(.5,`rgba(${c},${a*.35})`);g.addColorStop(1,`rgba(${c},0)`);
+    n.fillStyle=g;n.fillRect(0,0,neb.width,neb.height)});
+  for(let i=0;i<2500;i++){n.fillStyle=`rgba(200,220,255,${Math.random()*.08})`;n.fillRect(Math.random()*neb.width,Math.random()*neb.height,1,1)}
+}
+function drawBackground(dt){
+  ctx.setTransform(DPR,0,0,DPR,0,0);ctx.globalAlpha=1;
+  const g=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*.75);
+  g.addColorStop(0,'#071026');g.addColorStop(1,'#010209');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  const ox=-cam.yaw*W*.12,oy=(cam.pitch-PITCH0)*H*.3;
+  ctx.globalCompositeOperation='lighter';
+  ctx.drawImage(neb,-W*.3+((ox*.3)%(W*.3)),-H*.3+clamp(oy*.3,-H*.3,H*.3));
+  const cx=W/2,cy=H/2;
+  for(const s of stars){
+    const x=((s.x+ox*s.p*8)%W+W)%W,y=((s.y+oy*s.p*8)%H+H)%H;
+    const tw=.55+.45*Math.sin(T*s.ts+s.tw);
+    if(warp>.02){const dx=x-cx,dy=y-cy;
+      ctx.strokeStyle=`rgba(${s.c},${tw*.9})`;ctx.lineWidth=s.s;ctx.beginPath();ctx.moveTo(x,y);
+      ctx.lineTo(x+dx*warp*.35*(s.p*8),y+dy*warp*.35*(s.p*8));ctx.stroke()}
+    else{ctx.fillStyle=`rgba(${s.c},${tw})`;
+      if(s.s>1.6){ctx.beginPath();ctx.arc(x,y,s.s*.6,0,7);ctx.fill();
+        ctx.fillStyle=`rgba(${s.c},${tw*.15})`;ctx.beginPath();ctx.arc(x,y,s.s*2.2,0,7);ctx.fill()}
+      else ctx.fillRect(x,y,s.s,s.s)}
+  }
+  if(Math.random()<dt*.25) meteors.push({x:Math.random()*W,y:Math.random()*H*.5,vx:-(300+Math.random()*300),vy:150+Math.random()*120,l:1});
+  meteors=meteors.filter(m=>m.l>0);
+  for(const m of meteors){m.x+=m.vx*dt;m.y+=m.vy*dt;m.l-=dt*1.2;
+    const gr=ctx.createLinearGradient(m.x,m.y,m.x-m.vx*.18,m.y-m.vy*.18);
+    gr.addColorStop(0,`rgba(220,240,255,${m.l*.8})`);gr.addColorStop(1,'rgba(220,240,255,0)');
+    ctx.strokeStyle=gr;ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(m.x,m.y);ctx.lineTo(m.x-m.vx*.18,m.y-m.vy*.18);ctx.stroke()}
+  ctx.globalCompositeOperation='source-over';
+}
+
+/* ============================================================ 绘制：通用元件 */
+function ring3(cx,cy,r,h=0,n=96,a0=0,a1=Math.PI*2){
+  ctx.beginPath();
+  for(let i=0;i<=n;i++){const a=a0+(a1-a0)*i/n,p=P3(cx+Math.cos(a)*r,cy+Math.sin(a)*r,h);i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)}
+}
+function polyline(pts){ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y))}
+function along(pts,u){const f=u*(pts.length-1),i=Math.min(pts.length-2,Math.floor(f)),t=f-i,a=pts[i],b=pts[i+1];return {x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t}}
+function arrow(pts,col,size){
+  const b=pts[pts.length-1],a=pts[pts.length-2],l=Math.hypot(b.x-a.x,b.y-a.y)||1,ux=(b.x-a.x)/l,uy=(b.y-a.y)/l;
+  ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(b.x,b.y);
+  ctx.lineTo(b.x-ux*size-uy*size*.5,b.y-uy*size+ux*size*.5);ctx.lineTo(b.x-ux*size*.65,b.y-uy*size*.65);
+  ctx.lineTo(b.x-ux*size+uy*size*.5,b.y-uy*size-ux*size*.5);ctx.fill();
+}
+function pill(x,y,text,col,al,font){
+  ctx.font=font||`11px ${FONT}`;const tw=ctx.measureText(text).width,pw=tw+12,ph=17;
+  ctx.fillStyle=`rgba(3,8,20,${.85*al})`;ctx.strokeStyle=rgba(col,.6*al);ctx.lineWidth=1;
+  ctx.beginPath();ctx.roundRect?ctx.roundRect(x-pw/2,y-ph/2,pw,ph,3):ctx.rect(x-pw/2,y-ph/2,pw,ph);ctx.fill();ctx.stroke();
+  ctx.fillStyle=rgba(col,al);ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,x,y+.5);ctx.textBaseline='alphabetic';
+}
+// 沿 3D 抛物弧取样（平面内弯曲 + 向上拱起）
+function arc3(a,b,bend,lift,n=30){
+  const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1,cx=(a.x+b.x)/2-dy/len*bend,cy=(a.y+b.y)/2+dx/len*bend,pts=[];
+  for(let i=0;i<=n;i++){const t=i/n,u=1-t;
+    pts.push(P3(u*u*a.x+2*u*t*cx+t*t*b.x,u*u*a.y+2*u*t*cy+t*t*b.y,u*a.h+t*b.h+lift*4*t*(1-t)))}
+  return pts;
+}
+function trimPts(pts,r0,r1){
+  const s=pts[0],e=pts[pts.length-1];
+  let i=0,j=pts.length-1;
+  while(i<j-1&&Math.hypot(pts[i].x-s.x,pts[i].y-s.y)<r0)i++;
+  while(j>i+1&&Math.hypot(pts[j].x-e.x,pts[j].y-e.y)<r1)j--;
+  return pts.slice(i,j+1);
+}
+function flowLine(pts,col,al,width,hot,seed){
+  ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.strokeStyle=rgba(col,.2*al);ctx.lineWidth=width*3;polyline(pts);ctx.stroke();
+  ctx.strokeStyle=rgba(col,.9*al);ctx.lineWidth=width;
+  ctx.setLineDash([8,6]);ctx.lineDashOffset=S.opts.flow?-T*32:0;polyline(pts);ctx.stroke();ctx.setLineDash([]);
+  if(S.opts.flow){const gl=sprite('glow',col);
+    ctx.globalCompositeOperation='lighter';
+    for(let k=0;k<2;k++){const p=along(pts,(T*.3+k*.5+seed)%1);spr(gl,p.x,p.y,26,al*.9);
+      ctx.fillStyle=`rgba(255,255,255,${al})`;ctx.beginPath();ctx.arc(p.x,p.y,1.6,0,7);ctx.fill()}
+    ctx.globalCompositeOperation='source-over'}
+}
+
+// 恒星：日冕 + 变形镜头光 + 炽热内核
+function drawSun(x,y,R,col,al){
+  ctx.globalCompositeOperation='lighter';
+  spr(sprite('glow',col),x,y,R*11,al*.55);
+  spr(sprite('corona1',col),x,y,R*5.4*(1+.05*Math.sin(T*1.3)),al*.9,T*.05);
+  spr(sprite('corona2',col),x,y,R*4.4*(1+.05*Math.sin(T*1.7+1)),al*.75,-T*.07);
+  ctx.save();ctx.translate(x,y);ctx.scale(1,.04);spr(sprite('glow',col),0,0,R*20,al*.85);ctx.restore();
+  ctx.save();ctx.translate(x,y);ctx.scale(.03,1);spr(sprite('glow','#ffffff'),0,0,R*7,al*.35);ctx.restore();
+  spr(sprite('core',col),x,y,R*3,al);
+  ctx.globalCompositeOperation='source-over';
+  const g=ctx.createRadialGradient(x,y,0,x,y,R*.62);
+  g.addColorStop(0,`rgba(255,255,255,${al})`);g.addColorStop(.7,`rgba(${mix(col,.75)},${al})`);g.addColorStop(1,rgba(col,al*.9));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,R*.62,0,7);ctx.fill();
+}
+// 明亮卫星：总览中的非根节点，只有光，不画表面
+function drawSat(x,y,R,col,al){
+  if(al<=0)return;
+  ctx.globalCompositeOperation='lighter';
+  spr(sprite("glow",col),x,y,R*5.5,al*.95);spr(sprite("glow","#ffffff"),x,y,R*2.6,al*.8);
+  ctx.save();ctx.translate(x,y);ctx.scale(1,.07);spr(sprite('glow','#ffffff'),0,0,R*6,al*.55);ctx.restore();
+  spr(sprite('core',col),x,y,R*1.9,al);
+  ctx.globalCompositeOperation='source-over';
+  ctx.fillStyle=`rgba(255,255,255,${Math.min(1,al)})`;ctx.beginPath();ctx.arc(x,y,Math.max(1.3,R*.3),0,7);ctx.fill();
+}
+// 行星：带状大气纹理 + 明暗 + 大气辉光
+function drawPlanet(x,y,R,col,al,rot){
+  ctx.globalCompositeOperation='lighter';spr(sprite('glow',col),x,y,R*4.2,al*.55);ctx.globalCompositeOperation='source-over';
+  ctx.save();ctx.globalAlpha=al;ctx.beginPath();ctx.arc(x,y,R,0,7);ctx.clip();
+  const tex=sprite('band',col),tw=R*4,off=((rot*R)%tw+tw)%tw,X0=x-R-off;
+  ctx.drawImage(tex,X0,y-R,tw,R*2);ctx.drawImage(tex,X0+tw,y-R,tw,R*2);
+  const g=ctx.createRadialGradient(x-R*.45,y-R*.5,R*.05,x,y,R*1.05);
+  g.addColorStop(0,'rgba(255,255,255,.45)');g.addColorStop(.35,'rgba(255,255,255,0)');g.addColorStop(.75,'rgba(0,4,16,.35)');g.addColorStop(1,'rgba(0,2,10,.85)');
+  ctx.fillStyle=g;ctx.fillRect(x-R,y-R,R*2,R*2);ctx.restore();
+  ctx.lineWidth=1.6;ctx.strokeStyle=rgba(mix(col,.4).reduce((s,v)=>s+v.toString(16).padStart(2,'0'),'#'),.9*al);
+  ctx.beginPath();ctx.arc(x,y,R,Math.PI*.95,Math.PI*1.75);ctx.stroke();
+  ctx.lineWidth=1;ctx.strokeStyle=rgba(col,.35*al);ctx.beginPath();ctx.arc(x,y,R+1.5,0,7);ctx.stroke();
+}
+
+/* ============================================================ 绘制：焦点星图 */
+let moonPos=new Map();
+function highlightSet(){
+  const h=S.hover;if(!h||S.mode!=='focus'||!els.has(h))return null;
+  const e=get(h),set=new Set([h]);
+  set.add(ownerId(h));
+  if(e.state==='node'){
+    view.subs.forEach(([p,c])=>{if(p===h)set.add(c);if(c===h)set.add(p)});
+    view.rels.forEach(r=>{if(ownerId(r.from)===h){set.add(r.to);set.add(r.from)}if(r.to===h){set.add(r.from);set.add(ownerId(r.from))}});
+  }else view.rels.forEach(r=>{if(r.from===h)set.add(r.to)});
+  return set;
+}
+
+function drawFocus(A){
+  const fs=sim.get(S.focus);if(!fs)return;
+  const hl=highlightSet(),dim=id=>hl&&!hl.has(id)?.2:1;
+
+  // —— 全息平面：距离环 / 辐条 / 雷达扫描
+  const maxR=S.range*GAP;
+  ring3(fs.x,fs.y,maxR+GAP*.45,0,120);ctx.fillStyle=`rgba(40,120,200,${.05*A})`;ctx.fill();
+  ctx.lineWidth=1;
+  for(let i=0;i<12;i++){const a=i/12*Math.PI*2,p0=P3(fs.x,fs.y,0),p1=P3(fs.x+Math.cos(a)*(maxR+GAP*.45),fs.y+Math.sin(a)*(maxR+GAP*.45),0);
+    ctx.strokeStyle=`rgba(92,242,255,${.07*A})`;ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.stroke()}
+  for(let k=0;k<10;k++){const a0=T*.5-k*.05;ring3(fs.x,fs.y,maxR+GAP*.45,0,6,a0-.05,a0);
+    const p0=P3(fs.x,fs.y,0);ctx.lineTo(p0.x,p0.y);ctx.closePath();ctx.fillStyle=`rgba(92,242,255,${(.09-k*.008)*A})`;ctx.fill()}
+  for(let d=1;d<=S.range;d++){
+    ring3(fs.x,fs.y,d*GAP);ctx.strokeStyle=`rgba(92,242,255,${(.38-d*.04)*A})`;ctx.setLineDash([6,6]);ctx.lineDashOffset=(d%2?1:-1)*T*8;ctx.stroke();ctx.setLineDash([]);
+    const la=Math.atan2(-.35*cy_+1*sy_,1*cy_+.35*sy_);  // 让标签落在屏幕右下方向
+    const lp=P3(fs.x+Math.cos(-la)*d*GAP,fs.y+Math.sin(-la)*d*GAP,0);
+    ctx.font=`10px ${MONO}`;ctx.fillStyle=`rgba(92,242,255,${.7*A})`;ctx.textAlign='left';ctx.fillText(`D${d} · 距离 ${d}`,lp.x+6,lp.y-4)}
+  ring3(fs.x,fs.y,maxR+GAP*.45);ctx.strokeStyle=`rgba(255,181,71,${.12*A})`;ctx.setLineDash([2,9]);ctx.stroke();ctx.setLineDash([]);
+  ctx.strokeStyle=`rgba(92,242,255,${.3*A})`;
+  for(let i=0;i<72;i++){const a=i/72*Math.PI*2,r2=maxR+(i%6?8:20),p1=P3(fs.x+Math.cos(a)*maxR,fs.y+Math.sin(a)*maxR,0),p2=P3(fs.x+Math.cos(a)*r2,fs.y+Math.sin(a)*r2,0);
+    ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.stroke()}
+
+  // —— 投影
+  const PS=new Map();for(const [id,s] of sim)PS.set(id,P3(s.x,s.y,s.h));
+  moonPos=new Map();
+  for(const [id,s] of sim){
+    const at=attrsOf(id),k=at.length,ro=orbitR(id),ci=Math.cos(s.inc),si=Math.sin(s.inc);
+    at.forEach((e,i)=>{const ang=s.ph+i*Math.PI*2/k,lx=Math.cos(ang)*ro,ly=Math.sin(ang)*ro;
+      const X=s.x+lx,Y=s.y+ly*ci,Hh=s.h+ly*si;moonPos.set(e.id,{x:X,y:Y,h:Hh,ang,owner:id,p:P3(X,Y,Hh)})});
+  }
+
+  // —— 投影线 + 地面标记
+  for(const [id,s] of sim){const p=PS.get(id),g0=P3(s.x,s.y,0),al=s.a*dim(id)*A,col=colorOf(get(id));
+    ctx.strokeStyle=rgba(col,.35*al);ctx.lineWidth=1;ctx.setLineDash([2,4]);ctx.beginPath();ctx.moveTo(g0.x,g0.y);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.setLineDash([]);
+    ring3(s.x,s.y,10,0,24);ctx.strokeStyle=rgba(col,.5*al);ctx.stroke();
+    ring3(s.x,s.y,3,0,10);ctx.fillStyle=rgba(col,.7*al);ctx.fill()}
+  // 焦点光柱 + 地面准星
+  {const p=PS.get(S.focus),g0=P3(fs.x,fs.y,0),col=colorOf(get(S.focus));
+    const lg=ctx.createLinearGradient(g0.x,g0.y,p.x,p.y);lg.addColorStop(0,rgba(col,.55*A));lg.addColorStop(1,rgba(col,0));
+    ctx.strokeStyle=lg;ctx.lineWidth=10*p.s;ctx.beginPath();ctx.moveTo(g0.x,g0.y);ctx.lineTo(p.x,p.y);ctx.stroke();
+    for(let k=0;k<3;k++){const a0=T*.8+k*Math.PI*2/3;ring3(fs.x,fs.y,46,0,16,a0,a0+1.4);ctx.strokeStyle=rgba('#ffffff',.8*A);ctx.lineWidth=2;ctx.stroke()}
+    ring3(fs.x,fs.y,58+((T*30)%40),0,48);ctx.strokeStyle=rgba(col,(1-((T*30)%40)/40)*.6*A);ctx.lineWidth=1;ctx.stroke()}
+
+  // —— 隶属：直线光束
+  for(const [pid,cid] of view.subs){
+    const a=PS.get(pid),b=PS.get(cid),al=Math.min(sim.get(pid).a,sim.get(cid).a)*Math.min(dim(pid),dim(cid))*A,col=colorOf(get(cid));
+    const g=ctx.createLinearGradient(a.x,a.y,b.x,b.y);g.addColorStop(0,rgba(col,.7*al));g.addColorStop(1,rgba(col,.25*al));
+    ctx.strokeStyle=g;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+    const mx=a.x+(b.x-a.x)*.72,my=a.y+(b.y-a.y)*.72,s=4;
+    ctx.fillStyle=rgba(col,.8*al);ctx.beginPath();ctx.moveTo(mx,my-s);ctx.lineTo(mx+s,my);ctx.lineTo(mx,my+s);ctx.lineTo(mx-s,my);ctx.fill();
+  }
+
+  // —— 非隶属关系：拱起的流动弧线
+  const pairIdx=new Map();
+  for(const r of view.rels){
+    const src=get(r.from),oid=ownerId(r.from),fromAttr=src.state==='attr';
+    const sa=sim.get(oid),sb=sim.get(r.to);if(!sa||!sb)continue;
+    const a3=fromAttr?moonPos.get(r.from):{x:sa.x,y:sa.y,h:sa.h},b3={x:sb.x,y:sb.y,h:sb.h};
+    const key=[oid,r.to].sort().join('|'),n=pairIdx.get(key)||0;pairIdx.set(key,n+1);
+    const len=Math.hypot(b3.x-a3.x,b3.y-a3.y);
+    const bend=len*(.12+n*.1)*(oid<r.to?1:-1)*(n%2?-1:1);
+    const pa=fromAttr?a3.p||P3(a3.x,a3.y,a3.h):PS.get(oid),pb=PS.get(r.to);
+    let pts=arc3(a3,b3,bend,len*.22+30);
+    pts=trimPts(pts,fromAttr?6:nodeR(oid)*pa.s+3,nodeR(r.to)*pb.s+8);if(pts.length<2)continue;
+    const hot=hl&&(S.hover===r.to||S.hover===oid||S.hover===r.from);
+    const al=Math.min(sa.a,sb.a)*(hl?(hot?1:.12):1)*A,col=relColor(r.type);
+    flowLine(pts,col,al,hot?2:1.4,hot,n*.13+hash(r.id));
+    arrow(pts,rgba(col,al),11);
+    if(fromAttr){ctx.strokeStyle=rgba(col,.95*al);ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(pts[0].x,pts[0].y,7,0,7);ctx.stroke()}
+    else{ctx.fillStyle=rgba(col,al);ctx.beginPath();ctx.arc(pts[0].x,pts[0].y,2.6,0,7);ctx.fill()}
+    if(S.opts.relLabels||hot){const m=along(pts,.5);pill(m.x,m.y,r.type,col,al)}
+  }
+
+  // —— 星体（按深度排序：远的先画）
+  const order=[...sim.keys()].sort((a,b)=>PS.get(b).d-PS.get(a).d);
+  for(const id of order){
+    const e=get(id),s=sim.get(id),p=PS.get(id),col=colorOf(e),al=s.a*dim(id),la=al*A,R=nodeR(id)*p.s*s.k,isRoot=!e.parent,isF=id===S.focus;
+    const at=attrsOf(id);
+    if(at.length){
+      ctx.beginPath();const ro=orbitR(id),ci=Math.cos(s.inc),si=Math.sin(s.inc);
+      for(let i=0;i<=64;i++){const a=i/64*Math.PI*2,ly=Math.sin(a)*ro,q=P3(s.x+Math.cos(a)*ro,s.y+ly*ci,s.h+ly*si);i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y)}
+      ctx.strokeStyle=rgba(col,.22*la);ctx.lineWidth=1;ctx.stroke();
+    }
+    const moons=at.map(a=>({e:a,m:moonPos.get(a.id)}));
+    const showL=S.opts.attrLabels&&(cam.z>.5||isF||S.hover===id||S.sel===id||at.some(x=>x.id===S.hover||x.id===S.sel));
+    const drawMoon=({e:ae,m})=>{
+      const q=m.p,aa=s.a*(hl&&!hl.has(ae.id)&&!hl.has(id)?.2:1)*A,hov=S.hover===ae.id||S.sel===ae.id,hasRel=rels.some(x=>x.from===ae.id);
+      // 轨迹尾迹
+      const ro=orbitR(id),ci=Math.cos(s.inc),si=Math.sin(s.inc);
+      let prev=null;for(let k=0;k<=10;k++){const a=m.ang-.7+.07*k,ly=Math.sin(a)*ro,t=P3(s.x+Math.cos(a)*ro,s.y+ly*ci,s.h+ly*si);
+        if(prev){ctx.strokeStyle=rgba(col,(k/10)*.7*aa);ctx.lineWidth=.6+k*.16;ctx.beginPath();ctx.moveTo(prev.x,prev.y);ctx.lineTo(t.x,t.y);ctx.stroke()}prev=t}
+      const mr=Math.max(2.2,(hov?5:hasRel?4.2:3.4)*q.s);
+      ctx.globalCompositeOperation='lighter';spr(sprite('glow',col),q.x,q.y,mr*7,aa*.7);ctx.globalCompositeOperation='source-over';
+      const g=ctx.createRadialGradient(q.x-mr*.4,q.y-mr*.4,0,q.x,q.y,mr);
+      g.addColorStop(0,`rgba(255,255,255,${aa})`);g.addColorStop(.6,`rgba(${mix(col,.5)},${aa})`);g.addColorStop(1,`rgba(${mix(col,.6,[0,0,20])},${aa})`);
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(q.x,q.y,mr,0,7);ctx.fill();
+      if(S.sel===ae.id){ctx.strokeStyle=rgba('#ffffff',.9*aa);ctx.lineWidth=1;ctx.setLineDash([2,2]);ctx.beginPath();ctx.arc(q.x,q.y,mr+6,0,7);ctx.stroke();ctx.setLineDash([])}
+      if(showL||hov){const right=q.x>=p.x;ctx.font=`${hov?12:11}px ${FONT}`;ctx.textAlign=right?'left':'right';
+        ctx.fillStyle=rgba(hov?'#ffffff':'#c4d6e8',(hov?1:.85)*aa);ctx.fillText(ae.name,q.x+(right?mr+5:-mr-5),q.y+4)}
+      hits.push({id:ae.id,x:q.x,y:q.y,r:Math.max(8,mr+4),pri:2});
+    };
+    moons.filter(o=>o.m.p.d>p.d).forEach(drawMoon);
+    if(isRoot) drawSun(p.x,p.y,R,col,al);
+    else{const pm=trans?A:1;if(pm<1)drawSat(p.x,p.y,R,col,al*(1-pm));if(pm>0)drawPlanet(p.x,p.y,R,col,al*pm,T*.25+hash(id)*9)}
+    moons.filter(o=>o.m.p.d<=p.d).forEach(drawMoon);
+    hits.push({id,x:p.x,y:p.y,r:R+8,pri:1});
+
+    if(isF){const rr=R+18+Math.sin(T*2.4)*2.5;ctx.strokeStyle=rgba('#ffffff',.9*la);ctx.lineWidth=1.6;
+      for(let k=0;k<4;k++){const a0=T*.6+k*Math.PI/2;ctx.beginPath();ctx.arc(p.x,p.y,rr,a0,a0+.55);ctx.stroke()}}
+    if(S.sel===id&&!isF){ctx.strokeStyle=rgba('#ffffff',.85*la);ctx.lineWidth=1.2;ctx.setLineDash([4,3]);ctx.lineDashOffset=-T*10;
+      ctx.beginPath();ctx.arc(p.x,p.y,R+12,0,7);ctx.stroke();ctx.setLineDash([])}
+
+    ctx.textAlign='center';const ly=p.y+R+(isRoot?26:20);
+    ctx.font=`${isRoot?'600 15px':'13px'} ${FONT}`;ctx.shadowColor=rgba(col,.9);ctx.shadowBlur=10;
+    ctx.fillStyle=rgba('#ffffff',la);ctx.fillText(e.name,p.x,ly);ctx.shadowBlur=0;
+    ctx.font=`9.5px ${MONO}`;ctx.fillStyle=rgba(col,.8*la);ctx.fillText(`${kindOf(e)} · D${s.dist??'-'}`,p.x,ly+13);
+    if(S.opts.fnLabels&&e.fn){const full=isF||S.hover===id||S.sel===id;
+      ctx.font=`${full?12:11}px ${FONT}`;ctx.fillStyle=rgba('#d2e4f4',(full?.95:.7)*la);ctx.fillText(full?e.fn:clip(e.fn,16),p.x,ly+29)}
+    const bn=view.boundary.get(id);
+    if(bn&&s.ta>0){ctx.font=`10px ${MONO}`;ctx.fillStyle=rgba('#ffb547',.9*la);ctx.textAlign='left';ctx.fillText(`+${bn} ›`,p.x+R+8,p.y-R-4)}
+  }
+}
+
+/* ============================================================ 绘制：星团总览 */
+function galaxyPoint(g,rr,th,lh){
+  const lx=Math.cos(th)*rr,ly=Math.sin(th)*rr,y2=ly*Math.cos(g.inc),z2=ly*Math.sin(g.inc)+lh,cf=Math.cos(g.phi),sf=Math.sin(g.phi);
+  return P3(g.x+lx*cf-y2*sf,g.y+lx*sf+y2*cf,40+z2);
+}
+function galaxyBody(g,p,al,boost,ex){
+  if(al<=.003)return;
+  ctx.globalCompositeOperation='lighter';
+  spr(sprite('glow',g.col),p.x,p.y,g.r*2.6*p.s,al*.35*boost);
+  const st=Math.max(1,Math.round(80/Math.max(1,g.r*p.s)));   // 远景时抽稀星尘
+  ctx.globalAlpha=Math.min(1,al*boost*.6);
+  const paths=g.styles.map(()=>new Path2D()),k=Math.max(.6,p.s*1.3)*(st>1?1.4:1);
+  for(let i=0;i<g.parts.length;i+=st){const q=g.parts[i],pp=galaxyPoint(g,q.rr,q.th+T*q.w,q.lh),sz=q.sz*k;paths[q.b].rect(pp.x-sz/2,pp.y-sz/2,sz,sz)}
+  paths.forEach((ph,b)=>{ctx.fillStyle=g.styles[b];ctx.fill(ph)});
+  ctx.globalAlpha=1;
+  spr(sprite('glow',g.col),p.x,p.y,g.r*1.1*p.s,al*.9);
+  ctx.globalCompositeOperation='source-over';
+  // 缩微结构：层级轨道 + 根节点恒星 + 其余节点为明亮卫星（不显示名称）
+  for(let l=1;l<=g.L;l++){ring3(g.x,g.y,miniR(g,l),40,48);ctx.strokeStyle=rgba(g.col,.35*al);ctx.lineWidth=1;ctx.stroke()}
+  [...g.mini].filter(([id])=>!ex||!ex.has(id)).map(([id,m])=>{const q=miniAt(g,m);return {m,q:P3(q.x,q.y,q.h)}})
+    .sort((a,b)=>b.q.d-a.q.d).forEach(({m,q})=>{if(m.lev)drawSat(q.x,q.y,11*KM*q.s,g.col,al);else drawSun(q.x,q.y,17*KM*q.s,g.col,al)});
+}
+function drawOverview(A,ex,B=A){
+  const gs=[...GAL.values()];
+  const cx=gs.reduce((s,g)=>s+g.x,0)/gs.length,cy=gs.reduce((s,g)=>s+g.y,0)/gs.length;
+  const ext=Math.max(...gs.map(g=>Math.hypot(g.x-cx,g.y-cy)+g.r))+120;
+  const hv=S.hover&&GAL.has(S.hover)?S.hover:(S.hover&&els.has(S.hover)?rootOf(get(S.hover)).id:null);
+  const linked=new Set(hv?[hv,...cross.filter(c=>c.a===hv||c.b===hv).flatMap(c=>[c.a,c.b])]:[]);
+  const gdim=id=>hv&&!linked.has(id)?.3:1;
+
+  // 平面网格
+  ring3(cx,cy,ext,0,120);ctx.fillStyle=`rgba(40,120,200,${.04*A})`;ctx.fill();
+  for(let r=ext/4;r<=ext+1;r+=ext/4){ring3(cx,cy,r);ctx.strokeStyle=`rgba(92,242,255,${.1*A})`;ctx.lineWidth=1;ctx.setLineDash([3,7]);ctx.stroke();ctx.setLineDash([])}
+  for(let i=0;i<24;i++){const a=i/24*Math.PI*2,p0=P3(cx+Math.cos(a)*ext*.25,cy+Math.sin(a)*ext*.25,0),p1=P3(cx+Math.cos(a)*ext,cy+Math.sin(a)*ext,0);
+    ctx.strokeStyle=`rgba(92,242,255,${.05*A})`;ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.stroke()}
+  for(let k=0;k<12;k++){const a0=T*.25-k*.04;ring3(cx,cy,ext,0,8,a0-.04,a0);const p0=P3(cx,cy,0);ctx.lineTo(p0.x,p0.y);ctx.closePath();
+    ctx.fillStyle=`rgba(92,242,255,${(.07-k*.005)*A})`;ctx.fill()}
+  {const c0=P3(cx,cy,0);ctx.textAlign='center';ctx.font=`11px ${MONO}`;ctx.fillStyle=`rgba(92,242,255,${.55*A})`;
+    ctx.fillText(`${D.en} CLUSTER`,c0.x,c0.y);ring3(cx,cy,22,0,40);ctx.strokeStyle=`rgba(92,242,255,${.35*A})`;ctx.stroke()}
+
+  // 星系间关联
+  for(const c of cross){
+    const ga=GAL.get(c.a),gb=GAL.get(c.b),al=A*(hv?(c.a===hv||c.b===hv?1:.12):1);
+    const a3={x:ga.x,y:ga.y,h:40},b3={x:gb.x,y:gb.y,h:40},len=Math.hypot(gb.x-ga.x,gb.y-ga.y);
+    const rev=cross.some(o=>o.a===c.b&&o.b===c.a);
+    let pts=arc3(a3,b3,rev?len*.12*(c.a<c.b?1:-1):0,len*.3+60,40);
+    pts=trimPts(pts,ga.r*.32*pts[0].s,gb.r*.32*pts[pts.length-1].s);if(pts.length<2)continue;
+    const types=[...c.types],col=types.length===1?relColor(types[0][0]):'#cfefff';
+    flowLine(pts,col,al,1.2+c.count*.8,false,hash(c.a+c.b));
+    arrow(pts,rgba(col,al),13);
+    const m=along(pts,rev?(c.a<c.b?.4:.6):.5);pill(m.x,m.y,types.map(([t,n])=>n>1?`${t}×${n}`:t).join(' · '),col,al);
+  }
+
+  // 星系（螺旋星系粒子盘）
+  const order=gs.map(g=>({g,p:P3(g.x,g.y,40)})).sort((a,b)=>b.p.d-a.p.d);
+  for(const {g,p} of order){
+    const al=A*gdim(g.id),act=hv===g.id||S.sel===g.id,boost=act?1.25:1;
+    galaxyBody(g,p,B*gdim(g.id),boost,ex);
+    // 选中 / 悬停：环绕准星
+    if(act){ring3(g.x,g.y,g.r*1.08,40,96);ctx.strokeStyle=rgba('#ffffff',.6*al);ctx.lineWidth=1.2;ctx.setLineDash([10,8]);ctx.lineDashOffset=-T*20;ctx.stroke();ctx.setLineDash([])}
+    // 名称
+    const r=get(g.id),mem=g.mem.length;
+    ctx.textAlign='center';ctx.font=`600 ${act?19:17}px ${FONT}`;ctx.shadowColor=rgba(g.col,.95);ctx.shadowBlur=14;
+    ctx.fillStyle=`rgba(255,255,255,${al})`;ctx.fillText(r.name,p.x,p.y+g.r*.55*p.s+30);ctx.shadowBlur=0;
+    let ly2=p.y+g.r*.55*p.s+47;
+    if(S.opts.fnLabels&&r.fn){ctx.font=`${act?12.5:11.5}px ${FONT}`;ctx.fillStyle=`rgba(214,230,246,${(act?.95:.72)*al})`;ctx.fillText(act?r.fn:clip(r.fn,18),p.x,ly2);ly2+=15}
+    if(act||gs.length<=8){   // 星系较多时只在悬停 / 选中时显示统计行，避免文字重叠
+      ctx.font=`10px ${MONO}`;ctx.fillStyle=rgba(g.col,.85*al);
+      ctx.fillText(`${D.labels.root} · ${mem} 节点 · ${g.nAttr} 属性 · 显示 ${g.L} 级`,p.x,ly2)}
+    hits.push({id:g.id,x:p.x,y:p.y,r:Math.max(36,g.r*.55*p.s),pri:1});
+  }
+}
+
+/* ============================================================ 绘制：顶级总览 */
+function drawUniverse(A,exK){
+  const pks=Object.values(PACKS);
+  const ext=Math.max(...pks.map(pk=>Math.hypot(pk.cx,pk.cy)+pk.ext))+260;
+  const hvK=isDom(S.hover)?S.hover.slice(4):null,selK=isDom(S.sel)?S.sel.slice(4):null;
+  ring3(0,0,ext,0,160);ctx.fillStyle=`rgba(40,90,200,${.035*A})`;ctx.fill();
+  for(let i=1;i<=5;i++){ring3(0,0,ext*i/5,0,140);ctx.strokeStyle=`rgba(92,242,255,${.08*A})`;ctx.lineWidth=1;ctx.setLineDash([2,8]);ctx.stroke();ctx.setLineDash([])}
+  for(let i=0;i<36;i++){const a=i/36*Math.PI*2,p0=P3(Math.cos(a)*ext*.12,Math.sin(a)*ext*.12,0),p1=P3(Math.cos(a)*ext,Math.sin(a)*ext,0);
+    ctx.strokeStyle=`rgba(92,242,255,${.04*A})`;ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.stroke()}
+  for(let k=0;k<14;k++){const a0=T*.18-k*.035;ring3(0,0,ext,0,8,a0-.035,a0);const p0=P3(0,0,0);ctx.lineTo(p0.x,p0.y);ctx.closePath();
+    ctx.fillStyle=`rgba(92,242,255,${(.06-k*.004)*A})`;ctx.fill()}
+  // 中枢与星域之间的引导线（只表示归属于同一总览，不是关联）
+  const c0=P3(0,0,0);
+  for(const pk of pks){const q=P3(pk.cx,pk.cy,0);ctx.strokeStyle=rgba(pk.col,.16*A);ctx.setLineDash([3,9]);ctx.lineDashOffset=-T*12;
+    ctx.beginPath();ctx.moveTo(c0.x,c0.y);ctx.lineTo(q.x,q.y);ctx.stroke();ctx.setLineDash([])}
+  ring3(0,0,ext*.05,0,48);ctx.strokeStyle=`rgba(92,242,255,${.5*A})`;ctx.stroke();
+  ring3(0,0,ext*.08,0,48,T*.4,T*.4+2);ctx.strokeStyle=`rgba(255,255,255,${.6*A})`;ctx.lineWidth=1.5;ctx.stroke();ctx.lineWidth=1;
+  ctx.textAlign='center';ctx.font=`11px ${MONO}`;ctx.fillStyle=`rgba(92,242,255,${.7*A})`;ctx.fillText('STARMAP · UNIVERSE',c0.x,c0.y+4);
+
+  const order=pks.map(pk=>({pk,c:P3(pk.cx,pk.cy,0)})).sort((a,b)=>b.c.d-a.c.d);
+  for(const {pk,c} of order){
+    const act=hvK===pk.k||selK===pk.k,dimF=hvK&&!act?.45:1,al=A*dimF,d=DOMAINS[pk.k];
+    ctx.globalCompositeOperation='lighter';spr(sprite('glow',pk.col),c.x,c.y,pk.ext*2.8*c.s,al*.22*(act?1.5:1));ctx.globalCompositeOperation='source-over';
+    ring3(pk.cx,pk.cy,pk.ext,0,140);ctx.strokeStyle=rgba(pk.col,(act?.75:.35)*al);ctx.lineWidth=act?1.8:1;
+    ctx.setLineDash([14,9]);ctx.lineDashOffset=-T*16;ctx.stroke();ctx.setLineDash([]);ctx.lineWidth=1;
+    for(let i=0;i<48;i++){const a=i/48*Math.PI*2,r2=pk.ext*(i%4?1.02:1.05),q1=P3(pk.cx+Math.cos(a)*pk.ext,pk.cy+Math.sin(a)*pk.ext,0),q2=P3(pk.cx+Math.cos(a)*r2,pk.cy+Math.sin(a)*r2,0);
+      ctx.strokeStyle=rgba(pk.col,.3*al);ctx.beginPath();ctx.moveTo(q1.x,q1.y);ctx.lineTo(q2.x,q2.y);ctx.stroke()}
+    if(pk.k!==exK)[...pk.GAL.values()].map(g=>({g,p:P3(g.x,g.y,40)})).sort((a,b)=>b.p.d-a.p.d).forEach(({g,p})=>galaxyBody(g,p,al,act?1.2:1,null));
+    const lp=P3(pk.cx+sy_*pk.ext,pk.cy+cy_*pk.ext,0);
+    ctx.textAlign='center';ctx.font=`700 ${act?24:21}px ${FONT}`;ctx.shadowColor=rgba(pk.col,.95);ctx.shadowBlur=16;
+    ctx.fillStyle=`rgba(255,255,255,${al})`;ctx.fillText(d.name,lp.x,lp.y+32);ctx.shadowBlur=0;
+    ctx.font=`11px ${MONO}`;ctx.fillStyle=rgba(pk.col,.9*al);
+    ctx.fillText(`${d.en} · ${pk.GAL.size} 星系 · ${pk.nNode} 节点 · ${pk.nAttr} 属性`,lp.x,lp.y+50);
+    hits.push({id:'dom:'+pk.k,x:c.x,y:c.y,r:Math.max(50,pk.ext*c.s*.8),pri:0});
+  }
+}
+
+/* ============================================================ 主循环 */
+let last=performance.now();
+function frame(now){
+  const dt=clamp((now-last)/1000,0,.05);last=Math.max(last,now);T+=dt;
+  warp=Math.max(0,warp-dt*1.4);
+  if(S.opts.spin&&!drag.on)cam.tyaw+=dt*.035;
+  const fly=trans&&(trans.kind==='down'||trans.kind==='up');
+  if(trans){trans.t+=dt/(trans.kind==='in'?1.6:trans.kind==='out'?1.3:1.9);if(trans.t>=1)finishTrans()}
+  if(S.mode==='focus')step(dt);
+  autoCam();
+  const k=Math.min(1,dt*(fly?1.7:trans?2.4:3));
+  cam.x+=(cam.tx-cam.x)*k;cam.y+=(cam.ty-cam.y)*k;cam.z=Math.exp(Math.log(cam.z)+(Math.log(cam.tz)-Math.log(cam.z))*k);
+  cam.yaw+=(cam.tyaw-cam.yaw)*Math.min(1,dt*6);cam.pitch+=(cam.tpitch-cam.pitch)*Math.min(1,dt*6);
+  VX+=(tVX-VX)*Math.min(1,dt*4);VY+=(tVY-VY)*Math.min(1,dt*4);
+  camPrep();
+  drawBackground(dt);
+  hits=[];
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(trans&&(trans.kind==='down'||trans.kind==='up')){
+    const t=trans.t,seg=(a,b)=>ease(clamp((t-a)/(b-a),0,1));
+    const uA=trans.kind==='down'?1-seg(0,.5):seg(.4,1),oA=trans.kind==='down'?seg(.45,1):1-seg(0,.45);
+    drawUniverse(uA,S.dk);drawOverview(oA,null,1)}
+  else if(trans){
+    // 分段交叉淡化：先让旧图层的装饰退场，星体在两图层间连续移动，再让新图层的装饰进场
+    const t=trans.t,seg=(a,b)=>ease(clamp((t-a)/(b-a),0,1));
+    const ovA=trans.kind==='in'?1-seg(0,.45):seg(.35,1),fA=trans.kind==='in'?seg(.4,1):1-seg(0,.4);
+    const ex=new Set([...sim.keys()].filter(id=>miniPos(id).exact));
+    drawOverview(ovA,ex);drawFocus(fA)}
+  else if(S.mode==='universe')drawUniverse(1);
+  else if(S.mode==='overview')drawOverview(1);else drawFocus(1);
+  ctx.globalAlpha=1;
+  requestAnimationFrame(frame);
+}
+
+/* ============================================================ 交互 */
+const drag={on:false,moved:false,sx:0,sy:0,pan:false,down:null};
+function hit(mx,my){
+  let best=null,bd=1e9;
+  for(const h of hits){const d=Math.hypot(h.x-mx,h.y-my);if(d<h.r){const sc=d-(h.pri*12);if(sc<bd){bd=sc;best=h.id}}}
+  return best;
+}
+const tip=$('#tip');
+function showTip(id,mx,my){
+  if(isDom(id)){const pk=PACKS[id.slice(4)],d=DOMAINS[pk.k];
+    tip.innerHTML=`<b style="color:${pk.col}">${esc(d.name)}</b><div class="t2">${esc(d.en)} · ${pk.GAL.size} 星系 · ${pk.nNode} 节点 · ${pk.nAttr} 属性 · 双击进入</div>`;
+    tip.style.left=Math.min(W-270,mx+16)+'px';tip.style.top=(my+16)+'px';tip.style.opacity=1;return}
+  if(!id||!els.has(id)){tip.style.opacity=0;return}
+  const e=get(id);let l2;
+  if(S.mode==='overview'){const g=GAL.get(id);
+    if(!g){tip.style.opacity=0;return}
+    l2=`星系 · ${g.mem.length} 节点 · ${g.nAttr} 属性 · 双击进入`}
+  else l2=e.state==='attr'?`${kindOf(e)}（属性）· 属于 ${get(e.parent).name} · 距离同所属节点`:`${kindOf(e)}（节点）· 星系 ${rootOf(e).name} · 距焦点 ${view.dist.get(id)}`;
+  tip.innerHTML=`<b style="color:${colorOf(e)}">${esc(e.name)}</b><div class="t2">${esc(l2)}</div>${e.fn?`<div class="t4">功能：${esc(e.fn)}</div>`:''}${e.desc?`<div class="t3">${esc(e.desc)}</div>`:''}`;
+  tip.style.left=Math.min(W-270,mx+16)+'px';tip.style.top=(my+16)+'px';tip.style.opacity=1;
+}
+cvs.addEventListener('contextmenu',ev=>ev.preventDefault());
+cvs.addEventListener('pointerdown',ev=>{
+  cvs.setPointerCapture(ev.pointerId);
+  drag.on=true;drag.moved=false;drag.sx=ev.clientX;drag.sy=ev.clientY;drag.pan=ev.button===2||ev.shiftKey;
+  drag.down=hit(ev.clientX,ev.clientY);cvs.classList.add('drag');
+});
+cvs.addEventListener('pointermove',ev=>{
+  if(drag.on){
+    if(Math.abs(ev.clientX-drag.sx)+Math.abs(ev.clientY-drag.sy)>4)drag.moved=true;
+    if(!drag.moved)return;
+    if(drag.pan){
+      follow=false;const dxs=ev.movementX/cam.z,dys=ev.movementY/(cam.z*Math.max(.3,cp_));
+      cam.x-=dxs*cy_+dys*sy_;cam.y-=-dxs*sy_+dys*cy_;cam.tx=cam.x;cam.ty=cam.y;
+    }else{
+      cam.tyaw-=ev.movementX*.006;cam.yaw=cam.tyaw;
+      cam.tpitch=clamp(cam.tpitch-ev.movementY*.004,.12,1.3);cam.pitch=cam.tpitch;
+    }
+    showTip(null);return;
+  }
+  if(trans)return;
+  const h=hit(ev.clientX,ev.clientY);S.hover=h;cvs.classList.toggle('pointer',!!h);showTip(h,ev.clientX,ev.clientY);
+});
+cvs.addEventListener('pointerup',()=>{
+  if(drag.on&&!drag.moved&&!trans){
+    if(S.mode==='universe')select(drag.down||null);
+    else if(S.mode==='overview'){const id=drag.down;select(id?(GAL.has(id)?id:rootOf(get(id)).id):null)}
+    else select(drag.down||null);
+  }
+  drag.on=false;cvs.classList.remove('drag');
+});
+cvs.addEventListener('pointerleave',()=>{S.hover=null;showTip(null)});
+cvs.addEventListener('dblclick',ev=>{
+  const h=hit(ev.clientX,ev.clientY);if(!h||trans)return;
+  if(S.mode==='universe'){if(isDom(h))enterDomain(h.slice(4));return}
+  const e=get(h);
+  if(S.mode==='overview'){enterGalaxy(rootOf(e).id,h);return}
+  if(e.state==='node')setFocus(h);else{setFocus(e.parent,true);select(h)}
+});
+cvs.addEventListener('wheel',ev=>{
+  ev.preventDefault();cam.uz=clamp(cam.uz*Math.exp(-ev.deltaY*.0012),.35,4);
+},{passive:false});
+addEventListener('keydown',ev=>{
+  if(ev.target.tagName==='INPUT')return;
+  if(ev.key==='+'||ev.key==='=')setRange(S.range+1);
+  else if(ev.key==='-'||ev.key==='_')setRange(S.range-1);
+  else if(ev.key==='Escape'){if(S.mode==='focus')goOverview();else if(S.mode==='overview')goUniverse();else select(null)}
+  else if((ev.key==='f'||ev.key==='F')&&S.sel&&S.mode==='focus'){const e=get(S.sel);setFocus(e.state==='node'?e.id:e.parent,true)}
+});
+addEventListener('resize',resize);
+
+function select(id){S.sel=id;renderDetail()}
+
+/* ============================================================ 面板 */
+function renderAll(){renderDomains();renderHUD();renderDetail();renderGalaxies();renderLegend();renderTools();if(typeof renderCap==='function')renderCap()}
+function renderDomains(){
+  $('#domains').innerHTML=Object.entries(DOMAINS).map(([k,d])=>`<button data-k="${k}" class="${S.mode!=='universe'&&k===S.dk?'on':''}"><small>${esc(d.en)}</small><span>${esc(d.short)}</span></button>`).join('');
+}
+$('#domains').addEventListener('click',ev=>{const b=ev.target.closest('button');if(b&&(b.dataset.k!==S.dk||S.mode!=='overview'))enterDomain(b.dataset.k)});
+$('.brand').onclick=goUniverse;
+
+function renderHUD(){
+  const ov=S.mode!=='focus';
+  $('#hudRange').style.display=ov?'none':'';
+  if(S.mode==='universe'){const pks=Object.values(PACKS),sum=f=>pks.reduce((s,pk)=>s+f(pk),0);
+    $('#hudLbl').textContent='UNIVERSE · 顶级总览';
+    $('#hudName').textContent='全部星域';$('#hudName').style.color='#fff';
+    $('#hudSub').textContent=`${pks.length} 个星域 · 按管理方向划分 · 双击星域进入`;
+    $('#hudStats').innerHTML=`<div>星域 <em>${pks.length}</em> · 星系 <em>${sum(pk=>pk.GAL.size)}</em><br>节点 <em>${sum(pk=>pk.nNode)}</em> · 属性 <em>${sum(pk=>pk.nAttr)}</em></div>`;
+    return;
+  }
+  if(ov){
+    const nodes=[...els.values()].filter(e=>e.state==='node').length,attrs=els.size-nodes;
+    $('#hudLbl').textContent='CLUSTER · 星团总览';
+    $('#hudName').textContent=D.name;$('#hudName').style.color='#fff';
+    $('#hudSub').innerHTML=`<a data-uni>◂ 顶级总览</a> · ${GAL.size} 个星系 · 双击星系进入`;
+    $('#hudStats').innerHTML=`<div>星系 <em>${GAL.size}</em> · 节点 <em>${nodes}</em> · 属性 <em>${attrs}</em><br>关联 <em>${rels.length}</em> · 跨星系 <em>${cross.reduce((s,c)=>s+c.count,0)}</em></div>`;
+    return;
+  }
+  const f=get(S.focus),root=rootOf(f);
+  $('#hudLbl').textContent='FOCUS · 焦点';
+  $('#hudName').textContent=f.name;$('#hudName').style.color=colorOf(f);
+  $('#hudSub').innerHTML=`<a data-uni>全部</a> › <a data-ov>${esc(D.name)}</a> › <a data-focus="${root.id}">${esc(root.name)} 星系</a> › ${esc(kindOf(f))}`;
+  $('#rNum').textContent=S.range;
+  $('#rDots').innerHTML=Array.from({length:MAXR},(_,i)=>`<i data-r="${i+1}" class="${i<S.range?'on':''}" title="范围 ${i+1}"></i>`).join('');
+  const nAttr=[...view.vis].reduce((s,id)=>s+attrsOf(id).length,0);
+  const bTot=[...view.boundary.values()].reduce((a,b)=>a+b,0);
+  $('#hudStats').innerHTML=`<div>节点 <em>${view.vis.size}</em> · 属性 <em>${nAttr}</em><br>隶属 <em>${view.subs.length}</em> · 关联 <em>${view.rels.length}</em>${bTot?` · <span style="color:var(--amber)">范围外 +${bTot}</span>`:''}</div>`;
+  $('#rMinus').disabled=S.range<=1;
+}
+$('#rMinus').onclick=()=>setRange(S.range-1);
+$('#rPlus').onclick=()=>setRange(S.range+1);
+$('#rDots').addEventListener('click',ev=>{const i=ev.target.closest('i');if(i)setRange(+i.dataset.r)});
+
+function renderGalaxies(){
+  if(S.mode==='universe'){$('#listLbl').textContent='DOMAINS · 星域';
+    $('#galaxies').innerHTML=Object.values(PACKS).map(pk=>`<div class="item ${isDom(S.sel)&&S.sel.slice(4)===pk.k?'on':''}" data-dom="${pk.k}"><span class="dot" style="color:${pk.col}"></span><span class="nm">${esc(DOMAINS[pk.k].name)}</span><span class="meta">${pk.GAL.size} 星系</span></div>`).join('');
+    return}
+  $('#listLbl').textContent='GALAXIES · 星系';
+  const cur=S.mode==='focus'&&S.focus?rootOf(get(S.focus)).id:S.sel&&GAL.has(S.sel)?S.sel:null;
+  $('#galaxies').innerHTML=[...GAL.values()].map(g=>{const r=get(g.id);
+    return `<div class="item ${g.id===cur?'on':''}" data-gal="${g.id}"><span class="dot" style="color:${g.col}"></span><span class="nm">${esc(r.name)}</span><span class="meta">${g.mem.length} 节点 · ${g.nAttr} 属性</span></div>`}).join('');
+}
+function renderResults(){
+  const q=$('#q').value.trim().toLowerCase();
+  if(!q){$('#results').innerHTML='';return}
+  if(S.mode==='universe'){  // 顶级总览下跨星域搜索
+    const out=[];
+    for(const pk of Object.values(PACKS))for(const e of pk.els.values()){
+      if(!(e.name.toLowerCase().includes(q)||(e.fn||'').toLowerCase().includes(q)||(e.desc||'').toLowerCase().includes(q)))continue;
+      let r=e;while(r.parent)r=pk.els.get(r.parent);const lb=DOMAINS[pk.k].labels;
+      out.push(`<div class="item" data-go2="${pk.k}|${e.id}"><span class="dot ${e.state==='attr'?'attr':''}" style="color:${pk.gColor.get(r.id)}"></span><span class="nm">${esc(e.name)}</span><span class="meta">${esc(DOMAINS[pk.k].short)}·${esc(r.name)}</span></div>`)}
+    $('#results').innerHTML=out.length?out.slice(0,12).join(''):'<div class="empty">无匹配要素</div>';return}
+  const hitsQ=[...els.values()].filter(e=>e.name.toLowerCase().includes(q)||(e.fn||'').toLowerCase().includes(q)||(e.desc||'').toLowerCase().includes(q)).slice(0,12);
+  $('#results').innerHTML=hitsQ.length?hitsQ.map(e=>`<div class="item" data-go="${e.id}"><span class="dot ${e.state==='attr'?'attr':''}" style="color:${colorOf(e)}"></span><span class="nm">${esc(e.name)}</span><span class="meta">${esc(kindOf(e))}·${esc(rootOf(e).name)}</span></div>`).join('')
+    :'<div class="empty">无匹配要素</div>';
+}
+$('#q').addEventListener('input',renderResults);
+$('#q').addEventListener('keydown',ev=>{if(ev.key!=='Enter')return;const f=$('#results [data-go]'),f2=$('#results [data-go2]');
+  if(f)go(f.dataset.go);else if(f2){const [k,id]=f2.dataset.go2.split('|');go2(k,id)}});
+function go(id){const e=get(id);if(e.state==='node')setFocus(id);else{if(S.mode==='overview')enterGalaxy(rootOf(e).id,e.parent,id);else{setFocus(e.parent,true);select(id)}}}
+
+const relChip=t=>`<span class="rel" style="color:${relColor(t)};border:1px solid ${rgba(relColor(t),.5)}">${esc(t)} →</span>`;
+const link=id=>{const e=get(id);return `<a class="lnk" data-sel="${id}" style="color:${colorOf(e)}">${esc(e.name)}</a>`};
+
+function renderDetail(){
+  const box=$('#detail');syncHash();
+  if(S.mode==='universe'){box.innerHTML=isDom(S.sel)?domainDetail(S.sel.slice(4)):universeDetail();return}
+  if(S.mode==='overview'){box.innerHTML=S.sel&&GAL.has(S.sel)?galaxyDetail(S.sel):clusterDetail();return}
+  const id=S.sel||S.focus;if(!id||!els.has(id)){box.innerHTML='';return}
+  const e=get(id),col=colorOf(e),isAttr=e.state==='attr';
+  const own=isAttr?get(e.parent):e;
+  const d=view.dist.get(own.id);
+  const path=pathOf(e).map(p=>p.id===e.id?esc(p.name):link(p.id)).join(' <span class="via">›</span> ');
+  let h=`<span class="lbl">${isAttr?'ATTRIBUTE · 属性':(e.parent?'NODE · 节点':'ROOT · 根节点')}</span>
+  <h2 style="color:#fff;text-shadow:0 0 14px ${rgba(col,.7)}">${esc(e.name)}</h2>
+  <div class="kick"><span class="tag" style="color:${col}">${esc(kindOf(e))}</span>${id===S.focus?'<span class="tag" style="color:#fff">当前焦点</span>':''}</div>
+  ${e.fn?`<p class="fn">${esc(e.fn)}</p>`:''}
+  ${e.desc?`<p class="desc">${esc(e.desc)}</p>`:'<div style="height:10px"></div>'}
+  <div class="kv">
+    <span>星域</span><div><a class="lnk" data-ov>${esc(D.name)}</a></div>
+    <span>星系</span><div>${link(rootOf(e).id)}</div>
+    <span>隶属路径</span><div>${path}</div>
+    ${isAttr?`<span>所属节点</span><div>${link(e.parent)}</div>`:''}
+    <span>焦点距离</span><div>${d===undefined?'<span class="via">不可达 / 范围外</span>':d+(isAttr?' <span class="via">（同所属节点）</span>':'')}</div>
+  </div>`;
+  if(!isAttr) h+=`<button class="btn" data-focus="${id}" ${id===S.focus?'disabled':''}>◎ 设为焦点</button>`;
+  else h+=`<button class="btn" data-focus="${e.parent}" ${e.parent===S.focus?'disabled':''}>◎ 聚焦所属节点</button>`;
+  h+=`<a class="btn ghost" href="${manageUrl(id)}">✎ 编辑</a>`;
+
+  const outRow=r=>{const via=get(r.from).state==='attr'&&r.from!==id?`<span class="via">经属性 </span>${link(r.from)} `:'';return `<div class="row">${via}${relChip(r.type)}${link(r.to)}</div>`};
+  if(!isAttr){
+    const at=attrsOf(id),kids=kidsOf(id);
+    h+=`<div class="sec"><h3><span>${esc(D.labels.attr)} · 属性</span><span>${at.length}</span></h3>${at.length?at.map(a=>{
+      const rs=rels.filter(r=>r.from===a.id);
+      return `<div class="row">${link(a.id)}${rs.map(r=>` ${relChip(r.type)}${link(r.to)}`).join('')}</div>`}).join(''):'<div class="empty">暂无属性</div>'}</div>`;
+    h+=`<div class="sec"><h3><span>${esc(D.labels.node)} · 子节点</span><span>${kids.length}</span></h3>${kids.length?kids.map(k=>`<div class="row">${link(k.id)} <span class="via">${attrsOf(k.id).length} 属性</span></div>`).join(''):'<div class="empty">暂无子节点</div>'}</div>`;
+    const out=rels.filter(r=>ownerId(r.from)===id);
+    h+=`<div class="sec"><h3><span>出向关联</span><span>${out.length}</span></h3>${out.length?out.map(outRow).join(''):'<div class="empty">无</div>'}</div>`;
+    const inc=rels.filter(r=>r.to===id);
+    h+=`<div class="sec"><h3><span>入向关联</span><span>${inc.length}</span></h3>${inc.length?inc.map(r=>{const s=get(r.from);
+      return `<div class="row">${link(r.from)}${s.state==='attr'?` <span class="via">(${esc(get(s.parent).name)} 的属性)</span>`:''} ${relChip(r.type)}<span class="via">本节点</span></div>`}).join(''):'<div class="empty">无</div>'}</div>`;
+  }else{
+    const out=rels.filter(r=>r.from===id);
+    h+=`<div class="sec"><h3><span>由此属性发出</span><span>${out.length}</span></h3>${out.length?out.map(outRow).join(''):'<div class="empty">无</div>'}</div>`;
+    h+=`<div class="note">属性状态：与所属节点距离为 0，不额外占一跳。属性可以发起关联而保持属性状态；当它需要添加自己的属性 / 子节点，或被选为关联目标时，将自动升格为节点。</div>`;
+  }
+  box.innerHTML=h;
+}
+const crossChips=c=>[...c.types].map(([t,n])=>`<span class="rel" style="color:${relColor(t)};border:1px solid ${rgba(relColor(t),.5)}">${esc(t)}${n>1?'×'+n:''}</span>`).join('');
+function universeDetail(){
+  const pks=Object.values(PACKS);
+  return `<span class="lbl">UNIVERSE · 顶级总览</span>
+  <h2 style="color:#fff;text-shadow:0 0 14px rgba(92,242,255,.6)">全部星域</h2>
+  <div class="kick"><span class="tag" style="color:var(--cyan)">${pks.length} 个管理方向</span></div><div style="height:10px"></div>
+  <div class="sec"><h3><span>星域</span><span>${pks.length}</span></h3>${pks.map(pk=>`<div class="row"><a class="lnk" data-dsel="${pk.k}" style="color:${pk.col}">${esc(DOMAINS[pk.k].name)}</a> <span class="via">${pk.GAL.size} 星系 · ${pk.nNode} 节点 · ${pk.nAttr} 属性</span></div>`).join('')}</div>
+  <div class="note">星域按管理方向划分、彼此独立。跨星域参照尚未定义，因此这里不画星域之间的关联线；中心的虚线只表示同属一个总览。</div>`;
+}
+function domainDetail(k){
+  const pk=PACKS[k],d=DOMAINS[k],nx=pk.cross.reduce((s,c)=>s+c.count,0);
+  return `<span class="lbl">DOMAIN · 星域</span>
+  <h2 style="color:#fff;text-shadow:0 0 14px ${rgba(pk.col,.7)}">${esc(d.name)}</h2>
+  <div class="kick"><span class="tag" style="color:${pk.col}">${esc(d.en)}</span><span class="tag" style="color:${pk.col}">根节点称「${esc(d.labels.root)}」</span></div><div style="height:10px"></div>
+  <div class="kv"><span>星系</span><div>${pk.GAL.size}</div><span>节点</span><div>${pk.nNode}</div><span>属性</span><div>${pk.nAttr}</div>
+    <span>关联</span><div>${pk.rels.length} <span class="via">（跨星系 ${nx}）</span></div>
+    <span>关系用词</span><div>${Object.keys(d.relColors).map(t=>`<span class="rel" style="color:${d.relColors[t]};border:1px solid ${rgba(d.relColors[t],.5)}">${esc(t)}</span>`).join(' ')}</div></div>
+  <button class="btn" data-dom="${k}">⇲ 进入星域</button><a class="btn ghost" href="manage.html#d=${k}">▤ 管理</a>
+  <div class="sec"><h3><span>星系</span><span>${pk.GAL.size}</span></h3>${[...pk.GAL.values()].map(g=>`<div class="row"><span style="color:${g.col}">●</span> ${esc(pk.els.get(g.id).name)} <span class="via">${g.mem.length} 节点 · ${g.nAttr} 属性</span></div>`).join('')}</div>`;
+}
+function clusterDetail(){
+  const nodes=[...els.values()].filter(e=>e.state==='node').length;
+  return `<span class="lbl">CLUSTER · 星团</span>
+  <h2 style="color:#fff;text-shadow:0 0 14px rgba(92,242,255,.6)">${esc(D.name)}</h2>
+  <div class="kick"><span class="tag" style="color:var(--cyan)">管理方向 · ${esc(D.short)}</span></div>
+  <div style="height:10px"></div>
+  <div class="kv"><span>星系</span><div>${GAL.size}</div><span>节点</span><div>${nodes}</div><span>属性</span><div>${els.size-nodes}</div>
+    <span>关联</span><div>${rels.length} <span class="via">（跨星系 ${cross.reduce((s,c)=>s+c.count,0)}）</span></div></div>
+  <div class="sec"><h3><span>星系</span><span>${GAL.size}</span></h3>${[...GAL.values()].map(g=>`<div class="row"><a class="lnk" data-gsel="${g.id}" style="color:${g.col}">${esc(get(g.id).name)}</a> <span class="via">${g.mem.length} 节点 · ${g.nAttr} 属性</span></div>`).join('')}</div>
+  <div class="sec"><h3><span>跨星系关联</span><span>${cross.length}</span></h3>${cross.length?cross.map(c=>`<div class="row">${link(c.a)} ${crossChips(c)} → ${link(c.b)}</div>`).join(''):'<div class="empty">无</div>'}</div>
+  <a class="btn ghost" style="margin-left:0" href="manage.html#d=${S.dk}">▤ 在管理台查看本星域</a>
+  <div class="note">星域是管理容器，不充当根节点的隶属父节点。星系之间的连线只表示非隶属关联的汇总，不会合并星系。</div>`;
+}
+function galaxyDetail(id){
+  const g=GAL.get(id),r=get(id);
+  const depth=Math.max(0,...membersOf(id).map(e=>pathOf(e).length-1));
+  const outs=cross.filter(c=>c.a===id),ins=cross.filter(c=>c.b===id);
+  const top=[...attrsOf(id),...kidsOf(id)];
+  return `<span class="lbl">GALAXY · 星系</span>
+  <h2 style="color:#fff;text-shadow:0 0 14px ${rgba(g.col,.7)}">${esc(r.name)}</h2>
+  <div class="kick"><span class="tag" style="color:${g.col}">${esc(D.labels.root)} · 根节点</span></div>
+  ${r.fn?`<p class="fn">${esc(r.fn)}</p>`:''}
+  ${r.desc?`<p class="desc">${esc(r.desc)}</p>`:'<div style="height:10px"></div>'}
+  <div class="kv"><span>星域</span><div>${esc(D.name)}</div><span>规模</span><div>${g.mem.length} 节点 · ${g.nAttr} 属性</div><span>总览显示</span><div>${g.L} 级 · ${g.shown} 个节点</div><span>隶属层深</span><div>${depth}</div></div>
+  <button class="btn" data-enter="${id}">⇲ 进入星系</button><a class="btn ghost" href="${manageUrl(id)}">✎ 编辑</a>
+  <div class="sec"><h3><span>一级结构</span><span>${top.length}</span></h3>${top.length?top.map(e=>`<div class="row"><a class="lnk" data-go="${e.id}" style="color:${g.col}">${esc(e.name)}</a> <span class="via">${esc(kindOf(e))}${e.state==='attr'?'（属性）':''}</span></div>`).join(''):'<div class="empty">无</div>'}</div>
+  <div class="sec"><h3><span>出向跨星系</span><span>${outs.length}</span></h3>${outs.length?outs.map(c=>`<div class="row">${crossChips(c)} → <a class="lnk" data-gsel="${c.b}" style="color:${GAL.get(c.b).col}">${esc(get(c.b).name)}</a></div>`).join(''):'<div class="empty">无</div>'}</div>
+  <div class="sec"><h3><span>入向跨星系</span><span>${ins.length}</span></h3>${ins.length?ins.map(c=>`<div class="row"><a class="lnk" data-gsel="${c.a}" style="color:${GAL.get(c.a).col}">${esc(get(c.a).name)}</a> ${crossChips(c)} → 本星系</div>`).join(''):'<div class="empty">无</div>'}</div>`;
+}
+
+document.addEventListener('click',ev=>{
+  const t=ev.target;
+  if(t.closest('[data-uni]')){goUniverse();return}
+  if(t.closest('[data-ov]')){goOverview();return}
+  const dm=t.closest('[data-dom]');if(dm){enterDomain(dm.dataset.dom);return}
+  const ds=t.closest('[data-dsel]');if(ds){select('dom:'+ds.dataset.dsel);renderGalaxies();return}
+  const g2=t.closest('[data-go2]');if(g2){const [k,id]=g2.dataset.go2.split('|');go2(k,id);return}
+  const en=t.closest('[data-enter]');if(en){enterGalaxy(en.dataset.enter);return}
+  const gl=t.closest('[data-gal]');if(gl){const id=gl.dataset.gal;if(S.mode==='overview')enterGalaxy(id);else setFocus(id);return}
+  const gs=t.closest('[data-gsel]');if(gs){select(gs.dataset.gsel);return}
+  const f=t.closest('[data-focus]');if(f&&!f.disabled){setFocus(f.dataset.focus);return}
+  const s=t.closest('[data-sel]');if(s){if(S.mode==='overview'){const e=get(s.dataset.sel);enterGalaxy(rootOf(e).id,e.state==='node'?e.id:e.parent,e.id)}else select(s.dataset.sel);return}
+  const g=t.closest('[data-go]');if(g)go(g.dataset.go);
+});
+
+function renderLegend(){
+  const rl=Object.entries(D.relColors).map(([t,c])=>`<div class="lg"><svg width="44" height="14"><path d="M2 12 Q20 -2 34 9" fill="none" stroke="${c}" stroke-width="1.5" stroke-dasharray="5 4"/><path d="M42 12 L32 6 L34 10 L31 13Z" fill="${c}"/></svg>${esc(t)}</div>`).join('');
+  const defs=`<defs><radialGradient id="lgS"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#ffe2a8"/><stop offset="1" stop-color="#ffb547" stop-opacity="0"/></radialGradient>
+    <radialGradient id="lgP" cx=".35" cy=".3"><stop offset="0" stop-color="#e9fdff"/><stop offset=".5" stop-color="#5cf2ff"/><stop offset="1" stop-color="#0a2a44"/></radialGradient></defs>`;
+  if(S.mode==='universe'){
+    $('#legend').innerHTML=`
+    <div class="lg"><svg width="44" height="22"><ellipse cx="22" cy="11" rx="20" ry="8" fill="none" stroke="#ffb547" stroke-dasharray="5 3" opacity=".8"/></svg>星域 · 一个管理方向</div>
+    <div class="lg"><svg width="44" height="22">${defs}<circle cx="22" cy="11" r="9" fill="url(#lgS)"/></svg>星系 · 一个根节点及其后代</div>
+    <div class="lg"><svg width="44" height="12"><circle cx="22" cy="6" r="5" fill="#5cf2ff" opacity=".35"/><circle cx="22" cy="6" r="1.8" fill="#fff"/></svg>亮卫星 · 非根节点（最多 3 级）</div>
+    <div class="lg"><svg width="44" height="10"><line x1="2" y1="5" x2="42" y2="5" stroke="#9fb4c8" stroke-dasharray="3 6"/></svg>中枢虚线 · 同属总览（非关联）</div>`;
+    return;
+  }
+  if(S.mode==='overview'){
+    $('#legend').innerHTML=`
+    <div class="lg"><svg width="44" height="24">${defs}<ellipse cx="22" cy="12" rx="20" ry="7" fill="none" stroke="#5cf2ff" stroke-opacity=".35" stroke-dasharray="2 2"/><circle cx="22" cy="12" r="9" fill="url(#lgS)"/></svg>星系 · 以根节点「${esc(D.labels.root)}」为核心</div>
+    <div class="lg"><svg width="44" height="12"><circle cx="22" cy="6" r="5" fill="#5cf2ff" opacity=".35"/><circle cx="22" cy="6" r="1.8" fill="#fff"/><path d="M12 6H32" stroke="#fff" stroke-width=".6" opacity=".7"/></svg>亮卫星 = 非根节点，按层级排在轨道上（最多 3 级）</div>
+    <div class="lg"><svg width="44" height="12"><g fill="#9fd" opacity=".5"><circle cx="8" cy="4" r=".8"/><circle cx="14" cy="8" r=".8"/><circle cx="25" cy="5" r=".8"/><circle cx="33" cy="9" r=".8"/><circle cx="38" cy="3" r=".8"/></g></svg>星尘（装饰，规模随要素数量）</div>
+    <div class="grp"><span class="lbl">CROSS-GALAXY · 跨星系关联</span>${rl}</div>
+    <div class="lg"><svg width="44" height="14"><path d="M2 12 Q20 -2 34 9" fill="none" stroke="#cfefff" stroke-width="3" stroke-dasharray="5 4"/></svg>线越粗 = 关联条数越多</div>`;
+    return;
+  }
+  $('#legend').innerHTML=`
+  <div class="lg"><svg width="44" height="26">${defs}<path d="M4 13H40" stroke="#ffb547" stroke-width=".8" opacity=".7"/><circle cx="22" cy="13" r="12" fill="url(#lgS)"/><circle cx="22" cy="13" r="3.5" fill="#fff"/></svg>恒星 · 根节点「${esc(D.labels.root)}」</div>
+  <div class="lg"><svg width="44" height="20">${defs}<circle cx="22" cy="10" r="7" fill="url(#lgP)"/><path d="M15.5 8.5h13M15.2 11.5h13.6" stroke="#0a2a44" stroke-opacity=".5"/></svg>行星 · 节点「${esc(D.labels.node)}」</div>
+  <div class="lg"><svg width="44" height="18"><ellipse cx="22" cy="9" rx="18" ry="6" fill="none" stroke="rgba(92,242,255,.4)" transform="rotate(-12 22 9)"/><circle cx="39" cy="6" r="2.5" fill="#dff"/><circle cx="8" cy="12" r="2.2" fill="#dff"/></svg>卫星 · 属性「${esc(D.labels.attr)}」</div>
+  <div class="lg"><svg width="44" height="10"><line x1="2" y1="5" x2="42" y2="5" stroke="rgba(92,242,255,.75)" stroke-width="2"/><path d="M32 1.5L35.5 5L32 8.5L28.5 5Z" fill="rgba(92,242,255,.9)"/></svg>隶属（直线光束）</div>
+  <div class="lg"><svg width="44" height="18"><line x1="22" y1="2" x2="22" y2="13" stroke="#5cf2ff" stroke-dasharray="2 2" opacity=".6"/><ellipse cx="22" cy="14" rx="7" ry="2.6" fill="none" stroke="#5cf2ff" opacity=".6"/></svg>投影线 · 星体在星图平面的位置</div>
+  <div class="grp"><span class="lbl">RELATIONS · 关联</span>${rl}</div>
+  <div class="lg grp"><svg width="44" height="12"><circle cx="6" cy="6" r="2.4" fill="#fff"/><circle cx="6" cy="6" r="5" fill="none" stroke="#fff" stroke-width="1"/><line x1="12" y1="6" x2="42" y2="6" stroke="#9fb4c8" stroke-dasharray="4 3"/></svg>起点有圈 = 来自具体属性</div>
+  <div class="lg"><svg width="44" height="12"><circle cx="6" cy="6" r="2.4" fill="#9fb4c8"/><line x1="8" y1="6" x2="42" y2="6" stroke="#9fb4c8" stroke-dasharray="4 3"/></svg>起点贴星体 = 来自节点整体</div>
+  <div class="lg"><span style="font-family:var(--mono);color:var(--amber);width:44px;text-align:center">+2 ›</span>范围外仍有相邻节点</div>`;
+}
+function renderTools(){
+  const ov=S.mode!=='focus';
+  $('#toOverview').style.display=S.mode==='universe'?'none':'';
+  $('#toOverview').textContent=S.mode==='focus'?'◂ 星团总览':'◂ 顶级总览';
+  document.querySelectorAll('.tools [data-opt="attrLabels"]').forEach(b=>b.style.display=ov?'none':'');
+  $('#hint').textContent=S.mode==='universe'?'单击 选择星域 · 双击 进入星域 · 点击左上角 STARMAP 随时回到这里 · 拖拽 旋转 · 滚轮 缩放'
+    :ov?'单击 选择星系 · 双击 进入星系 · 拖拽 旋转视角 · 右键/Shift+拖拽 平移 · 滚轮 缩放'
+    :'单击 查看 · 双击 设为焦点 · 拖拽 旋转 · 右键/Shift+拖拽 平移 · 滚轮 缩放 · +/- 范围 · Esc 星团总览';
+}
+document.querySelectorAll('.tools [data-opt]').forEach(b=>b.onclick=()=>{S.opts[b.dataset.opt]=!S.opts[b.dataset.opt];b.classList.toggle('on')});
+$('#recenter').onclick=()=>{follow=true;cam.uz=1;cam.tpitch=PITCH0};
+$('#toOverview').onclick=()=>S.mode==='focus'?goOverview():goUniverse();
+
+/* ============================================================ 面板收起 + 沉浸模式 */
+const UI={col:{},imm:false};
+try{Object.assign(UI,JSON.parse(localStorage.getItem('starmap.ui')||'{}'))}catch(e){}
+const saveUI=()=>{try{localStorage.setItem('starmap.ui',JSON.stringify(UI))}catch(e){}};
+function viewBox(){
+  if(UI.imm)return {l:0,r:0,t:20,b:50};
+  if(W<=860)return {l:0,r:0,t:60,b:60};
+  const open=id=>!UI.col[id];
+  return {l:open('left')||open('legendP')?290:0,r:open('rightP')?340:0,t:open('hud')?120:90,b:70};
+}
+function applyUI(){
+  for(const id of ['hud','left','rightP','legendP']){
+    const el=document.getElementById(id),c=!!UI.col[id],b=el.querySelector('[data-panel]');
+    el.classList.toggle('collapsed',c);b.textContent=c?'+':'—';b.title=c?'展开':'收起';
+  }
+  document.body.classList.toggle('immersive',UI.imm);
+  $('#immBtn').classList.toggle('on',UI.imm);
+}
+function toggleImm(){UI.imm=!UI.imm;applyUI();saveUI();showTip(null)}
+document.querySelectorAll('[data-panel]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();UI.col[b.dataset.panel]=!UI.col[b.dataset.panel];applyUI();saveUI()});
+$('#immBtn').onclick=toggleImm;$('#immExit').onclick=toggleImm;
+addEventListener('keydown',ev=>{if(ev.target.tagName!=='INPUT'&&(ev.key==='h'||ev.key==='H'))toggleImm()});
+// 沉浸时底部只留一行位置提示
+function renderCap(){
+  let t;
+  if(S.mode==='universe')t='STARMAP · 全部星域';
+  else if(S.mode==='overview')t=`全部星域 › ${D.name}`;
+  else{const f=get(S.focus);t=f?`${D.name} › ${rootOf(f).name} › ${f.name}`:D.name}
+  $('#immCap').textContent=t+'　·　H 退出沉浸';
+  // 位置提示中的上层可点击
+  if(S.mode==='overview')$('#immCap').innerHTML=`<a data-uni>全部星域</a> › ${esc(D.name)}　·　Esc 上一层　·　H 退出沉浸`;
+  else if(S.mode==='focus'&&get(S.focus)){const f=get(S.focus),r=rootOf(f);
+    $('#immCap').innerHTML=`<a data-uni>全部星域</a> › <a data-ov>${esc(D.name)}</a> › ${r.id===f.id?esc(r.name):`<a data-focus="${r.id}">${esc(r.name)}</a> › ${esc(f.name)}`}　·　Esc 上一层　·　H 退出沉浸`}
+  $('#immBack').classList.toggle('can',S.mode!=='universe');
+  $('#immBack').textContent=S.mode==='focus'?'◂ 星团总览 · Esc':'◂ 顶级总览 · Esc';
+}
+
+function goUp(){if(trans)return;if(S.mode==='focus')goOverview();else if(S.mode==='overview')goUniverse()}
+$('#immBack').onclick=goUp;
+const manageUrl=id=>`manage.html#d=${S.dk}&s=${encodeURIComponent(id)}`;
+function stateHash(){
+  if(S.mode==='universe')return isDom(S.sel)?'':'';
+  let h='d='+S.dk;
+  if(S.mode==='focus'&&S.focus)h+=`&f=${encodeURIComponent(S.focus)}&r=${S.range}`;
+  if(S.sel&&!isDom(S.sel)&&els.has(S.sel))h+=`&s=${encodeURIComponent(S.sel)}`;
+  return h;
+}
+function syncHash(){
+  const h=stateHash();
+  try{history.replaceState(null,'',h?'#'+h:location.pathname+location.search)}catch(e){}
+  const sel=S.mode==='universe'?(isDom(S.sel)?'d='+S.sel.slice(4):''):h;
+  $('#toManage').href='manage.html'+(sel?'#'+sel:'');
+}
+// 管理台在另一个标签页保存数据时提示刷新（地址栏已记录当前位置，刷新后回到原处）
+addEventListener('storage',ev=>{if(ev.key===MyNet.KEY)$('#syncToast').style.display='block'});
+$('#syncReload').onclick=()=>location.reload();
+addEventListener('hashchange',()=>location.reload());
+
+/* ============================================================ 启动 */
+resize();camPrep();
+initPacks();
+// 从地址栏恢复位置（来自管理台的“在星图中查看”或刷新）
+{const hp=new URLSearchParams(location.hash.slice(1)),hd=hp.get('d'),hf=hp.get('f'),hs=hp.get('s');
+  S.anchor={x:0,y:0};applyUI();
+  if(hd&&PACKS[hd]){
+    usePack(hd);S.mode='overview';S.range=clamp(+hp.get('r')||1,1,MAXR);
+    const sel=hs&&els.has(hs)?hs:null,f=hf&&els.has(hf)&&get(hf).state==='node'?hf:null;
+    renderAll();autoCam(true);camPrep();cam.x=cam.tx;cam.y=cam.ty;cam.z=cam.tz*.6;
+    if(f)enterGalaxy(rootOf(get(f)).id,f,sel);
+    else{S.sel=sel?rootOf(get(sel)).id:null;renderAll()}
+  }else{usePack('res');S.mode='universe';warp=1;renderAll()}
+}
+requestAnimationFrame(frame);
+})().catch(console.error);
+</script>
+</body>
+</html>

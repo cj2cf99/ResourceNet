@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>星图 · 管理台</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cyan:#5cf2ff; --amber:#ffb547; --red:#ff6b7d; --ink:#dff6ff; --mute:#7f9bb3;
+  --panel:rgba(6,14,30,.72); --line:rgba(92,242,255,.18); --line2:rgba(92,242,255,.42);
+  --cn:"Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif;
+  --mono:"Share Tech Mono",ui-monospace,monospace;
+  --disp:"Orbitron","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;color:var(--ink);font-family:var(--cn);font-size:13px}
+body{background:radial-gradient(ellipse at 15% -10%,#13245a 0%,#060b1f 45%,#01030b 100%);overflow:hidden}
+#stars{position:fixed;inset:0;z-index:-1}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:inherit}
+.lbl{font-family:var(--disp);font-size:10px;letter-spacing:.22em;color:var(--cyan);opacity:.85}
+
+/* 顶栏（与星图页同位置的标题与页面切换器） */
+.brand{position:fixed;top:18px;left:20px;display:flex;align-items:baseline;gap:10px;text-decoration:none}
+.brand b{font-family:var(--disp);font-weight:900;font-size:22px;letter-spacing:.28em;color:#fff;text-shadow:0 0 18px rgba(92,242,255,.8)}
+.brand span{font-size:13px;color:var(--mute);letter-spacing:.3em}
+.brand:hover b{color:var(--cyan)}
+.views{position:fixed;top:18px;right:20px;display:flex;border:1px solid var(--line);border-radius:3px;overflow:hidden;background:rgba(6,14,30,.6);z-index:5}
+.views a{padding:7px 14px;font-size:12px;color:var(--mute);text-decoration:none;letter-spacing:.1em}
+.views a.on{color:var(--cyan);background:rgba(92,242,255,.12)}
+.views a:not(.on):hover{color:var(--ink);background:rgba(92,242,255,.06)}
+#domains{position:fixed;top:56px;left:20px;display:flex;gap:6px}
+#domains button{background:rgba(6,14,30,.55);border:1px solid var(--line);padding:6px 12px 6px 10px;cursor:pointer;border-radius:3px;
+  display:flex;flex-direction:column;align-items:flex-start;min-width:70px}
+#domains button small{font-family:var(--disp);font-size:8px;letter-spacing:.18em;color:var(--mute)}
+#domains button:hover{border-color:var(--line2)}
+#domains button.on{border-color:var(--cyan);background:rgba(92,242,255,.12);box-shadow:0 0 16px rgba(92,242,255,.2)}
+#domains button.on small{color:var(--cyan)}
+.topact{position:fixed;top:62px;right:20px;display:flex;gap:8px;align-items:center}
+.saved{font-family:var(--mono);font-size:11px;color:var(--mute)}
+.saved i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#6dff9c;box-shadow:0 0 6px #6dff9c;margin-right:6px}
+
+/* 三栏布局 */
+.layout{position:fixed;top:112px;left:20px;right:20px;bottom:20px;display:grid;grid-template-columns:250px minmax(0,1fr) 370px;gap:14px}
+.panel{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:4px;backdrop-filter:blur(10px);display:flex;flex-direction:column;min-height:0}
+.panel::before,.panel::after{content:"";position:absolute;width:12px;height:12px;border:2px solid var(--cyan);opacity:.8;pointer-events:none}
+.panel::before{top:-2px;left:-2px;border-right:none;border-bottom:none}
+.panel::after{bottom:-2px;right:-2px;border-left:none;border-top:none}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.scroll{overflow:auto;min-height:0;flex:1}
+.btn{display:inline-flex;align-items:center;gap:6px;background:rgba(92,242,255,.1);border:1px solid var(--cyan);color:var(--cyan);padding:6px 12px;cursor:pointer;
+  border-radius:2px;font-size:12px;text-decoration:none;white-space:nowrap}
+.btn:hover{background:rgba(92,242,255,.22)}
+.btn.ghost{background:transparent;border-color:var(--line2);color:var(--ink)}
+.btn.ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn.warn{border-color:rgba(255,107,125,.6);color:var(--red);background:transparent}
+.btn.warn:hover{background:rgba(255,107,125,.12)}
+.btn[disabled]{opacity:.35;cursor:not-allowed}
+.btn.sm{padding:3px 8px;font-size:11.5px}
+
+/* 结构树 */
+.tree{padding:6px 4px 10px}
+.tn{display:flex;align-items:center;gap:4px;padding:3px 6px;border-radius:2px;cursor:pointer;white-space:nowrap;border:1px solid transparent}
+.tn:hover{background:rgba(92,242,255,.07)}
+.tn.on{background:rgba(92,242,255,.14);border-color:var(--line2)}
+.tn .car{width:14px;text-align:center;color:var(--mute);font-size:10px;flex:none}
+.tn .dot{width:8px;height:8px;border-radius:50%;flex:none;background:currentColor;box-shadow:0 0 6px currentColor}
+.tn .dot.root{width:10px;height:10px}
+.tn .dot.attr{width:4px;height:4px;margin:0 2px;box-shadow:none;opacity:.8}
+.tn .nm{overflow:hidden;text-overflow:ellipsis}
+.tn.attr .nm{color:#a9bccf;font-size:12px}
+.tdom{padding:8px 8px 4px;font-family:var(--disp);font-size:9.5px;letter-spacing:.2em;color:var(--mute)}
+
+/* 表格 */
+.bar{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tabs{display:flex;border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.tabs button{background:transparent;border:none;padding:6px 14px;cursor:pointer;color:var(--mute)}
+.tabs button.on{background:rgba(92,242,255,.14);color:var(--cyan)}
+.tabs button em{font-style:normal;font-family:var(--mono);opacity:.7;margin-left:4px}
+.search{position:relative;flex:1;min-width:160px}
+.search input{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--line);padding:6px 10px 6px 28px;border-radius:2px;outline:none}
+.search input:focus{border-color:var(--cyan)}
+.search::before{content:"⌕";position:absolute;left:9px;top:3px;color:var(--cyan);font-size:16px}
+select,input[type=text],textarea{background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:2px;padding:5px 8px;outline:none}
+select:focus,input[type=text]:focus,textarea:focus{border-color:var(--cyan)}
+select option,select optgroup{background:#0a1430}
+table{width:100%;border-collapse:collapse}
+th{position:sticky;top:0;background:#0a1430;text-align:left;font-weight:normal;color:var(--mute);font-size:11.5px;padding:8px 10px;border-bottom:1px solid var(--line2);white-space:nowrap;z-index:1}
+td{padding:6px 10px;border-bottom:1px solid rgba(92,242,255,.07);vertical-align:middle;white-space:nowrap}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:rgba(92,242,255,.05)}
+tbody tr.on td{background:rgba(92,242,255,.13)}
+td .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;box-shadow:0 0 6px currentColor;margin-right:8px;vertical-align:middle}
+td .dot.attr{width:4px;height:4px;box-shadow:none;margin:0 10px 0 2px}
+td.path{color:var(--mute);font-size:12px;max-width:260px;overflow:hidden;text-overflow:ellipsis}
+td.fn{color:#c9dbec;font-size:12px;max-width:280px;overflow:hidden;text-overflow:ellipsis}
+td.fn.none{color:var(--amber);opacity:.7}
+.fldl{display:flex;justify-content:space-between;font-size:11px;color:var(--mute);margin:10px 0 4px}
+.fldl b{font-weight:normal;color:var(--cyan);letter-spacing:.1em}
+.fnIn{width:100%}
+td.num{font-family:var(--mono);color:var(--mute);text-align:right}
+.tag{font-size:10.5px;padding:1px 6px;border:1px solid currentColor;border-radius:2px;letter-spacing:.04em;white-space:nowrap}
+.rel{font-family:var(--mono);font-size:11px;padding:0 6px;border-radius:2px;white-space:nowrap}
+.ico{display:inline-flex;width:24px;height:22px;align-items:center;justify-content:center;border:1px solid transparent;border-radius:2px;color:var(--mute);text-decoration:none;cursor:pointer;background:none}
+.ico:hover{border-color:var(--line2);color:var(--cyan)}
+.ico.del:hover{color:var(--red);border-color:rgba(255,107,125,.5)}
+.via{color:var(--mute);font-size:11.5px}
+.empty{color:var(--mute);padding:18px;text-align:center}
+
+/* 编辑器 */
+.ed{padding:14px 16px 18px}
+.ed h2{margin:4px 0 8px;font-size:20px;font-weight:600}
+.ed .nameIn{width:100%;font-size:18px;font-weight:600;padding:6px 8px}
+.ed textarea{width:100%;min-height:54px;resize:vertical;margin-top:8px;line-height:1.5}
+.kv{display:grid;grid-template-columns:70px 1fr;gap:5px 10px;font-size:12.5px;margin:12px 0}
+.kv>span{color:var(--mute)}
+.sec{margin-top:16px}
+.sec h3{margin:0 0 8px;font-family:var(--disp);font-weight:500;font-size:10px;letter-spacing:.2em;color:var(--cyan);display:flex;justify-content:space-between;
+  border-bottom:1px solid var(--line);padding-bottom:4px}
+.li{display:flex;align-items:center;gap:6px;padding:4px 2px;border-bottom:1px dashed rgba(92,242,255,.08)}
+.li .grow{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lk{cursor:pointer;border-bottom:1px dashed rgba(92,242,255,.4)}
+.lk:hover{color:var(--cyan)}
+.row2{display:flex;gap:6px;margin-top:8px}
+.row2 input[type=text],.row2 select{flex:1;min-width:0}
+.note{font-size:11.5px;color:var(--mute);line-height:1.6;border-left:2px solid var(--amber);padding:6px 9px;background:rgba(255,181,71,.06);margin-top:10px}
+.foot{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;padding-top:12px;border-top:1px solid var(--line)}
+
+#toasts{position:fixed;right:24px;bottom:24px;display:flex;flex-direction:column;gap:8px;z-index:20;max-width:380px}
+.toast{background:rgba(4,10,22,.95);border:1px solid var(--line2);border-left:3px solid var(--cyan);padding:9px 12px;border-radius:3px;font-size:12.5px;line-height:1.5;
+  box-shadow:0 6px 24px rgba(0,0,0,.4);animation:tin .25s ease-out}
+.toast.up{border-left-color:var(--amber)}
+.toast.err{border-left-color:var(--red)}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-thumb{background:rgba(92,242,255,.25);border-radius:3px}
+
+@media (max-width:1180px){.layout{grid-template-columns:210px minmax(0,1fr) 320px} td.path{max-width:160px}}
+@media (max-width:900px){
+  body{overflow:auto}
+  .layout{position:static;margin:150px 12px 12px;display:flex;flex-direction:column}
+  .layout>.panel{max-height:70vh}
+  .topact{top:100px;left:20px;right:auto}
+  #domains{overflow-x:auto;right:20px}
+}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<a class="brand" href="starmap.html" title="回到星图 · 顶级总览"><b>STARMAP</b><span>管理台</span></a>
+<nav class="views"><a id="toMap" href="starmap.html" title="到星图（保留当前星域与选中对象）">◉ 星图</a><a class="on" title="当前：管理台">▤ 管理</a></nav>
+<nav id="domains"></nav>
+<div class="topact"><span class="saved" id="saved"><i></i>已保存到本浏览器</span><button class="btn ghost sm" id="resetData" title="放弃本浏览器中的修改，恢复 data.js 中的初始数据">恢复初始数据</button></div>
+
+<div class="layout">
+  <section class="panel">
+    <div class="ph"><span class="lbl">STRUCTURE · 结构</span><button class="btn sm" id="newRoot" title="新建根节点 = 新星系">＋ 根节点</button></div>
+    <div class="scroll tree" id="tree"></div>
+  </section>
+
+  <section class="panel">
+    <div class="bar">
+      <div class="tabs"><button data-tab="el">要素<em id="nEl"></em></button><button data-tab="rel">关系<em id="nRel"></em></button></div>
+      <div class="search"><input id="q" placeholder="搜索名称、功能、说明、关系…" autocomplete="off"></div>
+      <select id="fState"><option value="all">全部状态</option><option value="root">根节点</option><option value="node">节点</option><option value="attr">属性</option></select>
+      <select id="fGal"></select>
+    </div>
+    <div class="scroll" id="table"></div>
+  </section>
+
+  <section class="panel">
+    <div class="ph"><span class="lbl" id="edLbl">EDITOR · 编辑</span><a class="btn ghost sm" id="edMap" href="starmap.html">◎ 在星图中查看</a></div>
+    <div class="scroll ed" id="editor"></div>
+  </section>
+</div>
+<div id="toasts"></div>
+
+<script src="data.js?v=2026-11-02e"></script>
+<script src="storage.js?v=2026-11-02b"></script>
+<script>
+(async()=>{
+await MyNet.ready;
+/* ============================================================ 基础 */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rgb=hex=>{const n=parseInt(hex.slice(1),16);return [n>>16&255,n>>8&255,n&255]};
+const rgba=(hex,a)=>`rgba(${rgb(hex)},${a})`;
+let DATA=MyNet.load();
+const KEYS=Object.keys(DATA);
+// d: 当前星域或 'all'；sel: 'k|id'；tab: el / rel
+const M={d:'res',tab:'el',q:'',st:'all',gal:'',sel:null,open:new Set()};
+
+/* ============================================================ 查询 */
+const dom=k=>DATA[k];
+const E=(k,id)=>DATA[k].elements.find(e=>e.id===id);
+const roots=k=>DATA[k].elements.filter(e=>!e.parent);
+const childrenOf=(k,id)=>DATA[k].elements.filter(e=>e.parent===id);
+const rootOf=(k,e)=>{while(e&&e.parent)e=E(k,e.parent);return e};
+const pathOf=(k,e)=>{const p=[];while(e){p.unshift(e);e=e.parent?E(k,e.parent):null}return p};
+const ownerOf=(k,id)=>{const e=E(k,id);return e.state==='attr'?e.parent:e.id};
+const descendants=(k,id)=>{const out=new Set(),st=[id];while(st.length){const c=st.pop();for(const e of childrenOf(k,c))if(!out.has(e.id)){out.add(e.id);st.push(e.id)}}return out};
+// 星系颜色与星图页一致：按根节点出现顺序取色
+const gcol=(k,rid)=>MyNet.PALETTE[roots(k).findIndex(r=>r.id===rid)%MyNet.PALETTE.length]||'#9fb4c8';
+const colorOf=(k,e)=>gcol(k,rootOf(k,e).id);
+const kindOf=(k,e)=>{const L=dom(k).labels;return e.state==='attr'?L.attr:(e.parent?L.node:L.root)};
+const stateTag=(k,e)=>{const t=e.state==='attr'?'属性':(e.parent?'节点':'根节点'),c=e.state==='attr'?'#9fb4c8':(e.parent?'#5cf2ff':'#ffb547');
+  return `<span class="tag" style="color:${c}">${t} · ${esc(kindOf(k,e))}</span>`};
+const relColor=(k,t)=>dom(k).relColors[t]||'#9fb4c8';
+const relChip=(k,t)=>`<span class="rel" style="color:${relColor(k,t)};border:1px solid ${rgba(relColor(k,t),.5)}">${esc(t)} →</span>`;
+const scopeKeys=()=>M.d==='all'?KEYS:[M.d];
+const selKey=()=>M.sel?M.sel.split('|'):[null,null];
+// 树形顺序：根 → 属性 → 子节点（递归）
+function ordered(k){
+  const out=[];const walk=(e,dep)=>{out.push({e,dep});const ch=childrenOf(k,e.id);
+    ch.filter(c=>c.state==='attr').forEach(c=>out.push({e:c,dep:dep+1}));ch.filter(c=>c.state==='node').forEach(c=>walk(c,dep+1))};
+  roots(k).forEach(r=>walk(r,0));return out;
+}
+const mapUrl=(k,id)=>{const e=E(k,id);if(!e)return `starmap.html#d=${k}`;const f=e.state==='node'?e.id:e.parent;return `starmap.html#d=${k}&f=${encodeURIComponent(f)}&s=${encodeURIComponent(id)}`};
+
+/* ============================================================ 编辑操作（遵循需求中的结构规则） */
+function toast(msg,kind=''){const t=document.createElement('div');t.className='toast '+kind;t.innerHTML=msg;$('#toasts').appendChild(t);setTimeout(()=>t.remove(),kind==='err'?5200:4200)}
+let pendingCommits=0, saveFailed=false;
+async function commit(redraw=true){
+  for(const d of Object.values(DATA))if(!d.elements.some(e=>e.id===d.focus&&e.state==='node'))d.focus=d.elements.find(e=>e.state==='node')?.id||null;
+  if(redraw)render();
+  else{renderTree();renderFilters();renderTable();syncHash()}
+  pendingCommits++;
+  $('#saved').textContent='正在保存…';
+  try{await MyNet.save(DATA);saveFailed=false;}
+  catch(e){saveFailed=true;toast(esc(e.message)+'；更改保留在编辑器和草稿中，未确认保存的升格等操作尚未生效。','err')}
+  finally{pendingCommits--;if(!pendingCommits){$('#saved').textContent=saveFailed?'保存失败 · 草稿已保留':'已保存';if(!saveFailed)flashSaved()}}
+}
+function flashSaved(){const s=$('#saved');s.style.color='#6dff9c';setTimeout(()=>s.style.color='',600)}
+// 自动升格：同一对象改状态，身份、隶属、关联都不变
+function promote(k,id,why){
+  const e=E(k,id);if(!e||e.state!=='attr')return false;
+  e.state='node';
+  toast(`「${esc(e.name)}」在当前编辑中<b>自动升格</b>为节点（${why}），等待保存确认。身份、原隶属与已有关联保持不变。`,'up');
+  return true;
+}
+const uniqName=n=>n.trim();
+function opAddAttr(k,owner,name){
+  if(!uniqName(name))return;
+  promote(k,owner,'需要添加自己的属性');
+  const id=MyNet.uid(k[0]);DATA[k].elements.push({id,name:uniqName(name),parent:owner,state:'attr',fn:'',desc:''});
+  M.open.add(k+'|'+owner);commit();
+}
+function opAddChild(k,parent,name){
+  if(!uniqName(name))return;
+  promote(k,parent,'需要添加子节点');
+  const id=MyNet.uid(k[0]);DATA[k].elements.push({id,name:uniqName(name),parent,state:'node',fn:'',desc:''});
+  M.open.add(k+'|'+parent);M.sel=k+'|'+id;commit();
+}
+function opAddRoot(k,name){
+  if(!uniqName(name))return;
+  const id=MyNet.uid(k[0]);DATA[k].elements.push({id,name:uniqName(name),parent:null,state:'node',fn:'',desc:''});
+  M.sel=k+'|'+id;toast(`新建根节点「${esc(name)}」，形成新的星系。`);commit();
+}
+function opMove(k,id,np){
+  const e=E(k,id);np=np||null;
+  if(np===e.parent)return;
+  if(np&&(np===id||descendants(k,id).has(np))){toast('不能隶属到自身或自身的后代：隶属关系不允许成环。','err');render();return}
+  const wasRoot=!e.parent;
+  if(np)promote(k,np,'成为隶属父节点');
+  else if(e.state==='attr')promote(k,id,'设为根节点，根必须是节点');
+  e.parent=np;
+  if(wasRoot&&np)toast(`根节点「${esc(e.name)}」并入「${esc(rootOf(k,E(k,np)).name)}」星系：这是星系合并 / 重组，原星系不再独立。`,'up');
+  else if(!np)toast(`「${esc(e.name)}」已设为根节点，形成独立星系；其子树随之移动，非隶属关联保留。`);
+  else toast(`已改为隶属「${esc(E(k,np).name)}」，子树随之移动，非隶属关联保留。`);
+  commit();
+}
+function opAddRel(k,from,type,to){
+  type=(type||'').trim();
+  if(!type||!to){toast('请选择关系类型与目标。','err');return}
+  if(from===to){toast('关联起点与目标不能是同一个要素。','err');return}
+  if(DATA[k].relations.some(r=>r.from===from&&r.to===to&&r.type===type)){toast('相同起点、类型和目标的关系已存在。','err');return}
+  promote(k,to,'被选为关联目标');
+  DATA[k].relations.push({id:MyNet.uid('r'),from,type,to});
+  const f=E(k,from);
+  toast(`已建立「${esc(f.name)}」${f.state==='attr'?'（属性，保持属性状态）':''} ${esc(type)} →「${esc(E(k,to).name)}」。`);
+  commit();
+}
+function opDelRel(k,rid){DATA[k].relations=DATA[k].relations.filter(r=>r.id!==rid);toast('已删除该关系。');commit()}
+function canDelete(k,id){return !childrenOf(k,id).length&&!DATA[k].relations.some(r=>r.from===id||r.to===id)}
+function opDelete(k,id){
+  if(!canDelete(k,id)){toast('原型只允许删除没有子项、没有关联的要素（删除 / 回收站规则尚未定义）。','err');return}
+  const e=E(k,id);if(!confirm(`删除「${e.name}」？`))return;
+  DATA[k].elements=DATA[k].elements.filter(x=>x.id!==id);
+  M.sel=e.parent?k+'|'+e.parent:null;toast(`已删除「${esc(e.name)}」。`);commit();
+}
+
+/* ============================================================ 渲染 */
+function render(){renderDomains();renderTree();renderFilters();renderTable();renderEditor();syncHash()}
+function renderDomains(){
+  $('#domains').innerHTML=`<button data-d="all" class="${M.d==='all'?'on':''}"><small>ALL</small><span>全部</span></button>`+
+    KEYS.map(k=>`<button data-d="${k}" class="${M.d===k?'on':''}"><small>${esc(dom(k).en)}</small><span>${esc(dom(k).short)}</span></button>`).join('');
+  $('#newRoot').disabled=M.d==='all';$('#newRoot').title=M.d==='all'?'先选择一个星域':`在${dom(M.d).name}新建根节点（新星系）`;
+}
+function renderTree(){
+  const [sk,sid]=selKey();let h='';
+  for(const k of scopeKeys()){
+    if(M.d==='all')h+=`<div class="tdom">${esc(dom(k).name)}</div>`;
+    const walk=(e,dep)=>{
+      const key=k+'|'+e.id,ch=childrenOf(k,e.id),open=M.open.has(key),col=colorOf(k,e),on=sk===k&&sid===e.id;
+      h+=`<div class="tn ${e.state==='attr'?'attr':''} ${on?'on':''}" data-sel="${key}" title="${esc(e.fn||'')}" style="padding-left:${6+dep*14}px">
+        <span class="car" ${ch.length?`data-tog="${key}"`:''}>${ch.length?(open?'▾':'▸'):''}</span>
+        <span class="dot ${e.state==='attr'?'attr':(e.parent?'':'root')}" style="color:${col}"></span><span class="nm">${esc(e.name)}</span></div>`;
+      if(open){ch.filter(c=>c.state==='attr').forEach(c=>walk(c,dep+1));ch.filter(c=>c.state==='node').forEach(c=>walk(c,dep+1))}
+    };
+    roots(k).forEach(r=>walk(r,0));
+  }
+  $('#tree').innerHTML=h||'<div class="empty">无内容</div>';
+}
+function renderFilters(){
+  const opts=['<option value="">全部星系</option>'];
+  for(const k of scopeKeys())for(const r of roots(k))opts.push(`<option value="${k}|${r.id}" ${M.gal===k+'|'+r.id?'selected':''}>${M.d==='all'?esc(dom(k).short)+' · ':''}${esc(r.name)}</option>`);
+  $('#fGal').innerHTML=opts.join('');
+  $('#fState').value=M.st;
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===M.tab));
+}
+const match=(s,q)=>String(s||'').toLowerCase().includes(q);
+function elRows(){
+  const q=M.q.toLowerCase(),rows=[];
+  for(const k of scopeKeys())for(const {e,dep} of ordered(k)){
+    const st=e.state==='attr'?'attr':(e.parent?'node':'root');
+    if(M.st!=='all'&&M.st!==st)continue;
+    if(M.gal&&M.gal!==k+'|'+rootOf(k,e).id)continue;
+    if(q&&!(match(e.name,q)||match(e.fn,q)||match(e.desc,q)))continue;
+    rows.push({k,e,dep});
+  }
+  return rows;
+}
+function relRows(){
+  const q=M.q.toLowerCase(),rows=[];
+  for(const k of scopeKeys())for(const r of DATA[k].relations){
+    const f=E(k,r.from),t=E(k,r.to);if(!f||!t)continue;
+    if(M.gal&&M.gal!==k+'|'+rootOf(k,f).id&&M.gal!==k+'|'+rootOf(k,t).id)continue;
+    if(M.st!=='all'){const st=f.state==='attr'?'attr':(f.parent?'node':'root');if(st!==M.st)continue}
+    if(q&&!(match(f.name,q)||match(t.name,q)||match(r.type,q)))continue;
+    rows.push({k,r,f,t});
+  }
+  return rows;
+}
+function renderTable(){
+  const [sk,sid]=selKey(),all=M.d==='all';
+  const er=elRows(),rr=relRows();
+  $('#nEl').textContent=er.length;$('#nRel').textContent=rr.length;
+  // 列名随应用模板变化（单一星域时）
+  const L=all?{root:'根节点',node:'节点',attr:'属性'}:dom(M.d).labels;
+  if(M.tab==='el'){
+    if(!er.length){$('#table').innerHTML='<div class="empty">没有匹配的要素</div>';return}
+    $('#table').innerHTML=`<table><thead><tr>${all?'<th>星域</th>':''}<th>名称</th><th>功能</th><th>状态</th><th>星系</th><th>隶属路径</th>
+      <th title="${esc(L.attr)}">属性</th><th title="${esc(L.node)}">子节点</th><th>出向</th><th>入向</th><th></th></tr></thead><tbody>`+
+      er.map(({k,e,dep})=>{
+        const ch=childrenOf(k,e.id),na=ch.filter(c=>c.state==='attr').length,nn=ch.length-na,R=DATA[k].relations;
+        const out=R.filter(r=>r.from===e.id).length,inc=R.filter(r=>r.to===e.id).length,on=sk===k&&sid===e.id;
+        return `<tr data-sel="${k}|${e.id}" class="${on?'on':''}">${all?`<td class="via">${esc(dom(k).short)}</td>`:''}
+          <td style="padding-left:${10+dep*16}px"><span class="dot ${e.state==='attr'?'attr':''}" style="color:${colorOf(k,e)}"></span>${esc(e.name)}</td>
+          <td class="fn ${e.fn?'':'none'}" title="${esc(e.fn)}">${e.fn?esc(e.fn):'未填写'}</td>
+          <td>${stateTag(k,e)}</td><td>${esc(rootOf(k,e).name)}</td>
+          <td class="path">${pathOf(k,e).slice(0,-1).map(p=>esc(p.name)).join(' › ')||'—'}</td>
+          <td class="num">${e.state==='attr'?'—':na}</td><td class="num">${e.state==='attr'?'—':nn}</td><td class="num">${out||''}</td><td class="num">${inc||''}</td>
+          <td><a class="ico" href="${mapUrl(k,e.id)}" title="在星图中查看" data-stop>◎</a></td></tr>`}).join('')+'</tbody></table>';
+  }else{
+    if(!rr.length){$('#table').innerHTML='<div class="empty">没有匹配的关系</div>';return}
+    $('#table').innerHTML=`<table><thead><tr>${all?'<th>星域</th>':''}<th>起点</th><th>关系</th><th>目标</th><th>范围</th><th></th></tr></thead><tbody>`+
+      rr.map(({k,r,f,t})=>{
+        const same=rootOf(k,f).id===rootOf(k,t).id,on=sk===k&&(sid===r.from);
+        return `<tr data-sel="${k}|${r.from}" class="${on?'on':''}">${all?`<td class="via">${esc(dom(k).short)}</td>`:''}
+          <td><span class="dot ${f.state==='attr'?'attr':''}" style="color:${colorOf(k,f)}"></span>${esc(f.name)}${f.state==='attr'?` <span class="via">（${esc(E(k,f.parent).name)} 的属性）</span>`:''}</td>
+          <td>${relChip(k,r.type)}</td>
+          <td><span class="dot" style="color:${colorOf(k,t)}"></span><span class="lk" data-sel="${k}|${t.id}">${esc(t.name)}</span></td>
+          <td>${same?`<span class="via">星系内 · ${esc(rootOf(k,f).name)}</span>`:`<span class="tag" style="color:#b98cff">跨星系</span> <span class="via">${esc(rootOf(k,f).name)} → ${esc(rootOf(k,t).name)}</span>`}</td>
+          <td><a class="ico" href="${mapUrl(k,r.from)}" title="在星图中查看起点" data-stop>◎</a><button class="ico del" data-delrel="${k}|${r.id}" title="删除关系">✕</button></td></tr>`}).join('')+'</tbody></table>';
+  }
+}
+
+function optionsFor(k,exclude,{withRoot,attrNote}){
+  let h=withRoot?'<option value="">（无 · 设为根节点，形成新星系）</option>':'<option value="">选择目标…</option>';
+  for(const r of roots(k)){
+    h+=`<optgroup label="${esc(r.name)} 星系">`;
+    for(const {e,dep} of ordered(k).filter(o=>rootOf(k,o.e).id===r.id)){
+      if(exclude.has(e.id))continue;
+      h+=`<option value="${e.id}">${'　'.repeat(dep)}${esc(e.name)}${e.state==='attr'?attrNote:''}</option>`;
+    }
+    h+='</optgroup>';
+  }
+  return h;
+}
+function renderEditor(){
+  const box=$('#editor'),[k,id]=selKey(),e=k&&E(k,id);
+  if(!e){
+    const ks=scopeKeys();
+    $('#edLbl').textContent='OVERVIEW · 概况';$('#edMap').href=M.d==='all'?'starmap.html':`starmap.html#d=${M.d}`;
+    box.innerHTML=`<h2>${M.d==='all'?'全部星域':esc(dom(M.d).name)}</h2>
+      <div class="kv">${ks.map(k=>`<span>${esc(dom(k).short)}</span><div>${roots(k).length} 星系 · ${DATA[k].elements.filter(x=>x.state==='node').length} 节点 · ${DATA[k].elements.filter(x=>x.state==='attr').length} 属性 · ${DATA[k].relations.length} 关联</div>`).join('')}</div>
+      <div class="note">从左侧结构树或中间表格选择一个要素进行编辑。<br>
+      · 给属性添加属性 / 子节点，或把属性选为关联目标时，它会<b>自动升格</b>为节点，身份与原隶属不变。<br>
+      · 隶属只能有一个父节点，且不能成环；非隶属关联可以任意跨层、跨星系。<br>
+      · 所有修改即时保存在本浏览器，星图页会同步显示。</div>`;
+    return;
+  }
+  const d=dom(k),col=colorOf(k,e),isAttr=e.state==='attr',R=d.relations;
+  const ch=childrenOf(k,id),attrs=ch.filter(c=>c.state==='attr'),kids=ch.filter(c=>c.state==='node');
+  const out=R.filter(r=>r.from===id),inc=R.filter(r=>r.to===id),viaAttr=isAttr?[]:R.filter(r=>attrs.some(a=>a.id===r.from));
+  const types=Object.keys(d.relColors);
+  const exclParent=new Set([id,...descendants(k,id)]);
+  const lk=x=>`<span class="lk" data-sel="${k}|${x}" style="color:${colorOf(k,E(k,x))}">${esc(E(k,x).name)}</span>`;
+  $('#edLbl').textContent=isAttr?'ATTRIBUTE · 属性':(e.parent?'NODE · 节点':'ROOT · 根节点');
+  $('#edMap').href=mapUrl(k,id);
+  box.innerHTML=`
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${stateTag(k,e)}<span class="tag" style="color:${col}">${esc(rootOf(k,e).name)} 星系</span></div>
+    <div class="fldl"><b>名称</b></div>
+    <input type="text" class="nameIn" data-f="name" value="${esc(e.name)}">
+    <div class="fldl"><b>功能</b><span id="fnCount">${(e.fn||'').length} / 40</span></div>
+    <input type="text" class="fnIn" data-f="fn" maxlength="40" value="${esc(e.fn||'')}" placeholder="一句话说明它做什么，例如：每小时采集名单内个股报价">
+    <div class="fldl"><b>说明</b><span>细节、状态、约束</span></div>
+    <textarea data-f="desc" placeholder="可选">${esc(e.desc)}</textarea>
+    <div class="kv">
+      <span>星域</span><div>${esc(d.name)}</div>
+      <span>隶属路径</span><div>${pathOf(k,e).map(p=>p.id===id?esc(p.name):lk(p.id)).join(' <span class="via">›</span> ')}</div>
+      <span>标识</span><div class="via" style="font-family:var(--mono)">${esc(id)}</div>
+    </div>
+
+    <div class="sec"><h3><span>隶属 · 结构归属</span></h3>
+      <div class="row2"><select id="parentSel">${optionsFor(k,exclParent,{withRoot:true,attrNote:'（属性 · 将升格）'})}</select><button class="btn sm" data-act="move">应用</button></div>
+      <div class="note" style="margin-top:8px">只能有一个隶属父节点；自身及后代已从列表中排除，避免成环。${!e.parent?'当前是根节点：把它隶属到其他节点下会构成<b>星系合并</b>。':''}</div>
+    </div>
+
+    <div class="sec"><h3><span>${esc(d.labels.attr)} · 属性</span><span>${attrs.length}</span></h3>
+      ${attrs.map(a=>`<div class="li"><span style="color:${col}">·</span><span class="grow">${lk(a.id)}${R.filter(r=>r.from===a.id).map(r=>` ${relChip(k,r.type)}${esc(E(k,r.to).name)}`).join('')}</span>
+        <a class="ico" href="${mapUrl(k,a.id)}" title="在星图中查看">◎</a></div>`).join('')||`<div class="via">${isAttr?'属性不能直接拥有属性。':'暂无属性'}</div>`}
+      <div class="row2"><input type="text" id="newAttr" placeholder="新${esc(d.labels.attr)}名称"><button class="btn sm" data-act="addAttr">添加属性</button></div>
+      ${isAttr?'<div class="note">当前是属性：添加属性前会先<b>自动升格</b>为节点。</div>':''}
+    </div>
+
+    <div class="sec"><h3><span>${esc(d.labels.node)} · 子节点</span><span>${kids.length}</span></h3>
+      ${kids.map(c=>`<div class="li"><span class="grow">${lk(c.id)} <span class="via">${childrenOf(k,c.id).filter(x=>x.state==='attr').length} 属性</span></span><a class="ico" href="${mapUrl(k,c.id)}" title="在星图中查看">◎</a></div>`).join('')||'<div class="via">暂无子节点</div>'}
+      <div class="row2"><input type="text" id="newChild" placeholder="新${esc(d.labels.node)}名称"><button class="btn sm" data-act="addChild">添加子节点</button></div>
+    </div>
+
+    <div class="sec"><h3><span>关联 · 由此发出</span><span>${out.length+viaAttr.length}</span></h3>
+      ${out.map(r=>`<div class="li"><span class="grow">${relChip(k,r.type)}${lk(r.to)}</span><button class="ico del" data-delrel="${k}|${r.id}" title="删除关系">✕</button></div>`).join('')}
+      ${viaAttr.map(r=>`<div class="li"><span class="grow"><span class="via">经属性</span> ${lk(r.from)} ${relChip(k,r.type)}${lk(r.to)}</span><button class="ico del" data-delrel="${k}|${r.id}" title="删除关系">✕</button></div>`).join('')}
+      ${!out.length&&!viaAttr.length?'<div class="via">暂无</div>':''}
+      <div class="row2"><select id="relType">${types.map(t=>`<option>${esc(t)}</option>`).join('')}<option value="__custom">其他…</option></select>
+        <input type="text" id="relCustom" placeholder="自定义关系名" style="display:none"></div>
+      <div class="row2"><select id="relTo">${optionsFor(k,new Set([id]),{withRoot:false,attrNote:'（属性 · 将自动升格）'})}</select><button class="btn sm" data-act="addRel">建立</button></div>
+      <div class="note">起点是「${esc(e.name)}」${isAttr?'——作为属性发起关联，它<b>保持属性状态</b>':''}。目标若是属性，保存时会自动升格为节点，不复制对象、不改变其隶属。</div>
+    </div>
+
+    <div class="sec"><h3><span>关联 · 指向这里</span><span>${inc.length}</span></h3>
+      ${inc.map(r=>{const f=E(k,r.from);return `<div class="li"><span class="grow">${lk(r.from)}${f.state==='attr'?` <span class="via">（${esc(E(k,f.parent).name)} 的属性）</span>`:''} ${relChip(k,r.type)}<span class="via">本要素</span></span><button class="ico del" data-delrel="${k}|${r.id}" title="删除关系">✕</button></div>`}).join('')||'<div class="via">暂无</div>'}
+    </div>
+
+    <div class="foot">
+      <a class="btn" href="${mapUrl(k,id)}">◎ 在星图中查看</a>
+      <button class="btn warn" data-act="del" ${canDelete(k,id)?'':'disabled title="有子项或关联时不能删除（删除规则尚未定义）"'}>删除</button>
+    </div>
+    <div class="note">降格、回收站、撤销等规则尚未定义，原型中不提供。</div>`;
+  $('#parentSel').value=e.parent||'';
+}
+
+/* ============================================================ 地址栏：保留选中对象与搜索上下文 */
+function syncHash(){
+  const [k,id]=selKey(),p=new URLSearchParams();
+  p.set('d',M.d);if(id)p.set('s',id);if(M.tab!=='el')p.set('tab',M.tab);if(M.q)p.set('q',M.q);
+  try{history.replaceState(null,'','#'+p.toString())}catch(e){}
+  $('#toMap').href=id?mapUrl(k,id):(M.d==='all'?'starmap.html':`starmap.html#d=${M.d}`);
+}
+function readHash(){
+  const p=new URLSearchParams(location.hash.slice(1)),d=p.get('d'),s=p.get('s');
+  if(d==='all'||DATA[d])M.d=d;
+  M.tab=p.get('tab')==='rel'?'rel':'el';M.q=p.get('q')||'';$('#q').value=M.q;
+  const k=M.d==='all'?KEYS.find(k=>s&&E(k,s)):M.d;
+  if(k&&s&&E(k,s)){M.sel=k+'|'+s;let e=E(k,E(k,s).parent);while(e){M.open.add(k+'|'+e.id);e=e.parent?E(k,e.parent):null}}
+}
+
+/* ============================================================ 事件 */
+document.addEventListener('click',ev=>{
+  const t=ev.target;
+  if(t.closest('[data-stop]'))return;          // 链接直接跳转
+  const tog=t.closest('[data-tog]');if(tog){const key=tog.dataset.tog;M.open.has(key)?M.open.delete(key):M.open.add(key);renderTree();return}
+  const dr=t.closest('[data-delrel]');if(dr){const [k,rid]=dr.dataset.delrel.split('|');opDelRel(k,rid);return}
+  const dd=t.closest('[data-d]');if(dd){M.d=dd.dataset.d;M.gal='';const [k]=selKey();if(M.d!=='all'&&k!==M.d)M.sel=null;render();return}
+  const tb=t.closest('[data-tab]');if(tb){M.tab=tb.dataset.tab;render();return}
+  const act=t.closest('[data-act]');if(act){const [k,id]=selKey();const a=act.dataset.act;
+    if(a==='move')opMove(k,id,$('#parentSel').value);
+    else if(a==='addAttr')opAddAttr(k,id,$('#newAttr').value);
+    else if(a==='addChild')opAddChild(k,id,$('#newChild').value);
+    else if(a==='addRel'){const ty=$('#relType').value==='__custom'?$('#relCustom').value:$('#relType').value;opAddRel(k,id,ty,$('#relTo').value)}
+    else if(a==='del')opDelete(k,id);
+    return}
+  const s=t.closest('[data-sel]');if(s){M.sel=s.dataset.sel;const [k,id]=selKey();let e=E(k,E(k,id).parent);while(e){M.open.add(k+'|'+e.id);e=e.parent?E(k,e.parent):null}render();return}
+});
+document.addEventListener('change',ev=>{
+  const t=ev.target,[k,id]=selKey();
+  if(t.dataset.f&&k){const e=E(k,id),v=t.value;if(t.dataset.f==='name'&&!v.trim()){t.value=e.name;return}e[t.dataset.f]=t.dataset.f==='desc'?v:v.trim();commit(false);return}
+  if(t.id==='relType')$('#relCustom').style.display=t.value==='__custom'?'':'none';
+  if(t.id==='fState'){M.st=t.value;renderTable()}
+  if(t.id==='fGal'){M.gal=t.value;renderTable()}
+});
+document.addEventListener('keydown',ev=>{
+  if(ev.key!=='Enter')return;const id=ev.target.id;
+  if(id==='newAttr')document.querySelector('[data-act="addAttr"]').click();
+  if(id==='newChild')document.querySelector('[data-act="addChild"]').click();
+});
+$('#q').addEventListener('input',ev=>{M.q=ev.target.value;renderTable();syncHash()});
+document.addEventListener('input',ev=>{if(ev.target.dataset.f==='fn'&&$('#fnCount'))$('#fnCount').textContent=ev.target.value.length+' / 40'});
+$('#newRoot').onclick=()=>{if(M.d==='all')return;const n=prompt(`新${dom(M.d).labels.root}名称（将形成新星系）`);if(n)opAddRoot(M.d,n)};
+$('#resetData').onclick=async()=>{if(!confirm('恢复为初始数据？当前内容将被替换，建议先导出备份。'))return;document.body.inert=true;try{DATA=await MyNet.reset();M.sel=null;toast('已恢复初始数据。');$('#saved').textContent='已保存';render()}catch(e){toast(esc(e.message),'err')}finally{document.body.inert=false}};
+// 星图页一般只读；若另一个标签页的管理台改了数据，这里也同步
+addEventListener('storage',ev=>{if(ev.key===MyNet.KEY){DATA=MyNet.load();render()}});
+addEventListener('mynet:draft-restored',ev=>{DATA=ev.detail;$('#saved').textContent='未保存草稿';render()});
+addEventListener('hashchange',()=>{if(MyNet.hasDraft?.()){toast('请先保存或导出草稿再切换地址。','err');return}readHash();render()});
+
+/* ============================================================ 背景星点 */
+(function(){const c=$('#stars'),x=c.getContext('2d');const draw=()=>{c.width=innerWidth;c.height=innerHeight;
+  for(let i=0;i<innerWidth*innerHeight/2600;i++){x.fillStyle=`rgba(255,255,255,${Math.random()*.6})`;x.fillRect(Math.random()*c.width,Math.random()*c.height,Math.random()<.1?1.6:1,Math.random()<.1?1.6:1)}};
+  draw();addEventListener('resize',draw)})();
+
+readHash();
+KEYS.forEach(k=>roots(k).forEach(r=>M.open.add(k+'|'+r.id)));
+render();
+if(M.sel)setTimeout(()=>{const r=document.querySelector('#table tr.on');if(r)r.scrollIntoView({block:'center'})},50);
+})().catch(console.error);
+</script>
+</body>
+</html>

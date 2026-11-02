@@ -1,0 +1,13 @@
+{
+  "name": "mynet",
+  "private": true,
+  "version": "0.1.1",
+  "type": "module",
+  "engines": { "node": ">=24.0.0" },
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:browser": "node tests/regression.browser.mjs",
+    "check:data": "node tools/validate-data.mjs"
+  }
+}
