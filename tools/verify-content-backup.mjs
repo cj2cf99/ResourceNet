@@ -7,8 +7,9 @@ import {isDeepStrictEqual} from 'node:util';
 import {validate} from '../lib/model.mjs';
 const [archive,commit]=process.argv.slice(2);
 if(!archive||!/^[0-9a-f]{40}$/.test(commit||''))throw Error('需要远端新克隆中的快照路径和提交标识');
-const dir=resolve(import.meta.dirname,'../.local/20261103-knowledge-refresh');
 const raw=readFileSync(join(archive,'manifest.json')),m=JSON.parse(raw);
+if(!/^[a-z0-9-]+$/.test(m.change))throw Error('变更名称无效');
+const dir=resolve(import.meta.dirname,'../.local',m.change);
 const key=readFileSync('G:/cloudflare/myapp/.cloudflare-backup/keys/db-snapshot-production-master.key');
 const sha=b=>createHash('sha256').update(b).digest('hex');
 if(sha(key).slice(0,16)!==m.encryption.key_fingerprint)throw Error('密钥指纹不一致');
@@ -37,7 +38,7 @@ try{
   try{prod.exec(plain['production-mynet.sql.enc'].toString('utf8'));if(prod.prepare('PRAGMA integrity_check').get().integrity_check!=='ok')throw Error('生产导出恢复失败');}finally{prod.close();}
 }finally{rmSync(temp,{recursive:true,force:true});}
 for(const[name,expected]of Object.entries(m.sql)){
-  if(sha(readFileSync(resolve(archive,'../../../../changes/20261103-knowledge-refresh',name)))!==expected)throw Error('归档 SQL 摘要不一致');
+  if(sha(readFileSync(resolve(archive,'../../../../changes',m.change,name)))!==expected)throw Error('归档 SQL 摘要不一致');
 }
 const receipt={verified:true,verifiedAt:new Date().toISOString(),commit,ref:m.backupRef,manifestSha256:sha(raw),checks:'fresh clone; four envelopes decrypted; all hashes match; SQLite integrity/FK; baseline and additive parameters verified; production export restored; SQL hashes match'};
 writeFileSync(join(dir,'remote-backup-receipt.json'),JSON.stringify(receipt,null,2));console.log(JSON.stringify(receipt,null,2));

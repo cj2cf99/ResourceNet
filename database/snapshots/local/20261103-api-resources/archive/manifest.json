@@ -1,0 +1,88 @@
+{
+  "change": "20261103-api-resources",
+  "preparedAt": "2026-11-02T15:50:56.587Z",
+  "target": "MyNet local SQLite only",
+  "sourceBaseline": "ResourceNet eb807265fe1ecea8a2d21340d955dcc0c37b4885; user confirmed initial production content",
+  "localBeforeRevision": 2,
+  "localBeforeDataSha256": "0b5a093ab21057b4e4aeab9c37fd858ff0029d01c4844b756dbebcb2f543de13",
+  "afterDataSha256": "3c55e39aa4e320403b322dcdbe27156bdac73efaf57d221af81ed42026b15608",
+  "beforeCounts": {
+    "skill": {
+      "roots": 11,
+      "elements": 42,
+      "relations": 14
+    },
+    "idea": {
+      "roots": 19,
+      "elements": 94,
+      "relations": 18
+    },
+    "res": {
+      "roots": 14,
+      "elements": 53,
+      "relations": 17
+    },
+    "proj": {
+      "roots": 13,
+      "elements": 114,
+      "relations": 24
+    }
+  },
+  "afterCounts": {
+    "skill": {
+      "roots": 11,
+      "elements": 42,
+      "relations": 14
+    },
+    "idea": {
+      "roots": 19,
+      "elements": 94,
+      "relations": 18
+    },
+    "res": {
+      "roots": 14,
+      "elements": 89,
+      "relations": 27
+    },
+    "proj": {
+      "roots": 13,
+      "elements": 114,
+      "relations": 24
+    }
+  },
+  "originalElementsAndRelations": "unchanged, including IDs, order and all fields",
+  "sql": {
+    "01-precheck.sql": "98a3a7540d8dc8ebefe07bfce828e604514349752d9ac244a3535797209ab193",
+    "02-schema.sql": "98a85495c7efb040bf9cb69f5025e8e69e30d89239f02bf2714b5f1a5c0464a3",
+    "03-data.sql": "0dde836159f745b3c9db1fae2da600dd5beba7169600b155efc69d9dc715cfbd",
+    "04-verify.sql": "b987325451fbc9df010e2e66de19d12a93791ebd21911c6ccf45b34c055e3b2d",
+    "05-compensate.sql": "2997127abf42402c5f1dd1ebc4e3174bcdde453c7c4f3621b2305b923b7877b9"
+  },
+  "files": {
+    "local-before.sqlite.enc": {
+      "plaintext_sha256": "25d68052049c7b03754c9f10567e534063227601925a579aca47202f15067032",
+      "encrypted_sha256": "199304404d75e3c595ca408ca549f6eab835e8ab5583e6a25ce17554000f477a"
+    },
+    "before-domains.json.enc": {
+      "plaintext_sha256": "3909fbc09567ac18e60475645177607d837dcc95e55739d28cf8558f4f3cc196",
+      "encrypted_sha256": "c517f66afd89985285a5e8c76b6aafa409ecb756a0ece3444bb0c2deaeb19de6"
+    },
+    "after-domains.json.enc": {
+      "plaintext_sha256": "3c55e39aa4e320403b322dcdbe27156bdac73efaf57d221af81ed42026b15608",
+      "encrypted_sha256": "6a09a62f6c85c2b9c997d03d12e39ceaaa2318302646bebdd134ebdf7d57d64f"
+    },
+    "production-mynet.sql.enc": {
+      "plaintext_sha256": "e3baec9f1538c5dc98e1ac536064a753cc9a97f3fbffc7c5aa8c4c44580f33a3",
+      "encrypted_sha256": "67085f2d10a2401d90a7a9cd09f8f0743ee369f906e7300a9db1cbf96ee1377c"
+    }
+  },
+  "encryption": {
+    "algorithm": "AES-256-GCM",
+    "key_ref": "existing production master registered in Google Drive; key not included",
+    "key_fingerprint": "694064b08cc531ee"
+  },
+  "backupRemote": "https://github.com/cj2cf99/ResourceNet.git",
+  "backupRef": "refs/heads/db-snapshots/mynet-content",
+  "productionWrites": 0,
+  "status": "PREPARED; remote fresh-clone restore required before local apply"
+}
