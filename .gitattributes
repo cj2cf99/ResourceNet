@@ -1,0 +1,2 @@
+database/changes/20261103-knowledge-refresh/*.sql -text
+database/snapshots/local/20261103-knowledge-refresh/archive/* -text
