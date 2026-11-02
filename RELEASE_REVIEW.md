@@ -15,3 +15,10 @@ AI包含前述自由生成/合并调用/省流开关与两轮自审修正、固�
 ### 2026-11-03 联合发布最终数据/配置核对
 备份 db1ac51edad833c90ca625beda93760bcf52fe52 已单独push至db-snapshots/production并全新克隆恢复79/79表通过。MyNet生产revision 0，原始seed与追加前基线一致；17语句原子包准备为revision 1及一份快照，原历史和请求保留，新增77要素25关系。10条API管理记录全部已存在，包含PLaMo/BigModel/Z.ai/SiliconFlow/Sakura，本次无需重复灌入；逐字段守卫及后检保护。8个API Secret均存在，只更新ZAI_API_KEY。
 离线真实备份演练：旧行保留、重复拒绝、故障回滚、FK通过；MyNet新增执行计划回归后9/9。脚本/SQL/参数/回执见database/changes/20261103-mynet-ai-release、scripts/apply-mynet-release.mjs、scripts/configure-zai-secret.mjs及integrations/mynet/production-plan.mjs。生产实际DML、Secret刷新和代码部署尚未执行，随后追加回执。用户本次部署授权覆盖此核实后的范围，无额外新增服务。
+
+
+## 2026-11-03 联合生产发布完成回执
+执行时间 2026-11-02T17:20:41.106Z（UTC；日本时间见客户端）。主站Worker版本 e314616a-7cc5-4c09-9c21-928a26cc81e6，控制面确认100%流量；8个API Secret名称和AI/D1/KV绑定齐全，已安全刷新ZAI_API_KEY。无新服务、无重复Secret新增、未调用真实AI。部署代码提交 8ac52d4973562edb8af89133aec3bbbcf91903b7。
+MyNet 17语句原子灌入APPLIED_VERIFIED，revision 0→1；339要素83关系，其中新增77要素25关系，原始内容/配置保留，历史请求未改。10条API管理记录全部已存在并逐字段后检不变，不重复灌入。备份 db1ac51edad833c90ca625beda93760bcf52fe52 已独立push且全新克隆79/79表恢复通过。
+检测：语言185/185、MyNet9/9、主站546/546、主站构建及此前模拟浏览器通过；本轮真实供应商调用0。无DDL。第三方独立审核未执行。未登录Access或代用户验收，线上效果待用户截图确认。
+相关main已在部署前提交push；本完成回执继续提交push并逐一比对远端SHA。不覆盖历史记录。
