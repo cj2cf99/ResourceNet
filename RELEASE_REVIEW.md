@@ -10,3 +10,8 @@ AI包含前述自由生成/合并调用/省流开关与两轮自审修正、固�
 风险：生产数据漂移则停止重规划，数据失败不部署；新数据与旧代码兼容。代码可回滚旧版本，数据需前向补偿、禁止旧快照覆盖全库；Secret不可读回，仅使用云盘确认版本。第三方审核未执行；用户本次明确部署指令已收到，范围以本节及后续实际回执为准。备份/生产写入/部署/Git同步在本节编写时尚未完成。
 
 发布前核验：主站合并后 npm.cmd test 546/546、npm.cmd run check dry-run通过；db:sync-schema首次认证失败，Wrangler whoami刷新OAuth后重试通过，新增结构0。生产控制面确认8个AI API Secret均存在，本次无须重复新增Secret，仅更新ZAI_API_KEY。会员记录以新备份逐项核对，存在则不重复写入。用户已确认Key范围“就这些”。
+
+
+### 2026-11-03 联合发布最终数据/配置核对
+备份 db1ac51edad833c90ca625beda93760bcf52fe52 已单独push至db-snapshots/production并全新克隆恢复79/79表通过。MyNet生产revision 0，原始seed与追加前基线一致；17语句原子包准备为revision 1及一份快照，原历史和请求保留，新增77要素25关系。10条API管理记录全部已存在，包含PLaMo/BigModel/Z.ai/SiliconFlow/Sakura，本次无需重复灌入；逐字段守卫及后检保护。8个API Secret均存在，只更新ZAI_API_KEY。
+离线真实备份演练：旧行保留、重复拒绝、故障回滚、FK通过；MyNet新增执行计划回归后9/9。脚本/SQL/参数/回执见database/changes/20261103-mynet-ai-release、scripts/apply-mynet-release.mjs、scripts/configure-zai-secret.mjs及integrations/mynet/production-plan.mjs。生产实际DML、Secret刷新和代码部署尚未执行，随后追加回执。用户本次部署授权覆盖此核实后的范围，无额外新增服务。
