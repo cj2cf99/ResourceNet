@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS mynet_state (
   revision INTEGER NOT NULL CHECK(revision>=0),
   data TEXT,
   updated_at TEXT NOT NULL,
-  CHECK((revision=0 AND data IS NULL) OR (revision>0 AND json_valid(data)))
+  CHECK((revision=0 AND data IS NULL) OR (revision>0 AND data IS NOT NULL AND json_valid(data)=1))
 );
 CREATE TABLE IF NOT EXISTS mynet_snapshots (
   revision INTEGER PRIMARY KEY CHECK(revision>0),

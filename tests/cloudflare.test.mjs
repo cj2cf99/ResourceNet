@@ -23,6 +23,7 @@ test('Cloudflare pages, source assets and API require verified identity; no shar
 test('D1 batch CAS, idempotency, race and rollback',async()=>{
   const {db,handler,env}=setup();try{
     const body={revision:0,domains:seed,requestId:'initial_request'};
+    assert.throws(()=>db.sqlite.exec('UPDATE mynet_state SET revision=1,data=NULL'),/CHECK/);
     assert.equal((await handler(request('/api/mynet/state',body),env)).status,200);
     assert.equal((await handler(request('/api/mynet/state',body),env)).status,200);
     assert.equal(db.sqlite.prepare('SELECT count(*) n FROM mynet_snapshots').get().n,1);

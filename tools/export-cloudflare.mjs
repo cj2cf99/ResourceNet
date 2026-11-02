@@ -30,6 +30,7 @@ for(const [source,target] of [['cloudflare/routes.mjs','routes.mjs'],['lib/model
   const bytes=readFileSync(resolve(root,source));writeFileSync(resolve(out,'feature',target),bytes);copied.push({source,target:'feature/'+target,sha256:sha(bytes)});
 }
 copied.push({source:'data.js defaults()',target:'feature/seed.json',sha256:sha(JSON.stringify(seed))});
+const schema=readFileSync(resolve(root,'cloudflare/schema.sql'));writeFileSync(resolve(out,'schema.sql'),schema);copied.push({source:'cloudflare/schema.sql',target:'schema.sql',sha256:sha(schema)});
 writeFileSync(resolve(out,'feature/manifest.json'),JSON.stringify(manifest,null,2)+'\n');
 writeFileSync(resolve(out,'source.json'),JSON.stringify({sourceCommit:manifest.sourceCommit,files:copied},null,2)+'\n');
 console.log('Cloudflare 集成包已生成：.integration/mynet（4 个白名单资源、D1 处理器及种子）；未改写主项目或数据库。');

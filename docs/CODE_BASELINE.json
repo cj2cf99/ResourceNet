@@ -77,8 +77,8 @@
     },
     {
       "path": "cloudflare/schema.sql",
-      "sha256": "796a4a6534d5a36832ed54645c55bf0fd283faa1653cf6191e69ee485791e513",
-      "bytes": 762
+      "sha256": "19c51509bd8be01ce2f777e221b581a72051f9dc3194d66a53156d4fc3c22baf",
+      "bytes": 785
     },
     {
       "path": "cloudflare/model.mjs",
@@ -87,18 +87,23 @@
     },
     {
       "path": "tools/export-cloudflare.mjs",
-      "sha256": "b81a0bf34aa1b53ae1c212264b531cf7583ff92d0a2c60fecc657e14d4dbbbd4",
-      "bytes": 2973
+      "sha256": "1680b18c1f774c7351ab6e480d20ce5199d443e62f19537f0355143b7bc38ad8",
+      "bytes": 3172
     },
     {
       "path": "tests/cloudflare.test.mjs",
-      "sha256": "e964b23971fa6a5ed72a9749b6df91ff0d746b1f088aa75fc19e3a653ee58695",
-      "bytes": 4840
+      "sha256": "ff52c9a54dc297a11a7d97f366c2d3ef7bcb929f565fc1fa7d24212257f64857",
+      "bytes": 4934
     },
     {
       "path": "tests/helpers/d1.mjs",
       "sha256": "d2aa2a98cfd37d0821e5b139f82bb0a308beeb82a3e73ab9287da667b73b075f",
       "bytes": 775
+    },
+    {
+      "path": "tools/test-host-browser.mjs",
+      "sha256": "6beb4898761bb1c49e940ae154051df0dce1a57a448dc6676c3ac289b653b876",
+      "bytes": 4976
     }
   ]
 }
