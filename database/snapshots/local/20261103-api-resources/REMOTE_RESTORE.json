@@ -1,0 +1,8 @@
+{
+  "verified": true,
+  "verifiedAt": "2026-11-02T15:54:42.534Z",
+  "commit": "e9ed0ee486ae88961148451a8e1b8edd188775c6",
+  "ref": "refs/heads/db-snapshots/mynet-content",
+  "manifestSha256": "e508fc96e0155427793f5fcb5715e5459e5da52100dbc6ffe55c0bf766c52b23",
+  "checks": "fresh clone; four envelopes decrypted; all hashes match; SQLite integrity/FK; baseline and additive parameters verified; production export restored; SQL hashes match"
+}
