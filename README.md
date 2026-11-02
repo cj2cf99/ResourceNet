@@ -1,10 +1,12 @@
-# MyNet 星图
+# ResourceNet（MyNet 星图）
 
 依据 [需求](REQUIREMENTS.md) 与 [原型设计](docs/DESIGN.md) 开发的独立本地应用。保留星图与管理台两个页面、四类应用模板、单一隶属、多关系、属性自动升格和焦点距离探索。
 
 审核入口：[当前开发版本审核说明](DEVELOPMENT_REVIEW.md)。架构、数据库、接口、前后端规则和失败处理见 [开发设计与实现说明](docs/IMPLEMENTATION.md)，当前代码摘要见 [CODE_BASELINE.json](docs/CODE_BASELINE.json)。
 
 0.2.0 主站接入候选见 [Cloudflare 集成设计](docs/CLOUDFLARE_INTEGRATION.md)：独立页头、返回首页按钮、来源 D1 适配及白名单导出。`npm run export:cloudflare` 只生成本地集成包，不执行迁移或部署。
+
+来源仓库：[cj2cf99/ResourceNet](https://github.com/cj2cf99/ResourceNet)。ResourceNet 是仓库名称，MyNet 是应用名称。
 
 ## 启动
 
