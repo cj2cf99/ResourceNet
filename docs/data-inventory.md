@@ -4,10 +4,10 @@
 
 ```text
 MyNet 数据校验 · 存储键 mynet.data.v3
-  skill 技能管理星域：根节点 11 · 节点 26 · 属性 8 · 关系 10
-  idea  创意管理星域：根节点 19 · 节点 35 · 属性 54 · 关系 15
-  res   网络资源管理星域：根节点 7 · 节点 23 · 属性 18 · 关系 14
-  proj  项目管理星域：根节点 12 · 节点 52 · 属性 46 · 关系 19
+  skill 技能管理星域：根节点 11 · 节点 31 · 属性 11 · 关系 14
+  idea  创意管理星域：根节点 19 · 节点 37 · 属性 57 · 关系 18
+  res   网络资源管理星域：根节点 14 · 节点 46 · 属性 43 · 关系 27
+  proj  项目管理星域：根节点 13 · 节点 60 · 属性 54 · 关系 24
 校验通过（0 条提示）
 ```
 
@@ -20,11 +20,16 @@ MyNet 数据校验 · 存储键 mynet.data.v3
   - ● Node.js 服务端 `s_web_node` — 用 Node.js 提供本地服务、数据库与打包
   - ● 图形与可视化 `s_web_viz` — 把数据与角色绘制成图表和动画
     - · 响应式验收 `s_web_viz_resp` — 确保页面在桌面、平板、手机上都可用
+  - ● 多供应商接口适配 `s_web_api_adapter` — 统一模型接口与安全错误分类
+    - · 调用与费用边界 `s_web_api_adapter_boundary` — 限制请求并阻止隐式费用扩张
 - ● C# 开发 `s_csharp` — 使用 C# 开发软件
 - ● Cloudflare 平台开发 `s_cf` — 在 Cloudflare 上搭建与运维个人工作台
   - · Access 鉴权接入 `s_cf_access` — 为站点加上登录保护与身份校验
   - ● Workers 开发 `s_cf_worker` — 编写运行在边缘的页面与 API
   - ● D1 / SQLite 数据库 `s_cf_db` — 设计、迁移并安全变更业务数据库
+    - ● 数据库备份与恢复验证 `s_cf_db_backup` — 备份数据库并验证远端可恢复
+      - · 加密快照与密钥分离 `s_cf_db_backup_crypto` — 加密备份并独立保管恢复密钥
+    - ● 事务与幂等写入 `s_cf_db_atomic` — 用事务和请求身份保护重复写入
 - ● 数据工程 `s_data` — 让数据定时、可靠地流动和归档
   - ● 采集流水线 `s_data_pipe` — 定时抓取行情并发布为可读数据
     - · 行情消费契约 `s_data_pipe_contract` — 按身份与时间契约消费行情
@@ -37,8 +42,11 @@ MyNet 数据校验 · 存储键 mynet.data.v3
 - ● 软件工程流程 `s_eng` — 保证改动可验证、可审核、可回溯
   - ● 自动化测试 `s_eng_test` — 用自动测试守住功能与界面
     - · 结构与脱敏校验 `s_eng_test_data` — 校验内容结构并拦截敏感信息
+    - ● 故障注入与恢复测试 `s_eng_test_fault` — 验证失败重试和事务回滚行为
   - ● 发布审核 `s_eng_rel` — 在部署前记录变更并取得确认
+    - · Access 项目验收边界 `s_eng_rel_access` — 由用户确认受控项目线上效果
   - ● AI 协作开发 `s_eng_ai` — 让多个 AI 分工开发、审核与交接
+  - ● 子项目来源追踪 `s_eng_source_sync` — 按来源提交和摘要集成功能
 - ● 日语 `s_jp` — 在日本生活与工作中用日语沟通
   - · N2 / N1 表达 `s_jp_level` — 按 N2 / N1 难度组织表达
   - ● 情景会话 `s_jp_conv` — 应对做客、协作、客户安排等场景
@@ -60,6 +68,10 @@ MyNet 数据校验 · 存储键 mynet.data.v3
 - 响应式验收 `s_web_viz_resp` —帮助→ 自动化测试 `s_eng_test`
 - 骨骼绑定与 IK `s_anim_rig` —诱发→ 情景会话 `s_jp_conv`
 - 结构与脱敏校验 `s_eng_test_data` —促进→ 发布审核 `s_eng_rel`
+- 加密快照与密钥分离 `s_cf_db_backup_crypto` —帮助→ 发布审核 `s_eng_rel`
+- 故障注入与恢复测试 `s_eng_test_fault` —促进→ 事务与幂等写入 `s_cf_db_atomic`
+- 子项目来源追踪 `s_eng_source_sync` —帮助→ 发布审核 `s_eng_rel`
+- 调用与费用边界 `s_web_api_adapter_boundary` —诱发→ 故障注入与恢复测试 `s_eng_test_fault`
 
 ## 创意管理星域（idea）
 
@@ -79,6 +91,8 @@ MyNet 数据校验 · 存储键 mynet.data.v3
   - · 跨星域参照 `i_mynet_cross` — 允许不同星域之间互相参照
   - · 删除与回收站规则 `i_mynet_trash` — 定义删除、撤销与恢复的行为
   - ● 人际关系星域 `i_mynet_people` — 用星图管理人际关系
+  - ● 星图增量积累 `i_mynet_append` — 在保留已有内容的基础上持续追加
+    - · 正式基线与本地追加 `i_mynet_append_baseline` — 以确认后的正式内容作为追加起点
 - ● 数字生态花园 `i_garden` — 把云资源监控变成可交互的花园
   - · 真实事件驱动 `i_garden_event` — 只按真实事件改变画面状态
   - · 排障表格视图 `i_garden_table` — 提供精确的表格用于排障
@@ -92,6 +106,7 @@ MyNet 数据校验 · 存储键 mynet.data.v3
   - · 多视图 `i_graph_views` — 在关系图、树、表格、时间轴间切换
   - · 路径与结构分析 `i_graph_query` — 查询路径并发现孤立节点与循环
   - · 待评估技术 `i_graph_tech` — 列出待评估的图谱技术方案
+  - ● 能力证据与状态分层 `i_graph_evidence` — 为能力与积累保留事实依据
 - ● 简易项目管理与运维中心 `i_ops` — 一处查看项目进度、部署与故障
   - · 只读 GitHub 同步 `i_ops_gh` — 只读同步 GitHub 提交、PR 与发布
   - · 开发审核工作流 `i_ops_flow` — 表达开发、审核、确认、部署的流程
@@ -124,6 +139,7 @@ MyNet 数据校验 · 存储键 mynet.data.v3
   - · 隐私与备份 `i_timeline_privacy` — 保护隐私并支持长期导出备份
 - ● 免费 AI API 资源池 `i_pool` — 统一管理语言练习的模型接口
   - · 最小化日志内容 `i_pool_privacy` — 减少调用日志中的私人内容
+  - · 探测后再编排 `i_pool_probe_first` — 先验证单模型再设计资源池调度
   - ● 供应商候选核验 `i_pool_candidates` — 核验模型供应商的使用条件
     - · 首批模型候选 `i_pool_candidates_first` — 登记首批模型候选
     - · 扩展模型候选 `i_pool_candidates_next` — 登记扩展模型候选
@@ -146,6 +162,7 @@ MyNet 数据校验 · 存储键 mynet.data.v3
 - ● 个人云资源中心 `i_cloud` — 集中登记云资源与运行状态
   - · 只读状态展示 `i_cloud_readonly` — 从已采集快照展示资源状态
   - · 提醒联动 `i_cloud_alert` — 提醒资源到期及连续异常
+  - · 凭证位置与用途分离 `i_cloud_credential_location` — 登记凭证位置而不复制密钥正文
   - ● 资源与配额台账 `i_cloud_ledger` — 登记资源用途及使用条件
     - · 测量可信等级 `i_cloud_ledger_measure` — 区分官方用量与本地估算
     - · 费用风险提示 `i_cloud_ledger_cost` — 提示资源使用的费用边界
@@ -170,6 +187,9 @@ MyNet 数据校验 · 存储键 mynet.data.v3
 - 个人云资源中心 `i_cloud` —参考→ 跨平台免费资源协作 `i_distributed`
 - 数字生态花园 `i_garden` —参考→ 个人云资源中心 `i_cloud`
 - 简易项目管理与运维中心 `i_ops` —参考→ 个人云资源中心 `i_cloud`
+- 正式基线与本地追加 `i_mynet_append_baseline` —启发→ 能力证据与状态分层 `i_graph_evidence`
+- 探测后再编排 `i_pool_probe_first` —参考→ 统一模型适配 `i_pool_adapter`
+- 凭证位置与用途分离 `i_cloud_credential_location` —启发→ 个人会员与订阅管理中心 `i_sub`
 
 ## 网络资源管理星域（res）
 
@@ -185,6 +205,12 @@ MyNet 数据校验 · 存储键 mynet.data.v3
     - · 界面偏好 `cf_kv_prefs` — 保存图表等界面偏好
   - ● R2 · 对象存储 `cf_r2` — 存放私有传输的数据文件
   - ● Access 访问控制 `cf_access` — 只允许本人登录访问工作台
+    - ● Access 服务凭证 `cf_access_service_credential` — 登记凭证类型、用途与保管方式
+      - · 官网与开发入口 `cf_access_service_credential_website` — 定位凭证所属服务的公开网站
+      - · Google Drive 保管 `cf_access_service_credential_custody` — 查找凭证的保管平台与资料台账
+  - ● 会员独立 API Worker `cf_worker_subscriptions` — 为会员资源管理提供独立接口
+  - ● Workers AI 模型接口 `cf_ai` — 提供 Cloudflare 托管模型调用入口
+    - · Workers AI 官方文档 `cf_ai_website` — 查阅模型服务的官方接入资料
 - ● GitHub `gh` — 托管代码并运行自动化任务
   - ● 私有仓库 `gh_private` — 保存不公开的源码与数据
   - ● Actions `gh_actions` — 按计划运行采集、同步与发布
@@ -195,9 +221,19 @@ MyNet 数据校验 · 存储键 mynet.data.v3
   - ● 公开行情镜像 `gh_mirror` — 对外提供可匿名读取的最新行情
     - · 公开字段白名单 `gh_mirror_scope` — 限定公共镜像的发布字段
     - · 采集时间边界 `gh_mirror_time` — 保留行情时间与可信度边界
+  - ● 加密数据库快照分支 `gh_backup` — 保存加密快照及恢复证据
+  - ● 镜像自动化凭证 `gh_key_mirror` — 登记凭证类型、用途与保管方式
+    - · 官网与开发入口 `gh_key_mirror_website` — 定位凭证所属服务的公开网站
+    - · Google Drive 保管 `gh_key_mirror_custody` — 查找凭证的保管平台与资料台账
+  - ● PE Band 读取凭证 `gh_key_peband` — 登记凭证类型、用途与保管方式
+    - · 官网与开发入口 `gh_key_peband_website` — 定位凭证所属服务的公开网站
+    - · Google Drive 保管 `gh_key_peband_custody` — 查找凭证的保管平台与资料台账
 - ● 自用谷歌服务 `gg` — 提供邮件与云盘服务
   - ● Gmail `gg_gmail` — 接收自动行情日报
   - ● Google Drive `gg_drive` — 保存早期原始资料
+    - · 备份密钥独立保管 `gg_drive_key_custody` — 独立保存用于解密备份的密钥
+  - ● Gemini 模型接口 `gg_gemini` — 提供语言模型探测候选入口
+    - · Gemini 官方开发文档 `gg_gemini_website` — 查阅模型服务的官方接入资料
 - ● Salesforce `sf` — 记录消费原始账本
   - · 消费记录只读接口 `sf_api` — 向工作台提供只读消费记录
 - ● 行情数据源 `mk` — 提供外部市场行情
@@ -205,6 +241,14 @@ MyNet 数据校验 · 存储键 mynet.data.v3
   - ● JPX 日本交易所 `mk_jpx` — 提供日股公开数据
   - ● Multpl 与 Shiller `mk_multpl` — 提供标普月均历史资料
   - ● ECB 与 DataStream `mk_ecb` — 提供日经月均历史资料
+  - ● IRBANK Connect `mk_irbank` — 提供日本上市公司数据接口
+    - ● IRBANK API Key `mk_irbank_key` — 登记凭证类型、用途与保管方式
+      - · 官网与开发入口 `mk_irbank_key_website` — 定位凭证所属服务的公开网站
+      - · Google Drive 保管 `mk_irbank_key_custody` — 查找凭证的保管平台与资料台账
+  - ● TGMCharts Developer API `mk_tgm` — 提供美股研究的数据与图表接口
+    - ● TGMCharts API Key `mk_tgm_key` — 登记凭证类型、用途与保管方式
+      - · 官网与开发入口 `mk_tgm_key_website` — 定位凭证所属服务的公开网站
+      - · Google Drive 保管 `mk_tgm_key_custody` — 查找凭证的保管平台与资料台账
 - ● AI 开发助手 `ai` — 协助编写、审核与交接代码
   - · 语言练习候选模型 `ai_models` — 语言练习可选用的 AI 模型
   - ● Claude Code `ai_claude` — 协助开发与审核改动
@@ -214,6 +258,30 @@ MyNet 数据校验 · 存储键 mynet.data.v3
   - · Python `dev_python` — 运行采集与估值脚本
   - · Wrangler CLI `dev_wrangler` — 检查、同步并部署 Cloudflare 项目
   - · Playwright `dev_playwright` — 在真实浏览器中自动回归页面
+- ● Groq `groq` — 提供项目已接入的模型接口
+  - · Groq 官方开发文档 `groq_website` — 查阅模型服务的官方接入资料
+- ● DeepSeek `deepseek` — 提供项目已接入的模型接口
+  - · DeepSeek 官方开发文档 `deepseek_website` — 查阅模型服务的官方接入资料
+- ● PLaMo `plamo` — 提供语言项目的模型适配入口
+  - ● PLaMo API Key `plamo_key` — 登记凭证类型、用途与保管方式
+    - · 官网与开发入口 `plamo_key_website` — 定位凭证所属服务的公开网站
+    - · Google Drive 保管 `plamo_key_custody` — 查找凭证的保管平台与资料台账
+- ● BigModel `bigmodel` — 提供语言项目的模型适配入口
+  - ● BigModel API Key `bigmodel_key` — 登记凭证类型、用途与保管方式
+    - · 官网与开发入口 `bigmodel_key_website` — 定位凭证所属服务的公开网站
+    - · Google Drive 保管 `bigmodel_key_custody` — 查找凭证的保管平台与资料台账
+- ● Z.ai `zai` — 提供模型探测及限流诊断入口
+  - ● Z.ai API Key `zai_key` — 登记凭证类型、用途与保管方式
+    - · 官网与开发入口 `zai_key_website` — 定位凭证所属服务的公开网站
+    - · Google Drive 保管 `zai_key_custody` — 查找凭证的保管平台与资料台账
+- ● SiliconFlow `siliconflow` — 提供语言项目的模型适配入口
+  - ● SiliconFlow API Key `siliconflow_key` — 登记凭证类型、用途与保管方式
+    - · 官网与开发入口 `siliconflow_key_website` — 定位凭证所属服务的公开网站
+    - · Google Drive 保管 `siliconflow_key_custody` — 查找凭证的保管平台与资料台账
+- ● Sakura AI Engine `sakura` — 提供近期新增的模型适配入口
+  - ● Sakura 账户令牌 `sakura_key` — 登记凭证类型、用途与保管方式
+    - · 官网与开发入口 `sakura_key_website` — 定位凭证所属服务的公开网站
+    - · Google Drive 保管 `sakura_key_custody` — 查找凭证的保管平台与资料台账
 
 关系：
 
@@ -231,6 +299,19 @@ MyNet 数据校验 · 存储键 mynet.data.v3
 - Wrangler CLI `dev_wrangler` —调用→ Worker · myapp `cf_worker`
 - Worker · myapp `cf_worker` —写入→ D1 · 工作台主库 `cf_d1`
 - Worker · myapp `cf_worker` —写入→ KV `cf_kv`
+- 会员独立 API Worker `cf_worker_subscriptions` —依赖→ D1 · 工作台主库 `cf_d1`
+- Access 访问控制 `cf_access` —保护→ 会员独立 API Worker `cf_worker_subscriptions`
+- 加密数据库快照分支 `gh_backup` —依赖→ Google Drive `gg_drive`
+- Google Drive 保管 `mk_irbank_key_custody` —依赖→ Google Drive `gg_drive`
+- Google Drive 保管 `mk_tgm_key_custody` —依赖→ Google Drive `gg_drive`
+- Google Drive 保管 `cf_access_service_credential_custody` —依赖→ Google Drive `gg_drive`
+- Google Drive 保管 `gh_key_mirror_custody` —依赖→ Google Drive `gg_drive`
+- Google Drive 保管 `gh_key_peband_custody` —依赖→ Google Drive `gg_drive`
+- Google Drive 保管 `plamo_key_custody` —依赖→ Google Drive `gg_drive`
+- Google Drive 保管 `bigmodel_key_custody` —依赖→ Google Drive `gg_drive`
+- Google Drive 保管 `zai_key_custody` —依赖→ Google Drive `gg_drive`
+- Google Drive 保管 `siliconflow_key_custody` —依赖→ Google Drive `gg_drive`
+- Google Drive 保管 `sakura_key_custody` —依赖→ Google Drive `gg_drive`
 
 ## 项目管理星域（proj）
 
@@ -244,6 +325,8 @@ MyNet 数据校验 · 存储键 mynet.data.v3
   - ● 集成与发布 `p_myapp_int` — 接入子项目并安全发布
     - · 发布流程 `p_myapp_int_flow` — 规定从开发到部署的步骤
     - · 发布审核记录 `p_myapp_int_review` — 为每次发布留下可审核记录
+    - · 来源摘要与隔离合并 `p_myapp_int_provenance` — 核对来源并保留其他未完成工作
+    - · 生产快照恢复门禁 `p_myapp_int_restore` — 在数据库调整前验证备份可恢复
   - ● 首页总览 `p_myapp_home` — 汇总待办与近期提醒
   - ● 考证模块接线 `p_myapp_study` — 接入考证页面与业务接口
 - ● 事项提醒子项目 `p_rem` — 独立开发提醒模块后同步主站
@@ -289,6 +372,9 @@ MyNet 数据校验 · 存储键 mynet.data.v3
 - ● 日历与长期计划中心 `p_cal` — 管理日程与长期计划
   - · 假期与生日设置 `p_cal_holiday` — 设置休假与生日
   - ● P1 日历 `p_cal_p1` — 查看与安排日程
+    - ● 艾森豪威尔矩阵 `p_cal_matrix` — 按重要度与紧急度组织事项
+    - ● 特殊日期投影 `p_cal_special_projection` — 在日历和首页显示特殊日期
+      - · 年度资料修订更新 `p_cal_special_yearly` — 按修订维护年度官方日期资料
   - ● P2 长期计划 `p_cal_p2` — 拆解长期计划并跟踪执行
     - · 甘特 / 依赖 / 基线 `p_cal_p2_gantt` — 用甘特图管理依赖与基线
     - · 全局容量与重排预览 `p_cal_p2_cap` — 按可用时间重排计划
@@ -318,6 +404,9 @@ MyNet 数据校验 · 存储键 mynet.data.v3
   - ● 应对方式 `p_lang_mode` — 用拼词或自由回答应对对话
     - · 最终完整手打 `p_lang_mode_hand` — 通过完整手打提交最终答案
   - ● 角色动作 `p_lang_char` — 用角色动画演示对话情景
+  - ● 模型连通性探测 `p_lang_probe` — 用受限单次请求检查模型接入
+    - · 安全错误与限流分类 `p_lang_probe_errors` — 用安全错误说明探测失败原因
+    - · Sakura 适配增量 `p_lang_probe_sakura` — 增加固定模型的单次探测适配
 - ● WebCharacter 网页角色 `p_wc` — 制作网页中的 2D 角色动画
   - · 苹果小剧场 `p_wc_apple` — 演示双角色递苹果
   - · 魔法书与扫帚 `p_wc_magic` — 演示拾书骑扫帚飞走
@@ -332,6 +421,14 @@ MyNet 数据校验 · 存储键 mynet.data.v3
   - ● 共享数据层 `p_mynet_data` — 让星图与管理台共用同一份数据
     - · 数据校验与清单 `p_mynet_data_validate` — 校验初始数据并生成交接清单
     - · 本地编辑优先 `p_mynet_data_local` — 保留浏览器中的已有编辑
+    - ● SQLite 与 D1 持久化 `p_mynet_data_store` — 分别保存本地和生产星图内容
+      - · 初始内容作为追加基线 `p_mynet_data_store_baseline` — 以确认过的正式初始数据继续追加
+  - ● 主站独立页头接线 `p_mynet_host` — 接入工作台并保留返回首页入口
+- ● 定远会员资源管理 `p_info` — 管理会员订阅和资源账户资料
+  - ● 会员与资源台账 `p_info_ledger` — 查询和维护分类资源资料
+    - · 凭据位置登记 `p_info_secret_position` — 记录凭据位置和用途而不存正文
+  - ● 独立 REST API `p_info_api` — 提供受控的资料读写接口
+    - · 请求重放与内容冲突 `p_info_api_replay` — 区分同内容重试和冲突提交
 
 关系：
 
@@ -354,3 +451,8 @@ MyNet 数据校验 · 存储键 mynet.data.v3
 - 星图展示 `p_mynet_map` —使用→ 共享数据层 `p_mynet_data`
 - 首页总览 `p_myapp_home` —使用→ 事项提醒 `p_myapp_rem`
 - 首页总览 `p_myapp_home` —使用→ 待办与处理记录 `p_myapp_aim`
+- 个人工作台 myapp `p_myapp` —集成→ 定远会员资源管理 `p_info`
+- 个人工作台 myapp `p_myapp` —集成→ 主站独立页头接线 `p_mynet_host`
+- 会员与资源台账 `p_info_ledger` —使用→ 独立 REST API `p_info_api`
+- 凭据位置登记 `p_info_secret_position` —参考→ 模型连通性探测 `p_lang_probe`
+- SQLite 与 D1 持久化 `p_mynet_data_store` —参考→ 集成与发布 `p_myapp_int`

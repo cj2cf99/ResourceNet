@@ -1,9 +1,9 @@
 {
-  "recordedDate": "2026-11-02",
+  "recordedDate": "2026-11-03",
   "version": "0.2.0",
   "algorithm": "SHA-256",
   "gitBaseline": null,
-  "scope": "Current fix code and config; local Git initialized; first fix commit is discoverable with git log; original 0.1.0 has only archived hashes",
+  "scope": "Current additive knowledge and API resource source; local import status in dated refresh documents; production unchanged",
   "files": [
     {
       "path": "package.json",
@@ -32,23 +32,23 @@
     },
     {
       "path": "manage.html",
-      "sha256": "b0817170a0b05abab8296ff9ec6b25104a23a2c335b5d07660fab78040d35861",
+      "sha256": "01993729d58dc2e41aa8a9d6ca6dac12431bbd69758dfc23ef813b076417c096",
       "bytes": 37866
     },
     {
       "path": "starmap.html",
-      "sha256": "16f1fc21757fd248dfe5e86c50067b4cb80838f944d2db878a95e6222e93268c",
+      "sha256": "9b90ec0d2cdb21592ce8895599fb702028b8933eec2955c1b66dbd1d777b3254",
       "bytes": 93607
     },
     {
       "path": "data.js",
-      "sha256": "485de38c1456ab130a4f1fd83f08104f4f76cea047d80af9783ce6d7bad8c344",
-      "bytes": 57617
+      "sha256": "bf385e81561ffaae349c29dddc051c83956fd46a1d22e93fe9a45c3b629db2bb",
+      "bytes": 90152
     },
     {
       "path": "tools/validate-data.mjs",
-      "sha256": "9063979790241008239a1b157c6e8c1e3bcc23a99b739f7844094fe038afcc03",
-      "bytes": 6879
+      "sha256": "28b29f6aaf4ad2ff7fde5a457d0792679ee81869e5133377765390648a55b925",
+      "bytes": 7481
     },
     {
       "path": "tools/restore-data.mjs",
@@ -104,6 +104,101 @@
       "path": "tools/test-host-browser.mjs",
       "sha256": "6beb4898761bb1c49e940ae154051df0dce1a57a448dc6676c3ac289b653b876",
       "bytes": 4976
+    },
+    {
+      "path": ".gitattributes",
+      "sha256": "6399994a44b95d5e2afa91f8766f2fb0b8f637fb16d5f2bf753d215c953a0ab9",
+      "bytes": 240
+    },
+    {
+      "path": "tools/refresh-knowledge.mjs",
+      "sha256": "3a154a99e02fcc3d9fac9d738123fbe76fca2e4f47c4154d6a01870e893966e4",
+      "bytes": 8458
+    },
+    {
+      "path": "tools/verify-content-backup.mjs",
+      "sha256": "b75b8fa6b2d47917e8c6e5f79c50779c962765307f8093092a2ccd2494e38929",
+      "bytes": 3611
+    },
+    {
+      "path": "database/changes/20261103-knowledge-refresh/01-precheck.sql",
+      "sha256": "98a3a7540d8dc8ebefe07bfce828e604514349752d9ac244a3535797209ab193",
+      "bytes": 198
+    },
+    {
+      "path": "database/changes/20261103-knowledge-refresh/02-schema.sql",
+      "sha256": "98a85495c7efb040bf9cb69f5025e8e69e30d89239f02bf2714b5f1a5c0464a3",
+      "bytes": 68
+    },
+    {
+      "path": "database/changes/20261103-knowledge-refresh/03-data.sql",
+      "sha256": "0dde836159f745b3c9db1fae2da600dd5beba7169600b155efc69d9dc715cfbd",
+      "bytes": 183
+    },
+    {
+      "path": "database/changes/20261103-knowledge-refresh/04-verify.sql",
+      "sha256": "b987325451fbc9df010e2e66de19d12a93791ebd21911c6ccf45b34c055e3b2d",
+      "bytes": 273
+    },
+    {
+      "path": "database/changes/20261103-knowledge-refresh/05-compensate.sql",
+      "sha256": "2997127abf42402c5f1dd1ebc4e3174bcdde453c7c4f3621b2305b923b7877b9",
+      "bytes": 234
+    },
+    {
+      "path": "database/changes/20261103-knowledge-refresh/additions.json",
+      "sha256": "aa293150edb7d6a1efe6fa8cd3d08569c19ad02a00b0e90736efed788b45e4a7",
+      "bytes": 13719
+    },
+    {
+      "path": "database/changes/20261103-knowledge-refresh/README.md",
+      "sha256": "3ddc4b57e1e4f7da229b2bce854723a9c2a0145514c6195ca8d1f054c79bfb2d",
+      "bytes": 1717
+    },
+    {
+      "path": "lib/public-resource-sites.mjs",
+      "sha256": "90e6569592c22e72b7c2bd1ba4c8a6e5b95a231cab6affa0215435c58c45a593",
+      "bytes": 991
+    },
+    {
+      "path": "tests/public-resource-sites.test.mjs",
+      "sha256": "3f3886c9959d4ae77562693e1b2cca3fd66141e89a069c5a0a51f9be1e2126ce",
+      "bytes": 875
+    },
+    {
+      "path": "database/changes/20261103-api-resources/01-precheck.sql",
+      "sha256": "98a3a7540d8dc8ebefe07bfce828e604514349752d9ac244a3535797209ab193",
+      "bytes": 198
+    },
+    {
+      "path": "database/changes/20261103-api-resources/02-schema.sql",
+      "sha256": "98a85495c7efb040bf9cb69f5025e8e69e30d89239f02bf2714b5f1a5c0464a3",
+      "bytes": 68
+    },
+    {
+      "path": "database/changes/20261103-api-resources/03-data.sql",
+      "sha256": "0dde836159f745b3c9db1fae2da600dd5beba7169600b155efc69d9dc715cfbd",
+      "bytes": 183
+    },
+    {
+      "path": "database/changes/20261103-api-resources/04-verify.sql",
+      "sha256": "b987325451fbc9df010e2e66de19d12a93791ebd21911c6ccf45b34c055e3b2d",
+      "bytes": 273
+    },
+    {
+      "path": "database/changes/20261103-api-resources/05-compensate.sql",
+      "sha256": "2997127abf42402c5f1dd1ebc4e3174bcdde453c7c4f3621b2305b923b7877b9",
+      "bytes": 234
+    },
+    {
+      "path": "database/changes/20261103-api-resources/additions.json",
+      "sha256": "19ba86a05df3725eecaf71aad37d91cab99ed50f36fe111b30729186d4ba7b98",
+      "bytes": 14672
+    },
+    {
+      "path": "database/changes/20261103-api-resources/README.md",
+      "sha256": "91b31b98125b3462766e11233c376f7b2ef4fe1b94f335483a0f68ea91315e43",
+      "bytes": 1875
     }
   ]
 }

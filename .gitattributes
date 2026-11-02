@@ -1,0 +1,4 @@
+database/changes/20261103-knowledge-refresh/*.sql -text
+database/snapshots/local/20261103-knowledge-refresh/archive/* -text
+database/changes/20261103-api-resources/*.sql -text
+database/snapshots/local/20261103-api-resources/archive/* -text

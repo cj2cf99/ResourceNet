@@ -1,0 +1,3 @@
+-- Preserve subsequent edits. Do not DELETE history or overwrite production.
+-- Reopen the verified local-before.sqlite backup in isolation, then restore its
+-- domains as a new local revision after comparing any later local changes.

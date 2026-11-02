@@ -7,6 +7,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import vm from 'node:vm';
+import { isPublicResourceSite } from '../lib/public-resource-sites.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const src = readFileSync(join(root, 'data.js'), 'utf8');
@@ -66,10 +67,19 @@ for (const [k, d] of Object.entries(D)) {
 const SENSITIVE = [
   [/account_id/i, '账号 ID 字段'], [/\b[0-9a-f]{32}\b/i, '32 位十六进制 ID'], [/\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/i, 'UUID'],
   [/workers\.dev/i, 'workers.dev 地址'], [/cloudflareaccess\.com/i, 'Access 团队域名'], [/(token|secret|password|api[_-]?key)\s*[:=]/i, '凭据赋值'],
-  [/[\w.+-]+@[\w-]+\.[\w.]+/, '邮箱地址'], [/https?:\/\//i, '网址'], [/[A-Za-z]:\\/, '本机路径（注释除外请勿写入数据）'], [/3MVG[\w.]{10,}/, 'Salesforce 客户端 ID'],
+  [/[\w.+-]+@[\w-]+\.[\w.]+/, '邮箱地址'], [/[A-Za-z]:\\/, '本机路径（注释除外请勿写入数据）'], [/3MVG[\w.]{10,}/, 'Salesforce 客户端 ID'],
 ];
 const dataText = JSON.stringify(D);
 for (const [re, label] of SENSITIVE) if (re.test(dataText)) err(`数据中出现疑似敏感内容：${label}（${re}）`);
+// User requested corresponding websites. Permit only reviewed public HTTPS pages
+// in resource descriptions, never account-specific, signed or secret-bearing URLs.
+for (const [domain, d] of Object.entries(D)) for (const e of d.elements) {
+  for (const [field,value] of Object.entries(e)) if (typeof value === 'string') {
+    for (const match of value.matchAll(/https?:\/\/[^\s<>"'，。；）)]+/g)) {
+      if (domain !== 'res' || field !== 'desc' || !isPublicResourceSite(match[0])) err(`网址不在已审核公开资源清单：${e.id}`);
+    }
+  }
+}
 
 // 统计
 const summary = ['MyNet 数据校验 · 存储键 ' + MyNet.KEY];

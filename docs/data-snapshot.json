@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-11-02T06:08:09.664Z",
+  "exportedAt": "2026-11-02T15:50:56.679Z",
   "storageKey": "mynet.data.v3",
   "domains": {
     "skill": {
@@ -289,6 +289,70 @@
           "state": "attr",
           "desc": "长期指标文档中的维护场景：巴菲特与标普使用独立近期窗口和审计，更新历史数据需显式采纳；不记录个人投资结论。",
           "fn": "按独立窗口维护长期指标"
+        },
+        {
+          "id": "s_cf_db_backup",
+          "name": "数据库备份与恢复验证",
+          "parent": "s_cf_db",
+          "state": "node",
+          "desc": "项目实践积累（2026-11-03）：SQLite Backup API、生产逻辑导出、独立快照分支及全新克隆恢复检查；不据此推断个人熟练等级。",
+          "fn": "备份数据库并验证远端可恢复"
+        },
+        {
+          "id": "s_cf_db_backup_crypto",
+          "name": "加密快照与密钥分离",
+          "parent": "s_cf_db_backup",
+          "state": "attr",
+          "desc": "项目采用 AES-256-GCM、摘要回读和密钥外置；星图只记录方法，不保存凭据或业务备份内容。",
+          "fn": "加密备份并独立保管恢复密钥"
+        },
+        {
+          "id": "s_cf_db_atomic",
+          "name": "事务与幂等写入",
+          "parent": "s_cf_db",
+          "state": "node",
+          "desc": "MyNet D1 适配实践：条件版本写入、请求重放、原子批次和冲突检测；与原有浏览器版本冲突场景互补。",
+          "fn": "用事务和请求身份保护重复写入"
+        },
+        {
+          "id": "s_web_api_adapter",
+          "name": "多供应商接口适配",
+          "parent": "s_web",
+          "state": "node",
+          "desc": "语言项目已有多供应商适配和固定模型探测代码；实现存在不等于每个账户已连通、免费额度持续有效或已掌握所有供应商。",
+          "fn": "统一模型接口与安全错误分类"
+        },
+        {
+          "id": "s_web_api_adapter_boundary",
+          "name": "调用与费用边界",
+          "parent": "s_web_api_adapter",
+          "state": "attr",
+          "desc": "近期实践包含超时、响应长度约束、禁止重定向、不自动重试或付费回退，以及不输出上游原始错误。",
+          "fn": "限制请求并阻止隐式费用扩张"
+        },
+        {
+          "id": "s_eng_test_fault",
+          "name": "故障注入与恢复测试",
+          "parent": "s_eng_test",
+          "state": "node",
+          "desc": "项目验证覆盖响应丢失、重复提交、旧读取晚到、版本冲突和批次失败回滚；本地合成验证与线上效果分别记录。",
+          "fn": "验证失败重试和事务回滚行为"
+        },
+        {
+          "id": "s_eng_source_sync",
+          "name": "子项目来源追踪",
+          "parent": "s_eng",
+          "state": "node",
+          "desc": "实践约束：业务先在子项目开发检测，主项目负责接线；以来源提交、文件摘要及差异记录防止遗漏或覆盖其他工作。",
+          "fn": "按来源提交和摘要集成功能"
+        },
+        {
+          "id": "s_eng_rel_access",
+          "name": "Access 项目验收边界",
+          "parent": "s_eng_rel",
+          "state": "attr",
+          "desc": "用户规则（2026-11-02）：不代理登录、不复用 Access 会话、不绕过控制；线上页面效果由用户自行操作并提供截图确认。",
+          "fn": "由用户确认受控项目线上效果"
         }
       ],
       "relations": [
@@ -351,6 +415,30 @@
           "type": "促进",
           "to": "s_eng_rel",
           "id": "skill_r9"
+        },
+        {
+          "id": "skill_refresh_20261103_1",
+          "from": "s_cf_db_backup_crypto",
+          "type": "帮助",
+          "to": "s_eng_rel"
+        },
+        {
+          "id": "skill_refresh_20261103_2",
+          "from": "s_eng_test_fault",
+          "type": "促进",
+          "to": "s_cf_db_atomic"
+        },
+        {
+          "id": "skill_refresh_20261103_3",
+          "from": "s_eng_source_sync",
+          "type": "帮助",
+          "to": "s_eng_rel"
+        },
+        {
+          "id": "skill_refresh_20261103_4",
+          "from": "s_web_api_adapter_boundary",
+          "type": "诱发",
+          "to": "s_eng_test_fault"
         }
       ]
     },
@@ -1081,6 +1169,46 @@
           "state": "attr",
           "desc": "待设计：用量、有效期、连续失败与数据过期可与已有提醒和日历联动，尚未配置任务或通知。",
           "fn": "提醒资源到期及连续异常"
+        },
+        {
+          "id": "i_mynet_append",
+          "name": "星图增量积累",
+          "parent": "i_mynet",
+          "state": "node",
+          "desc": "用户明确方向（2026-11-03）：根据新的知识、技能和项目积累刷新星图，尽量保持原有数据，只追加新内容；短期内不在线上编辑。",
+          "fn": "在保留已有内容的基础上持续追加"
+        },
+        {
+          "id": "i_mynet_append_baseline",
+          "name": "正式基线与本地追加",
+          "parent": "i_mynet_append",
+          "state": "attr",
+          "desc": "本次正式基线由用户确认是初始内容；生产尚未保存时不把空数据库误当作空星图。后续本地修改与发布分开处理。",
+          "fn": "以确认后的正式内容作为追加起点"
+        },
+        {
+          "id": "i_graph_evidence",
+          "name": "能力证据与状态分层",
+          "parent": "i_graph",
+          "state": "node",
+          "desc": "待设计：区分用户自述、项目代码实践、本地测试、已部署和用户效果确认，避免把代理完成的实现直接当作个人熟练度。",
+          "fn": "为能力与积累保留事实依据"
+        },
+        {
+          "id": "i_pool_probe_first",
+          "name": "探测后再编排",
+          "parent": "i_pool",
+          "state": "attr",
+          "desc": "候选推进方式：已有连通性探测与安全适配可作为前置证据；自动选路、跨供应商配额管理和故障切换仍不能视为已实现。",
+          "fn": "先验证单模型再设计资源池调度"
+        },
+        {
+          "id": "i_cloud_credential_location",
+          "name": "凭证位置与用途分离",
+          "parent": "i_cloud",
+          "state": "attr",
+          "desc": "由会员管理实践启发：资源台账记录用途、位置与有效期，密钥实物独立保管；星图只保留非敏感能力与联系。",
+          "fn": "登记凭证位置而不复制密钥正文"
         }
       ],
       "relations": [
@@ -1173,6 +1301,24 @@
           "type": "参考",
           "to": "i_cloud",
           "id": "idea_r14"
+        },
+        {
+          "id": "idea_refresh_20261103_1",
+          "from": "i_mynet_append_baseline",
+          "type": "启发",
+          "to": "i_graph_evidence"
+        },
+        {
+          "id": "idea_refresh_20261103_2",
+          "from": "i_pool_probe_first",
+          "type": "参考",
+          "to": "i_pool_adapter"
+        },
+        {
+          "id": "idea_refresh_20261103_3",
+          "from": "i_cloud_credential_location",
+          "type": "启发",
+          "to": "i_sub"
         }
       ]
     },
@@ -1522,6 +1668,390 @@
           "state": "node",
           "desc": "长期指标文档登记的日经月均历史来源；文档限定受控个人工作台使用，来源与许可需随实际使用复核。",
           "fn": "提供日经月均历史资料"
+        },
+        {
+          "id": "cf_worker_subscriptions",
+          "name": "会员独立 API Worker",
+          "parent": "cf",
+          "state": "node",
+          "desc": "项目已有独立 REST API Worker 与共享 D1 接线；此处登记资源职责，不断言当前启用配置或线上可用性。",
+          "fn": "为会员资源管理提供独立接口"
+        },
+        {
+          "id": "cf_ai",
+          "name": "Workers AI 模型接口",
+          "parent": "cf",
+          "state": "node",
+          "desc": "语言项目已有固定模型探测适配；具体型号、计费和账户可用性须另行核验，不在星图写死免费承诺。",
+          "fn": "提供 Cloudflare 托管模型调用入口"
+        },
+        {
+          "id": "gg_gemini",
+          "name": "Gemini 模型接口",
+          "parent": "gg",
+          "state": "node",
+          "desc": "项目已有 Gemini 适配及不可用型号错误处理；模型更换与真实连通验证分别记录，不推定持续免费。",
+          "fn": "提供语言模型探测候选入口"
+        },
+        {
+          "id": "gh_backup",
+          "name": "加密数据库快照分支",
+          "parent": "gh",
+          "state": "node",
+          "desc": "既有项目流程使用专用备份分支保存加密快照，并从远端全新克隆验证恢复；不存明文业务资料。",
+          "fn": "保存加密快照及恢复证据"
+        },
+        {
+          "id": "gg_drive_key_custody",
+          "name": "备份密钥独立保管",
+          "parent": "gg_drive",
+          "state": "attr",
+          "desc": "既有流程将主密钥实物保存在专用云盘位置；此处不记录密钥正文、位置链接或账户信息。",
+          "fn": "独立保存用于解密备份的密钥"
+        },
+        {
+          "id": "groq",
+          "name": "Groq",
+          "parent": null,
+          "state": "node",
+          "desc": "用户在近期项目反馈中确认过测试成功；这不代表全部模型、账户额度或后续稳定性均已验证。",
+          "fn": "提供项目已接入的模型接口"
+        },
+        {
+          "id": "deepseek",
+          "name": "DeepSeek",
+          "parent": null,
+          "state": "node",
+          "desc": "用户在近期项目反馈中确认过测试成功；保留已有调用边界，不据此承诺持续免费。",
+          "fn": "提供项目已接入的模型接口"
+        },
+        {
+          "id": "plamo",
+          "name": "PLaMo",
+          "parent": null,
+          "state": "node",
+          "desc": "近期代码已登记固定模型探测适配；账户配额、实际启用与连通状态需分别验证。",
+          "fn": "提供语言项目的模型适配入口"
+        },
+        {
+          "id": "bigmodel",
+          "name": "BigModel",
+          "parent": null,
+          "state": "node",
+          "desc": "项目按独立供应商登记适配，不与 Z.ai 的账户、额度或错误状态混为一谈。",
+          "fn": "提供语言项目的模型适配入口"
+        },
+        {
+          "id": "zai",
+          "name": "Z.ai",
+          "parent": null,
+          "state": "node",
+          "desc": "近期实现包含供应商专属错误码白名单分类；不把通用 HTTP 429 直接判定为账户根因。",
+          "fn": "提供模型探测及限流诊断入口"
+        },
+        {
+          "id": "siliconflow",
+          "name": "SiliconFlow",
+          "parent": null,
+          "state": "node",
+          "desc": "已有固定模型探测代码；适配存在不代表真实账户测试通过或永久免费。",
+          "fn": "提供语言项目的模型适配入口"
+        },
+        {
+          "id": "sakura",
+          "name": "Sakura AI Engine",
+          "parent": null,
+          "state": "node",
+          "desc": "2026-11-03 项目已增加单模型探测适配；真实连通、配置和效果以各自回执为准，不写入密钥或账户信息。",
+          "fn": "提供近期新增的模型适配入口"
+        },
+        {
+          "id": "mk_irbank",
+          "name": "IRBANK Connect",
+          "parent": "mk",
+          "state": "node",
+          "desc": "现有凭证台账登记的服务，用于日本上市公司估值研究；本轮未实际调用或确认额度。",
+          "fn": "提供日本上市公司数据接口"
+        },
+        {
+          "id": "mk_tgm",
+          "name": "TGMCharts Developer API",
+          "parent": "mk",
+          "state": "node",
+          "desc": "现有凭证台账登记的服务；本轮核对官方开发文档，不代表已接入现有采集链路。",
+          "fn": "提供美股研究的数据与图表接口"
+        },
+        {
+          "id": "mk_irbank_key",
+          "name": "IRBANK API Key",
+          "parent": "mk_irbank",
+          "state": "node",
+          "desc": "凭证元数据，非密钥正文。类型：provider_api_key。用途：日本上市公司 PE/PER 等估值分析。 台账状态：active（仅原台账标记，本轮未验证有效性、权限或到期日）。",
+          "fn": "登记凭证类型、用途与保管方式"
+        },
+        {
+          "id": "mk_irbank_key_website",
+          "name": "官网与开发入口",
+          "parent": "mk_irbank_key",
+          "state": "attr",
+          "desc": "公开入口：https://app.irbank.net/",
+          "fn": "定位凭证所属服务的公开网站"
+        },
+        {
+          "id": "mk_irbank_key_custody",
+          "name": "Google Drive 保管",
+          "parent": "mk_irbank_key",
+          "state": "attr",
+          "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。",
+          "fn": "查找凭证的保管平台与资料台账"
+        },
+        {
+          "id": "mk_tgm_key",
+          "name": "TGMCharts API Key",
+          "parent": "mk_tgm",
+          "state": "node",
+          "desc": "凭证元数据，非密钥正文。类型：provider_api_key。用途：美股基础数据和历史估值研究。 台账状态：active（仅原台账标记，本轮未验证有效性、权限或到期日）。",
+          "fn": "登记凭证类型、用途与保管方式"
+        },
+        {
+          "id": "mk_tgm_key_website",
+          "name": "官网与开发入口",
+          "parent": "mk_tgm_key",
+          "state": "attr",
+          "desc": "公开入口：https://tgmcharts.com/developers",
+          "fn": "定位凭证所属服务的公开网站"
+        },
+        {
+          "id": "mk_tgm_key_custody",
+          "name": "Google Drive 保管",
+          "parent": "mk_tgm_key",
+          "state": "attr",
+          "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。",
+          "fn": "查找凭证的保管平台与资料台账"
+        },
+        {
+          "id": "cf_access_service_credential",
+          "name": "Access 服务凭证",
+          "parent": "cf_access",
+          "state": "node",
+          "desc": "凭证元数据，非密钥正文。类型：cloudflare_access_service_token。用途：订阅管理 API 的服务间认证；此用途登记不代表允许代理登录或代验收受控页面。 台账状态：unknown（仅原台账标记，本轮未验证有效性、权限或到期日）。",
+          "fn": "登记凭证类型、用途与保管方式"
+        },
+        {
+          "id": "cf_access_service_credential_website",
+          "name": "官网与开发入口",
+          "parent": "cf_access_service_credential",
+          "state": "attr",
+          "desc": "公开入口：https://developers.cloudflare.com/cloudflare-one/access-controls/service-credentials/service-tokens/",
+          "fn": "定位凭证所属服务的公开网站"
+        },
+        {
+          "id": "cf_access_service_credential_custody",
+          "name": "Google Drive 保管",
+          "parent": "cf_access_service_credential",
+          "state": "attr",
+          "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。",
+          "fn": "查找凭证的保管平台与资料台账"
+        },
+        {
+          "id": "gh_key_mirror",
+          "name": "镜像自动化凭证",
+          "parent": "gh",
+          "state": "node",
+          "desc": "凭证元数据，非密钥正文。类型：github_token。用途：供 PublicMarketMirrorWriter 相关自动化使用；仓库权限范围待核实。 台账状态：unknown（仅原台账标记，本轮未验证有效性、权限或到期日）。",
+          "fn": "登记凭证类型、用途与保管方式"
+        },
+        {
+          "id": "gh_key_mirror_website",
+          "name": "官网与开发入口",
+          "parent": "gh_key_mirror",
+          "state": "attr",
+          "desc": "公开入口：https://github.com/settings/tokens",
+          "fn": "定位凭证所属服务的公开网站"
+        },
+        {
+          "id": "gh_key_mirror_custody",
+          "name": "Google Drive 保管",
+          "parent": "gh_key_mirror",
+          "state": "attr",
+          "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。",
+          "fn": "查找凭证的保管平台与资料台账"
+        },
+        {
+          "id": "gh_key_peband",
+          "name": "PE Band 读取凭证",
+          "parent": "gh",
+          "state": "node",
+          "desc": "凭证元数据，非密钥正文。类型：github_token。用途：读取 Cloudflare PE Band 相关仓库；目标仓库和权限范围待核实。 台账状态：unknown（仅原台账标记，本轮未验证有效性、权限或到期日）。",
+          "fn": "登记凭证类型、用途与保管方式"
+        },
+        {
+          "id": "gh_key_peband_website",
+          "name": "官网与开发入口",
+          "parent": "gh_key_peband",
+          "state": "attr",
+          "desc": "公开入口：https://github.com/settings/tokens",
+          "fn": "定位凭证所属服务的公开网站"
+        },
+        {
+          "id": "gh_key_peband_custody",
+          "name": "Google Drive 保管",
+          "parent": "gh_key_peband",
+          "state": "attr",
+          "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。",
+          "fn": "查找凭证的保管平台与资料台账"
+        },
+        {
+          "id": "plamo_key",
+          "name": "PLaMo API Key",
+          "parent": "plamo",
+          "state": "node",
+          "desc": "凭证元数据，非密钥正文。类型：API Key。用途：语言学习AI单次连通检查 台账状态：unknown（仅原台账标记，本轮未验证有效性、权限或到期日）。",
+          "fn": "登记凭证类型、用途与保管方式"
+        },
+        {
+          "id": "plamo_key_website",
+          "name": "官网与开发入口",
+          "parent": "plamo_key",
+          "state": "attr",
+          "desc": "公开入口：https://plamo.preferredai.jp/",
+          "fn": "定位凭证所属服务的公开网站"
+        },
+        {
+          "id": "plamo_key_custody",
+          "name": "Google Drive 保管",
+          "parent": "plamo_key",
+          "state": "attr",
+          "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。",
+          "fn": "查找凭证的保管平台与资料台账"
+        },
+        {
+          "id": "bigmodel_key",
+          "name": "BigModel API Key",
+          "parent": "bigmodel",
+          "state": "node",
+          "desc": "凭证元数据，非密钥正文。类型：API Key。用途：语言学习AI单次连通检查 台账状态：unknown（仅原台账标记，本轮未验证有效性、权限或到期日）。",
+          "fn": "登记凭证类型、用途与保管方式"
+        },
+        {
+          "id": "bigmodel_key_website",
+          "name": "官网与开发入口",
+          "parent": "bigmodel_key",
+          "state": "attr",
+          "desc": "公开入口：https://docs.bigmodel.cn/",
+          "fn": "定位凭证所属服务的公开网站"
+        },
+        {
+          "id": "bigmodel_key_custody",
+          "name": "Google Drive 保管",
+          "parent": "bigmodel_key",
+          "state": "attr",
+          "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。",
+          "fn": "查找凭证的保管平台与资料台账"
+        },
+        {
+          "id": "zai_key",
+          "name": "Z.ai API Key",
+          "parent": "zai",
+          "state": "node",
+          "desc": "凭证元数据，非密钥正文。类型：API Key。用途：语言学习AI单次连通检查 台账状态：unknown（仅原台账标记，本轮未验证有效性、权限或到期日）。",
+          "fn": "登记凭证类型、用途与保管方式"
+        },
+        {
+          "id": "zai_key_website",
+          "name": "官网与开发入口",
+          "parent": "zai_key",
+          "state": "attr",
+          "desc": "公开入口：https://docs.z.ai/guides/overview/quick-start",
+          "fn": "定位凭证所属服务的公开网站"
+        },
+        {
+          "id": "zai_key_custody",
+          "name": "Google Drive 保管",
+          "parent": "zai_key",
+          "state": "attr",
+          "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。",
+          "fn": "查找凭证的保管平台与资料台账"
+        },
+        {
+          "id": "siliconflow_key",
+          "name": "SiliconFlow API Key",
+          "parent": "siliconflow",
+          "state": "node",
+          "desc": "凭证元数据，非密钥正文。类型：API Key。用途：语言学习AI单次连通检查 台账状态：unknown（仅原台账标记，本轮未验证有效性、权限或到期日）。",
+          "fn": "登记凭证类型、用途与保管方式"
+        },
+        {
+          "id": "siliconflow_key_website",
+          "name": "官网与开发入口",
+          "parent": "siliconflow_key",
+          "state": "attr",
+          "desc": "公开入口：https://www.siliconflow.cn/",
+          "fn": "定位凭证所属服务的公开网站"
+        },
+        {
+          "id": "siliconflow_key_custody",
+          "name": "Google Drive 保管",
+          "parent": "siliconflow_key",
+          "state": "attr",
+          "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。",
+          "fn": "查找凭证的保管平台与资料台账"
+        },
+        {
+          "id": "sakura_key",
+          "name": "Sakura 账户令牌",
+          "parent": "sakura",
+          "state": "node",
+          "desc": "凭证元数据，非密钥正文。类型：Bearer Token。用途：AI连通测试；固定模型gpt-oss-120b 台账状态：active（仅原台账标记，本轮未验证有效性、权限或到期日）。",
+          "fn": "登记凭证类型、用途与保管方式"
+        },
+        {
+          "id": "sakura_key_website",
+          "name": "官网与开发入口",
+          "parent": "sakura_key",
+          "state": "attr",
+          "desc": "公开入口：https://ai.sakura.ad.jp/sakura-ai/ai-engine/",
+          "fn": "定位凭证所属服务的公开网站"
+        },
+        {
+          "id": "sakura_key_custody",
+          "name": "Google Drive 保管",
+          "parent": "sakura_key",
+          "state": "attr",
+          "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。",
+          "fn": "查找凭证的保管平台与资料台账"
+        },
+        {
+          "id": "groq_website",
+          "name": "Groq 官方开发文档",
+          "parent": "groq",
+          "state": "attr",
+          "desc": "公开入口：https://console.groq.com/docs/quickstart",
+          "fn": "查阅模型服务的官方接入资料"
+        },
+        {
+          "id": "deepseek_website",
+          "name": "DeepSeek 官方开发文档",
+          "parent": "deepseek",
+          "state": "attr",
+          "desc": "公开入口：https://api-docs.deepseek.com/",
+          "fn": "查阅模型服务的官方接入资料"
+        },
+        {
+          "id": "gg_gemini_website",
+          "name": "Gemini 官方开发文档",
+          "parent": "gg_gemini",
+          "state": "attr",
+          "desc": "公开入口：https://ai.google.dev/gemini-api/docs",
+          "fn": "查阅模型服务的官方接入资料"
+        },
+        {
+          "id": "cf_ai_website",
+          "name": "Workers AI 官方文档",
+          "parent": "cf_ai",
+          "state": "attr",
+          "desc": "公开入口：https://developers.cloudflare.com/workers-ai/",
+          "fn": "查阅模型服务的官方接入资料"
         }
       ],
       "relations": [
@@ -1608,6 +2138,84 @@
           "type": "写入",
           "to": "cf_kv",
           "id": "res_r13"
+        },
+        {
+          "id": "res_refresh_20261103_1",
+          "from": "cf_worker_subscriptions",
+          "type": "依赖",
+          "to": "cf_d1"
+        },
+        {
+          "id": "res_refresh_20261103_2",
+          "from": "cf_access",
+          "type": "保护",
+          "to": "cf_worker_subscriptions"
+        },
+        {
+          "id": "res_refresh_20261103_3",
+          "from": "gh_backup",
+          "type": "依赖",
+          "to": "gg_drive"
+        },
+        {
+          "id": "res_api_20261103_0",
+          "from": "mk_irbank_key_custody",
+          "type": "依赖",
+          "to": "gg_drive"
+        },
+        {
+          "id": "res_api_20261103_1",
+          "from": "mk_tgm_key_custody",
+          "type": "依赖",
+          "to": "gg_drive"
+        },
+        {
+          "id": "res_api_20261103_2",
+          "from": "cf_access_service_credential_custody",
+          "type": "依赖",
+          "to": "gg_drive"
+        },
+        {
+          "id": "res_api_20261103_3",
+          "from": "gh_key_mirror_custody",
+          "type": "依赖",
+          "to": "gg_drive"
+        },
+        {
+          "id": "res_api_20261103_4",
+          "from": "gh_key_peband_custody",
+          "type": "依赖",
+          "to": "gg_drive"
+        },
+        {
+          "id": "res_api_20261103_5",
+          "from": "plamo_key_custody",
+          "type": "依赖",
+          "to": "gg_drive"
+        },
+        {
+          "id": "res_api_20261103_6",
+          "from": "bigmodel_key_custody",
+          "type": "依赖",
+          "to": "gg_drive"
+        },
+        {
+          "id": "res_api_20261103_7",
+          "from": "zai_key_custody",
+          "type": "依赖",
+          "to": "gg_drive"
+        },
+        {
+          "id": "res_api_20261103_8",
+          "from": "siliconflow_key_custody",
+          "type": "依赖",
+          "to": "gg_drive"
+        },
+        {
+          "id": "res_api_20261103_9",
+          "from": "sakura_key_custody",
+          "type": "依赖",
+          "to": "gg_drive"
         }
       ]
     },
@@ -2411,6 +3019,134 @@
           "state": "attr",
           "desc": "当前原型优先读取浏览器已保存数据；更新初始数据不覆盖本地编辑，未提供服务端同步。",
           "fn": "保留浏览器中的已有编辑"
+        },
+        {
+          "id": "p_info",
+          "name": "定远会员资源管理",
+          "parent": null,
+          "state": "node",
+          "desc": "informationManage 项目已具备会员、手机号及凭证位置管理页面与独立 API；登记实现职责，不依据旧文档推定当前生产开关。相关创意：个人会员与订阅管理中心。",
+          "fn": "管理会员订阅和资源账户资料"
+        },
+        {
+          "id": "p_info_ledger",
+          "name": "会员与资源台账",
+          "parent": "p_info",
+          "state": "node",
+          "desc": "实现包含搜索、筛选、新增和编辑；个人初始资料和凭据正文不进入星图。",
+          "fn": "查询和维护分类资源资料"
+        },
+        {
+          "id": "p_info_api",
+          "name": "独立 REST API",
+          "parent": "p_info",
+          "state": "node",
+          "desc": "采用独立接口职责及共享 D1；禁止删除、保留审计及幂等身份；跨域配置是否生效不由本条断言。",
+          "fn": "提供受控的资料读写接口"
+        },
+        {
+          "id": "p_info_api_replay",
+          "name": "请求重放与内容冲突",
+          "parent": "p_info_api",
+          "state": "attr",
+          "desc": "近期修复对相同显式标识的同内容请求返回已有结果，不同内容返回冲突；避免响应丢失后重复新增。",
+          "fn": "区分同内容重试和冲突提交"
+        },
+        {
+          "id": "p_info_secret_position",
+          "name": "凭据位置登记",
+          "parent": "p_info_ledger",
+          "state": "attr",
+          "desc": "记录范围为位置、周期等管理元数据；不将密钥、账户值或个人台账复制进星图。",
+          "fn": "记录凭据位置和用途而不存正文"
+        },
+        {
+          "id": "p_cal_matrix",
+          "name": "艾森豪威尔矩阵",
+          "parent": "p_cal_p1",
+          "state": "node",
+          "desc": "近期已统一视图名称及五级配色；提醒默认映射为高 4、中 2、低 1，原始等级不回写，既有手动覆盖优先。",
+          "fn": "按重要度与紧急度组织事项"
+        },
+        {
+          "id": "p_cal_special_projection",
+          "name": "特殊日期投影",
+          "parent": "p_cal_p1",
+          "state": "node",
+          "desc": "已有特殊日期设置的配套实现：日历标记、首页只读提示、局部失败降级与跨页更新通知；不复制生日或假期个人内容。",
+          "fn": "在日历和首页显示特殊日期"
+        },
+        {
+          "id": "p_cal_special_yearly",
+          "name": "年度资料修订更新",
+          "parent": "p_cal_special_projection",
+          "state": "attr",
+          "desc": "项目实现按年度和修订号更新资料，并保护较新版本；实际定时运行与具体年份资料完整性仍需独立验证。",
+          "fn": "按修订维护年度官方日期资料"
+        },
+        {
+          "id": "p_lang_probe",
+          "name": "模型连通性探测",
+          "parent": "p_lang",
+          "state": "node",
+          "desc": "近期加入多供应商固定模型探测入口，与正式教师点评和自动模型资源池是不同阶段；不自动重试或故障切换。",
+          "fn": "用受限单次请求检查模型接入"
+        },
+        {
+          "id": "p_lang_probe_errors",
+          "name": "安全错误与限流分类",
+          "parent": "p_lang_probe",
+          "state": "attr",
+          "desc": "实现包括型号不可用、配额与限流等安全分类；不显示上游原始响应、密钥或思考内容。",
+          "fn": "用安全错误说明探测失败原因"
+        },
+        {
+          "id": "p_lang_probe_sakura",
+          "name": "Sakura 适配增量",
+          "parent": "p_lang_probe",
+          "state": "attr",
+          "desc": "2026-11-03 已有实现和集成来源回执；不将代码存在视为真实调用验证完成。",
+          "fn": "增加固定模型的单次探测适配"
+        },
+        {
+          "id": "p_mynet_data_store",
+          "name": "SQLite 与 D1 持久化",
+          "parent": "p_mynet_data",
+          "state": "node",
+          "desc": "本地 SQLite 与生产 D1 共用领域校验；保存采用版本检查、请求幂等和历史快照。生产未保存时返回内置初始数据。",
+          "fn": "分别保存本地和生产星图内容"
+        },
+        {
+          "id": "p_mynet_data_store_baseline",
+          "name": "初始内容作为追加基线",
+          "parent": "p_mynet_data_store",
+          "state": "attr",
+          "desc": "用户于 2026-11-03 确认生产内容即初始数据，短期不在线上编辑；追加前本地内容与集成初始内容完全一致，旧库已保留。",
+          "fn": "以确认过的正式初始数据继续追加"
+        },
+        {
+          "id": "p_mynet_host",
+          "name": "主站独立页头接线",
+          "parent": "p_mynet",
+          "state": "node",
+          "desc": "MyNet 按用户要求保留自身页头与星图交互，通过返回首页按钮回到工作台；不强制套用主站统一菜单。",
+          "fn": "接入工作台并保留返回首页入口"
+        },
+        {
+          "id": "p_myapp_int_provenance",
+          "name": "来源摘要与隔离合并",
+          "parent": "p_myapp_int",
+          "state": "attr",
+          "desc": "近期集成按来源提交和文件摘要同步，避免把其他项目尚未完成的变更混入本次发布。",
+          "fn": "核对来源并保留其他未完成工作"
+        },
+        {
+          "id": "p_myapp_int_restore",
+          "name": "生产快照恢复门禁",
+          "parent": "p_myapp_int",
+          "state": "attr",
+          "desc": "既有流程要求加密快照单独提交推送并全新克隆恢复验证；本地测试、Git 同步和生产发布分别留痕。",
+          "fn": "在数据库调整前验证备份可恢复"
         }
       ],
       "relations": [
@@ -2527,6 +3263,36 @@
           "type": "使用",
           "to": "p_myapp_aim",
           "id": "proj_r18"
+        },
+        {
+          "id": "proj_refresh_20261103_1",
+          "from": "p_myapp",
+          "type": "集成",
+          "to": "p_info"
+        },
+        {
+          "id": "proj_refresh_20261103_2",
+          "from": "p_myapp",
+          "type": "集成",
+          "to": "p_mynet_host"
+        },
+        {
+          "id": "proj_refresh_20261103_3",
+          "from": "p_info_ledger",
+          "type": "使用",
+          "to": "p_info_api"
+        },
+        {
+          "id": "proj_refresh_20261103_4",
+          "from": "p_info_secret_position",
+          "type": "参考",
+          "to": "p_lang_probe"
+        },
+        {
+          "id": "proj_refresh_20261103_5",
+          "from": "p_mynet_data_store",
+          "type": "参考",
+          "to": "p_myapp_int"
         }
       ]
     }

@@ -1,0 +1,368 @@
+{
+  "skill": {
+    "elements": [],
+    "relations": []
+  },
+  "idea": {
+    "elements": [],
+    "relations": []
+  },
+  "res": {
+    "elements": [
+      {
+        "id": "mk_irbank",
+        "name": "IRBANK Connect",
+        "parent": "mk",
+        "state": "node",
+        "fn": "提供日本上市公司数据接口",
+        "desc": "现有凭证台账登记的服务，用于日本上市公司估值研究；本轮未实际调用或确认额度。"
+      },
+      {
+        "id": "mk_tgm",
+        "name": "TGMCharts Developer API",
+        "parent": "mk",
+        "state": "node",
+        "fn": "提供美股研究的数据与图表接口",
+        "desc": "现有凭证台账登记的服务；本轮核对官方开发文档，不代表已接入现有采集链路。"
+      },
+      {
+        "id": "mk_irbank_key",
+        "name": "IRBANK API Key",
+        "parent": "mk_irbank",
+        "state": "node",
+        "fn": "登记凭证类型、用途与保管方式",
+        "desc": "凭证元数据，非密钥正文。类型：provider_api_key。用途：日本上市公司 PE/PER 等估值分析。 台账状态：active（仅原台账标记，本轮未验证有效性、权限或到期日）。"
+      },
+      {
+        "id": "mk_irbank_key_website",
+        "name": "官网与开发入口",
+        "parent": "mk_irbank_key",
+        "state": "attr",
+        "fn": "定位凭证所属服务的公开网站",
+        "desc": "公开入口：https://app.irbank.net/"
+      },
+      {
+        "id": "mk_irbank_key_custody",
+        "name": "Google Drive 保管",
+        "parent": "mk_irbank_key",
+        "state": "attr",
+        "fn": "查找凭证的保管平台与资料台账",
+        "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。"
+      },
+      {
+        "id": "mk_tgm_key",
+        "name": "TGMCharts API Key",
+        "parent": "mk_tgm",
+        "state": "node",
+        "fn": "登记凭证类型、用途与保管方式",
+        "desc": "凭证元数据，非密钥正文。类型：provider_api_key。用途：美股基础数据和历史估值研究。 台账状态：active（仅原台账标记，本轮未验证有效性、权限或到期日）。"
+      },
+      {
+        "id": "mk_tgm_key_website",
+        "name": "官网与开发入口",
+        "parent": "mk_tgm_key",
+        "state": "attr",
+        "fn": "定位凭证所属服务的公开网站",
+        "desc": "公开入口：https://tgmcharts.com/developers"
+      },
+      {
+        "id": "mk_tgm_key_custody",
+        "name": "Google Drive 保管",
+        "parent": "mk_tgm_key",
+        "state": "attr",
+        "fn": "查找凭证的保管平台与资料台账",
+        "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。"
+      },
+      {
+        "id": "cf_access_service_credential",
+        "name": "Access 服务凭证",
+        "parent": "cf_access",
+        "state": "node",
+        "fn": "登记凭证类型、用途与保管方式",
+        "desc": "凭证元数据，非密钥正文。类型：cloudflare_access_service_token。用途：订阅管理 API 的服务间认证；此用途登记不代表允许代理登录或代验收受控页面。 台账状态：unknown（仅原台账标记，本轮未验证有效性、权限或到期日）。"
+      },
+      {
+        "id": "cf_access_service_credential_website",
+        "name": "官网与开发入口",
+        "parent": "cf_access_service_credential",
+        "state": "attr",
+        "fn": "定位凭证所属服务的公开网站",
+        "desc": "公开入口：https://developers.cloudflare.com/cloudflare-one/access-controls/service-credentials/service-tokens/"
+      },
+      {
+        "id": "cf_access_service_credential_custody",
+        "name": "Google Drive 保管",
+        "parent": "cf_access_service_credential",
+        "state": "attr",
+        "fn": "查找凭证的保管平台与资料台账",
+        "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。"
+      },
+      {
+        "id": "gh_key_mirror",
+        "name": "镜像自动化凭证",
+        "parent": "gh",
+        "state": "node",
+        "fn": "登记凭证类型、用途与保管方式",
+        "desc": "凭证元数据，非密钥正文。类型：github_token。用途：供 PublicMarketMirrorWriter 相关自动化使用；仓库权限范围待核实。 台账状态：unknown（仅原台账标记，本轮未验证有效性、权限或到期日）。"
+      },
+      {
+        "id": "gh_key_mirror_website",
+        "name": "官网与开发入口",
+        "parent": "gh_key_mirror",
+        "state": "attr",
+        "fn": "定位凭证所属服务的公开网站",
+        "desc": "公开入口：https://github.com/settings/tokens"
+      },
+      {
+        "id": "gh_key_mirror_custody",
+        "name": "Google Drive 保管",
+        "parent": "gh_key_mirror",
+        "state": "attr",
+        "fn": "查找凭证的保管平台与资料台账",
+        "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。"
+      },
+      {
+        "id": "gh_key_peband",
+        "name": "PE Band 读取凭证",
+        "parent": "gh",
+        "state": "node",
+        "fn": "登记凭证类型、用途与保管方式",
+        "desc": "凭证元数据，非密钥正文。类型：github_token。用途：读取 Cloudflare PE Band 相关仓库；目标仓库和权限范围待核实。 台账状态：unknown（仅原台账标记，本轮未验证有效性、权限或到期日）。"
+      },
+      {
+        "id": "gh_key_peband_website",
+        "name": "官网与开发入口",
+        "parent": "gh_key_peband",
+        "state": "attr",
+        "fn": "定位凭证所属服务的公开网站",
+        "desc": "公开入口：https://github.com/settings/tokens"
+      },
+      {
+        "id": "gh_key_peband_custody",
+        "name": "Google Drive 保管",
+        "parent": "gh_key_peband",
+        "state": "attr",
+        "fn": "查找凭证的保管平台与资料台账",
+        "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。"
+      },
+      {
+        "id": "plamo_key",
+        "name": "PLaMo API Key",
+        "parent": "plamo",
+        "state": "node",
+        "fn": "登记凭证类型、用途与保管方式",
+        "desc": "凭证元数据，非密钥正文。类型：API Key。用途：语言学习AI单次连通检查 台账状态：unknown（仅原台账标记，本轮未验证有效性、权限或到期日）。"
+      },
+      {
+        "id": "plamo_key_website",
+        "name": "官网与开发入口",
+        "parent": "plamo_key",
+        "state": "attr",
+        "fn": "定位凭证所属服务的公开网站",
+        "desc": "公开入口：https://plamo.preferredai.jp/"
+      },
+      {
+        "id": "plamo_key_custody",
+        "name": "Google Drive 保管",
+        "parent": "plamo_key",
+        "state": "attr",
+        "fn": "查找凭证的保管平台与资料台账",
+        "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。"
+      },
+      {
+        "id": "bigmodel_key",
+        "name": "BigModel API Key",
+        "parent": "bigmodel",
+        "state": "node",
+        "fn": "登记凭证类型、用途与保管方式",
+        "desc": "凭证元数据，非密钥正文。类型：API Key。用途：语言学习AI单次连通检查 台账状态：unknown（仅原台账标记，本轮未验证有效性、权限或到期日）。"
+      },
+      {
+        "id": "bigmodel_key_website",
+        "name": "官网与开发入口",
+        "parent": "bigmodel_key",
+        "state": "attr",
+        "fn": "定位凭证所属服务的公开网站",
+        "desc": "公开入口：https://docs.bigmodel.cn/"
+      },
+      {
+        "id": "bigmodel_key_custody",
+        "name": "Google Drive 保管",
+        "parent": "bigmodel_key",
+        "state": "attr",
+        "fn": "查找凭证的保管平台与资料台账",
+        "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。"
+      },
+      {
+        "id": "zai_key",
+        "name": "Z.ai API Key",
+        "parent": "zai",
+        "state": "node",
+        "fn": "登记凭证类型、用途与保管方式",
+        "desc": "凭证元数据，非密钥正文。类型：API Key。用途：语言学习AI单次连通检查 台账状态：unknown（仅原台账标记，本轮未验证有效性、权限或到期日）。"
+      },
+      {
+        "id": "zai_key_website",
+        "name": "官网与开发入口",
+        "parent": "zai_key",
+        "state": "attr",
+        "fn": "定位凭证所属服务的公开网站",
+        "desc": "公开入口：https://docs.z.ai/guides/overview/quick-start"
+      },
+      {
+        "id": "zai_key_custody",
+        "name": "Google Drive 保管",
+        "parent": "zai_key",
+        "state": "attr",
+        "fn": "查找凭证的保管平台与资料台账",
+        "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。"
+      },
+      {
+        "id": "siliconflow_key",
+        "name": "SiliconFlow API Key",
+        "parent": "siliconflow",
+        "state": "node",
+        "fn": "登记凭证类型、用途与保管方式",
+        "desc": "凭证元数据，非密钥正文。类型：API Key。用途：语言学习AI单次连通检查 台账状态：unknown（仅原台账标记，本轮未验证有效性、权限或到期日）。"
+      },
+      {
+        "id": "siliconflow_key_website",
+        "name": "官网与开发入口",
+        "parent": "siliconflow_key",
+        "state": "attr",
+        "fn": "定位凭证所属服务的公开网站",
+        "desc": "公开入口：https://www.siliconflow.cn/"
+      },
+      {
+        "id": "siliconflow_key_custody",
+        "name": "Google Drive 保管",
+        "parent": "siliconflow_key",
+        "state": "attr",
+        "fn": "查找凭证的保管平台与资料台账",
+        "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。"
+      },
+      {
+        "id": "sakura_key",
+        "name": "Sakura 账户令牌",
+        "parent": "sakura",
+        "state": "node",
+        "fn": "登记凭证类型、用途与保管方式",
+        "desc": "凭证元数据，非密钥正文。类型：Bearer Token。用途：AI连通测试；固定模型gpt-oss-120b 台账状态：active（仅原台账标记，本轮未验证有效性、权限或到期日）。"
+      },
+      {
+        "id": "sakura_key_website",
+        "name": "官网与开发入口",
+        "parent": "sakura_key",
+        "state": "attr",
+        "fn": "定位凭证所属服务的公开网站",
+        "desc": "公开入口：https://ai.sakura.ad.jp/sakura-ai/ai-engine/"
+      },
+      {
+        "id": "sakura_key_custody",
+        "name": "Google Drive 保管",
+        "parent": "sakura_key",
+        "state": "attr",
+        "fn": "查找凭证的保管平台与资料台账",
+        "desc": "凭证实物保存在 Google Drive，具体位置在定远会员资源管理的凭证台账查找；星图不保存私人分享链接、文件标识或密钥正文。"
+      },
+      {
+        "id": "groq_website",
+        "name": "Groq 官方开发文档",
+        "parent": "groq",
+        "state": "attr",
+        "fn": "查阅模型服务的官方接入资料",
+        "desc": "公开入口：https://console.groq.com/docs/quickstart"
+      },
+      {
+        "id": "deepseek_website",
+        "name": "DeepSeek 官方开发文档",
+        "parent": "deepseek",
+        "state": "attr",
+        "fn": "查阅模型服务的官方接入资料",
+        "desc": "公开入口：https://api-docs.deepseek.com/"
+      },
+      {
+        "id": "gg_gemini_website",
+        "name": "Gemini 官方开发文档",
+        "parent": "gg_gemini",
+        "state": "attr",
+        "fn": "查阅模型服务的官方接入资料",
+        "desc": "公开入口：https://ai.google.dev/gemini-api/docs"
+      },
+      {
+        "id": "cf_ai_website",
+        "name": "Workers AI 官方文档",
+        "parent": "cf_ai",
+        "state": "attr",
+        "fn": "查阅模型服务的官方接入资料",
+        "desc": "公开入口：https://developers.cloudflare.com/workers-ai/"
+      }
+    ],
+    "relations": [
+      {
+        "id": "res_api_20261103_0",
+        "from": "mk_irbank_key_custody",
+        "type": "依赖",
+        "to": "gg_drive"
+      },
+      {
+        "id": "res_api_20261103_1",
+        "from": "mk_tgm_key_custody",
+        "type": "依赖",
+        "to": "gg_drive"
+      },
+      {
+        "id": "res_api_20261103_2",
+        "from": "cf_access_service_credential_custody",
+        "type": "依赖",
+        "to": "gg_drive"
+      },
+      {
+        "id": "res_api_20261103_3",
+        "from": "gh_key_mirror_custody",
+        "type": "依赖",
+        "to": "gg_drive"
+      },
+      {
+        "id": "res_api_20261103_4",
+        "from": "gh_key_peband_custody",
+        "type": "依赖",
+        "to": "gg_drive"
+      },
+      {
+        "id": "res_api_20261103_5",
+        "from": "plamo_key_custody",
+        "type": "依赖",
+        "to": "gg_drive"
+      },
+      {
+        "id": "res_api_20261103_6",
+        "from": "bigmodel_key_custody",
+        "type": "依赖",
+        "to": "gg_drive"
+      },
+      {
+        "id": "res_api_20261103_7",
+        "from": "zai_key_custody",
+        "type": "依赖",
+        "to": "gg_drive"
+      },
+      {
+        "id": "res_api_20261103_8",
+        "from": "siliconflow_key_custody",
+        "type": "依赖",
+        "to": "gg_drive"
+      },
+      {
+        "id": "res_api_20261103_9",
+        "from": "sakura_key_custody",
+        "type": "依赖",
+        "to": "gg_drive"
+      }
+    ]
+  },
+  "proj": {
+    "elements": [],
+    "relations": []
+  }
+}

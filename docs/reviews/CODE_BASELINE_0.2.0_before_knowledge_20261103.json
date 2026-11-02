@@ -1,0 +1,109 @@
+{
+  "recordedDate": "2026-11-02",
+  "version": "0.2.0",
+  "algorithm": "SHA-256",
+  "gitBaseline": null,
+  "scope": "Current fix code and config; local Git initialized; first fix commit is discoverable with git log; original 0.1.0 has only archived hashes",
+  "files": [
+    {
+      "path": "package.json",
+      "sha256": "1b2c886088dc8f94eaf6ee1a2b0e4d1d862352143f26f81f6a19b93bcea79ebf",
+      "bytes": 383
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "cd4a69aacb3974a770a253f97b0755e3791fd68bef9f98733944f05401624273",
+      "bytes": 66
+    },
+    {
+      "path": "server.mjs",
+      "sha256": "f893ba7da63083a49e93ae519333280d81ee8d57efaebc72f9a3598095a32050",
+      "bytes": 7437
+    },
+    {
+      "path": "storage.js",
+      "sha256": "0c2b79ba882af9c1273d43d9b1cd3fc3d9422d59f146c052040f21163c8bee8e",
+      "bytes": 6146
+    },
+    {
+      "path": "lib/model.mjs",
+      "sha256": "a323145bd453037c7d8d6f9473c1e03b999496dde0cd1a986e14cdd4ea429d1c",
+      "bytes": 3626
+    },
+    {
+      "path": "manage.html",
+      "sha256": "b0817170a0b05abab8296ff9ec6b25104a23a2c335b5d07660fab78040d35861",
+      "bytes": 37866
+    },
+    {
+      "path": "starmap.html",
+      "sha256": "16f1fc21757fd248dfe5e86c50067b4cb80838f944d2db878a95e6222e93268c",
+      "bytes": 93607
+    },
+    {
+      "path": "data.js",
+      "sha256": "485de38c1456ab130a4f1fd83f08104f4f76cea047d80af9783ce6d7bad8c344",
+      "bytes": 57617
+    },
+    {
+      "path": "tools/validate-data.mjs",
+      "sha256": "9063979790241008239a1b157c6e8c1e3bcc23a99b739f7844094fe038afcc03",
+      "bytes": 6879
+    },
+    {
+      "path": "tools/restore-data.mjs",
+      "sha256": "bb00cadaf8779e594d36c9c73ef229419ff55f8110cab5139148486d8682f370",
+      "bytes": 1281
+    },
+    {
+      "path": "tests/app.test.mjs",
+      "sha256": "f06eea79bfb932352b3ee6082d3c3a6febfcc5cebeea62070c95a539cff84ad1",
+      "bytes": 6676
+    },
+    {
+      "path": "tests/regression.browser.mjs",
+      "sha256": "bfd53f88b25969152645d8f13932ae901a05f81f72c9cea8941e07a91923688e",
+      "bytes": 11378
+    },
+    {
+      "path": ".claude/launch.json",
+      "sha256": "a1f7afab363ceadc9982016929879177c353a49eb6918733ce3f5106eaafff05",
+      "bytes": 184
+    },
+    {
+      "path": "cloudflare/routes.mjs",
+      "sha256": "d28fcfc55af6df8124409c3e87d1d3f03ae9abd819c59ba69380b902cd543782",
+      "bytes": 6896
+    },
+    {
+      "path": "cloudflare/schema.sql",
+      "sha256": "19c51509bd8be01ce2f777e221b581a72051f9dc3194d66a53156d4fc3c22baf",
+      "bytes": 785
+    },
+    {
+      "path": "cloudflare/model.mjs",
+      "sha256": "6eb8ded4208169f3d402b90267996c345055c7e7ed09a6768b93c438488673b6",
+      "bytes": 136
+    },
+    {
+      "path": "tools/export-cloudflare.mjs",
+      "sha256": "268f2f2f02338f9e17f91fb330941b2069318279553f9bf2298039c50b1af34c",
+      "bytes": 3255
+    },
+    {
+      "path": "tests/cloudflare.test.mjs",
+      "sha256": "ff52c9a54dc297a11a7d97f366c2d3ef7bcb929f565fc1fa7d24212257f64857",
+      "bytes": 4934
+    },
+    {
+      "path": "tests/helpers/d1.mjs",
+      "sha256": "d2aa2a98cfd37d0821e5b139f82bb0a308beeb82a3e73ab9287da667b73b075f",
+      "bytes": 775
+    },
+    {
+      "path": "tools/test-host-browser.mjs",
+      "sha256": "6beb4898761bb1c49e940ae154051df0dce1a57a448dc6676c3ac289b653b876",
+      "bytes": 4976
+    }
+  ]
+}
