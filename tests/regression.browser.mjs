@@ -97,6 +97,21 @@ try {
     await p.goto(base+'/starmap.html#d=skill&f=s_english');await p.locator('#domains button').first().waitFor();await p.evaluate(()=>location.hash='d=skill&f=s_csharp&s=s_csharp');await p.waitForFunction(()=>document.querySelector('#hudName').textContent==='C# 开发');
     await c.close();passed.push('F10：两页 hash 导航生效');
   }
+  {
+    for(const width of [1440,768,375]){
+      const c=await browser.newContext({viewport:{width,height:900},hasTouch:width<1000});
+      await c.route('**/*',r=>r.request().url().startsWith(base)?r.continue():r.abort());
+      for(const path of ['/manage.html#d=skill&s=s_english','/starmap.html#d=skill&f=s_english']){
+        const p=await page(c,path);const home=p.getByRole('link',{name:'返回首页',exact:true});await home.waitFor({state:'visible'});assert.equal(await home.getAttribute('href'),'/');
+        assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`overflow ${width} ${path}`);
+        const bounds=await p.evaluate(()=>{const a=document.querySelector('.brand').getBoundingClientRect(),b=document.querySelector('.views').getBoundingClientRect();return {brandRight:a.right,navLeft:b.left}});assert.ok(bounds.brandRight<=bounds.navLeft,`header overlap ${width}`);
+        if(path.startsWith('/starmap')){await p.getByRole('button',{name:'拖动：旋转',exact:true}).click();assert.equal(await p.locator('#cameraPan').getAttribute('aria-pressed'),'true');await p.getByRole('button',{name:'放大视图',exact:true}).click();}
+        await p.close();
+      }
+      await c.close();
+    }
+    passed.push('集成界面：1440/768/375 无横向溢出，独立页头无重叠，首页按钮与触屏视图控件可用');
+  }
   console.log(passed.join('\n'));
 } finally {
   if(browser)await browser.close();

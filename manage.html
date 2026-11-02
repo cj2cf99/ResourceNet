@@ -143,12 +143,19 @@ td.num{font-family:var(--mono);color:var(--mute);text-align:right}
   .topact{top:100px;left:20px;right:auto}
   #domains{overflow-x:auto;right:20px}
 }
+@media(max-width:600px){
+  .brand{left:12px}.brand b{font-size:17px;letter-spacing:.15em}.brand span{display:none}
+  .views{right:12px}.views a{padding:7px;font-size:11px;letter-spacing:0}
+  .topact{left:12px;right:12px;flex-wrap:wrap;gap:6px}.saved{font-size:10px}
+  .layout{margin-top:162px}.layout>.panel{min-width:0;max-width:100%}
+  #toasts{left:12px;right:12px;max-width:none}
+}
 </style>
 </head>
 <body>
 <canvas id="stars"></canvas>
 <a class="brand" href="starmap.html" title="回到星图 · 顶级总览"><b>STARMAP</b><span>管理台</span></a>
-<nav class="views"><a id="toMap" href="starmap.html" title="到星图（保留当前星域与选中对象）">◉ 星图</a><a class="on" title="当前：管理台">▤ 管理</a></nav>
+<nav class="views"><a href="/" aria-label="返回首页" title="返回主站首页">← 首页</a><a id="toMap" href="starmap.html" title="到星图（保留当前星域与选中对象）">◉ 星图</a><a class="on" title="当前：管理台">▤ 管理</a></nav>
 <nav id="domains"></nav>
 <div class="topact"><span class="saved" id="saved"><i></i>已保存到本浏览器</span><button class="btn ghost sm" id="resetData" title="放弃本浏览器中的修改，恢复 data.js 中的初始数据">恢复初始数据</button></div>
 
@@ -176,7 +183,7 @@ td.num{font-family:var(--mono);color:var(--mute);text-align:right}
 <div id="toasts"></div>
 
 <script src="data.js?v=2026-11-02e"></script>
-<script src="storage.js?v=2026-11-02b"></script>
+<script src="storage.js?v=2026-11-02c"></script>
 <script>
 (async()=>{
 await MyNet.ready;

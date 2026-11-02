@@ -4,6 +4,8 @@
 
 审核入口：[当前开发版本审核说明](DEVELOPMENT_REVIEW.md)。架构、数据库、接口、前后端规则和失败处理见 [开发设计与实现说明](docs/IMPLEMENTATION.md)，当前代码摘要见 [CODE_BASELINE.json](docs/CODE_BASELINE.json)。
 
+0.2.0 主站接入候选见 [Cloudflare 集成设计](docs/CLOUDFLARE_INTEGRATION.md)：独立页头、返回首页按钮、来源 D1 适配及白名单导出。`npm run export:cloudflare` 只生成本地集成包，不执行迁移或部署。
+
 ## 启动
 
 安装 Node.js 24 或更新版本，应用运行无第三方依赖，无需 `npm install`。浏览器回归另需 Playwright 与可用 Chromium。

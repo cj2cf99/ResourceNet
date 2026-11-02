@@ -38,7 +38,7 @@
 
 ## 版本与恢复
 
-当前版本 0.1.1，当前摘要见 [CODE_BASELINE](../CODE_BASELINE.json)。旧版摘要见 [CODE_BASELINE_0.1.0](CODE_BASELINE_0.1.0.json)。原独立审核中的摘要和结论针对旧版，不能与当前摘要逐项相等比较。
+本次修复版本 0.1.1，摘要见 [CODE_BASELINE_0.1.1](CODE_BASELINE_0.1.1.json)。旧版摘要见 [CODE_BASELINE_0.1.0](CODE_BASELINE_0.1.0.json)。原独立审核中的摘要和结论针对旧版，不能与后续集成候选摘要逐项相等比较。
 
 旧 schema 升级为 1 会增加 requests 表；旧 snapshots 内容继续使用。若需回退应用，应先停止服务、保留当前库与草稿，使用 `.before-v1-*` 升级前备份恢复到另一个文件再启动旧版，不直接删除个人工作目录。恢复 JSON 会生成新快照并触发保留策略，旧版本不是永久可取。
 

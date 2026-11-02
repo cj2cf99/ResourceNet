@@ -1,6 +1,7 @@
 /* SQLite 适配：串行提交、有限等待、幂等重试，以及每标签页的失败草稿。 */
 (() => {
   const app = window.MyNet;
+  const API=document.currentScript?.dataset.apiBase||'/api';
   if (location.protocol === 'file:') { app.ready = Promise.resolve(); return; }
   let cache, revision, queued = Promise.resolve(), pending = 0, draft, generation = 0;
   const copy = value => JSON.parse(JSON.stringify(value));
@@ -33,7 +34,7 @@
       dispatchEvent(new CustomEvent('mynet:draft-restored',{detail:copy(draft.domains)}));
     }}]);
   }
-  async function request(path='/api/state',options={}) {
+  async function request(path=API+'/state',options={}) {
     const response=await fetch(path,{cache:'no-store',...options,signal:AbortSignal.timeout(8000)});
     const result=await response.json();
     if (!response.ok) throw Object.assign(new Error(result.error || '保存失败'),{status:response.status});
@@ -54,7 +55,7 @@
       const body=JSON.stringify({revision,domains:snapshot,requestId:crypto.randomUUID()});
       let result;
       for(let attempt=0;attempt<2;attempt++) {
-        try {result=await request('/api/state',{method:'PUT',headers:{'Content-Type':'application/json'},body});break;}
+        try {result=await request(API+'/state',{method:'PUT',headers:{'Content-Type':'application/json'},body});break;}
         catch(error) {if(error.status || attempt===1) throw error;}
       }
       cache=snapshot;revision=result.revision;
@@ -71,7 +72,7 @@
     const saved=document.getElementById('saved');
     if(saved){
       saved.textContent='已连接本地数据库';
-      const link=document.createElement('a');link.href='/api/export';link.textContent='导出备份';link.className='btn ghost sm';saved.after(link);
+      const link=document.createElement('a');link.href=API+'/export';link.textContent='导出备份';link.className='btn ghost sm';saved.after(link);
       const reset=document.getElementById('resetData');if(reset)reset.title='恢复数据库初始数据；历史版本受保留数量限制';
       const legacy=get(app.KEY);
       if(legacy){
@@ -85,7 +86,7 @@
     if(draft)draftMessage('发现未保存草稿，可导出或恢复到编辑器；恢复保留旧版本号以防覆盖其他页面更改。');
     setInterval(async()=>{
       if(pending||document.hidden)return;
-      try{const result=await request('/api/revision');if(result.revision!==revision&&!draft)message('另一页面已更新数据。',[{label:'刷新查看',run:()=>location.reload()}]);}catch{/* 下次重试；保存异常单独提示 */}
+      try{const result=await request(API+'/revision');if(result.revision!==revision&&!draft)message('另一页面已更新数据。',[{label:'刷新查看',run:()=>location.reload()}]);}catch{/* 下次重试；保存异常单独提示 */}
     },10000);
   }).catch(()=>{});
 })();

@@ -170,6 +170,12 @@ body.immersive #immCap{opacity:1}
   .right{top:auto;bottom:64px;left:16px;right:16px;width:auto;max-height:38vh}
   .tools{left:16px;right:16px;justify-content:center;flex-wrap:wrap}
 }
+@media(max-width:600px){
+  .brand b{font-size:17px;letter-spacing:.15em}.brand span{display:none}
+  .views{right:12px}.views a{padding:7px;font-size:11px;letter-spacing:0}
+  #immCap{max-width:calc(100vw - 24px);overflow:hidden;text-overflow:ellipsis}
+  .tools{gap:2px;padding:6px}.tools button{padding:6px;font-size:11px}
+}
 </style>
 </head>
 <body>
@@ -217,6 +223,9 @@ body.immersive #immCap{opacity:1}
 </div>
 
 <div class="tools panel">
+  <button id="cameraPan" aria-pressed="false">拖动：旋转</button>
+  <button id="cameraIn" aria-label="放大视图">放大</button>
+  <button id="cameraOut" aria-label="缩小视图">缩小</button>
   <button id="toOverview" class="acc">◂ 星团总览</button>
   <button data-opt="attrLabels" class="on">属性标签</button>
   <button data-opt="relLabels" class="on">关系标签</button>
@@ -229,13 +238,13 @@ body.immersive #immCap{opacity:1}
 <div class="hint" id="hint"></div>
 <button id="immExit" title="退出沉浸（H）">⛶ 退出沉浸 · H</button>
 <button id="immBack" title="返回上一层（Esc）">◂ 上一层 · Esc</button>
-<nav class="views"><a class="on" title="当前：星图">◉ 星图</a><a id="toManage" href="manage.html" title="到管理台（保留当前星域与选中对象）">▤ 管理</a></nav>
+<nav class="views"><a href="/" aria-label="返回首页" title="返回主站首页">← 首页</a><a class="on" title="当前：星图">◉ 星图</a><a id="toManage" href="manage.html" title="到管理台（保留当前星域与选中对象）">▤ 管理</a></nav>
 <div id="syncToast">管理台修改了数据<button id="syncReload">刷新星图</button></div>
 <div id="immCap"></div>
 <div id="tip"></div>
 
 <script src="data.js?v=2026-11-02e"></script>
-<script src="storage.js?v=2026-11-02b"></script>
+<script src="storage.js?v=2026-11-02c"></script>
 <script>
 (async()=>{
 await MyNet.ready;
@@ -997,9 +1006,14 @@ function showTip(id,mx,my){
   tip.style.left=Math.min(W-270,mx+16)+'px';tip.style.top=(my+16)+'px';tip.style.opacity=1;
 }
 cvs.addEventListener('contextmenu',ev=>ev.preventDefault());
+let cameraPan=false;
+cvs.style.touchAction='none';
+$('#cameraPan').onclick=()=>{cameraPan=!cameraPan;$('#cameraPan').textContent=cameraPan?'拖动：平移':'拖动：旋转';$('#cameraPan').setAttribute('aria-pressed',String(cameraPan))};
+$('#cameraIn').onclick=()=>{cam.uz=clamp(cam.uz*1.25,.35,4)};
+$('#cameraOut').onclick=()=>{cam.uz=clamp(cam.uz/1.25,.35,4)};
 cvs.addEventListener('pointerdown',ev=>{
   cvs.setPointerCapture(ev.pointerId);
-  drag.on=true;drag.moved=false;drag.sx=ev.clientX;drag.sy=ev.clientY;drag.pan=ev.button===2||ev.shiftKey;
+  drag.on=true;drag.moved=false;drag.sx=ev.clientX;drag.sy=ev.clientY;drag.pan=cameraPan||ev.button===2||ev.shiftKey;
   drag.down=hit(ev.clientX,ev.clientY);cvs.classList.add('drag');
 });
 cvs.addEventListener('pointermove',ev=>{
@@ -1027,6 +1041,7 @@ cvs.addEventListener('pointerup',()=>{
   drag.on=false;cvs.classList.remove('drag');
 });
 cvs.addEventListener('pointerleave',()=>{S.hover=null;showTip(null)});
+cvs.addEventListener('pointercancel',()=>{drag.on=false;cvs.classList.remove('drag')});
 cvs.addEventListener('dblclick',ev=>{
   const h=hit(ev.clientX,ev.clientY);if(!h||trans)return;
   if(S.mode==='universe'){if(isDom(h))enterDomain(h.slice(4));return}
