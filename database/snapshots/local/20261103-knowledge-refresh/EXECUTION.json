@@ -1,0 +1,31 @@
+{
+  "status": "APPLIED_LOCAL_ONLY",
+  "completedAt": "2026-11-02T15:38:01.943Z",
+  "revision": 2,
+  "counts": {
+    "skill": {
+      "roots": 11,
+      "elements": 42,
+      "relations": 14
+    },
+    "idea": {
+      "roots": 19,
+      "elements": 94,
+      "relations": 18
+    },
+    "res": {
+      "roots": 14,
+      "elements": 53,
+      "relations": 17
+    },
+    "proj": {
+      "roots": 13,
+      "elements": 114,
+      "relations": 24
+    }
+  },
+  "originalContent": "unchanged",
+  "backupCommit": "ed7f45d9170934f0fa1c08b94b4ff7d9f0ef8707",
+  "backupRef": "refs/heads/db-snapshots/mynet-content",
+  "productionWrites": 0
+}
