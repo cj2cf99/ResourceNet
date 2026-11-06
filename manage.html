@@ -150,6 +150,17 @@ td.num{font-family:var(--mono);color:var(--mute);text-align:right}
   .layout{margin-top:162px}.layout>.panel{min-width:0;max-width:100%}
   #toasts{left:12px;right:12px;max-width:none}
 }
+/* Optional page-level auxiliary content: keep it outside the business panels.
+   An empty slot leaves the standalone management layout unchanged. */
+#page-auxiliary:empty{display:none}
+#page-auxiliary:not(:empty){position:relative;margin:112px 20px 0}
+body:has(#page-auxiliary:not(:empty)){overflow:auto}
+#page-auxiliary:not(:empty)+.layout{position:relative;inset:auto;margin:14px 20px 20px;height:calc(100vh - 132px);min-height:480px}
+@media(max-width:900px){
+  #page-auxiliary:not(:empty){margin:150px 12px 0}
+  #page-auxiliary:not(:empty)+.layout{height:auto;min-height:0;margin:14px 12px 12px}
+}
+@media(max-width:600px){#page-auxiliary:not(:empty){margin-top:162px}}
 </style>
 </head>
 <body>
@@ -159,6 +170,7 @@ td.num{font-family:var(--mono);color:var(--mute);text-align:right}
 <nav id="domains"></nav>
 <div class="topact"><span class="saved" id="saved"><i></i>已保存到本浏览器</span><button class="btn ghost sm" id="resetData" title="放弃本浏览器中的修改，恢复 data.js 中的初始数据">恢复初始数据</button></div>
 
+<div id="page-auxiliary"></div>
 <div class="layout">
   <section class="panel">
     <div class="ph"><span class="lbl">STRUCTURE · 结构</span><button class="btn sm" id="newRoot" title="新建根节点 = 新星系">＋ 根节点</button></div>
