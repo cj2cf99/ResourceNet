@@ -1,0 +1,23 @@
+[
+  {
+    "root": "G:/selftool/MyNet",
+    "old": "REQUIREMENTS.md",
+    "new": "docs/requirements/REQUIREMENTS.md",
+    "before_sha256": "9fa5c8603543d7f67314b184466dc4481dee8ea819185d900185a4c9eeca7a92",
+    "after_sha256": "9fa5c8603543d7f67314b184466dc4481dee8ea819185d900185a4c9eeca7a92"
+  },
+  {
+    "root": "G:/selftool/MyNet",
+    "old": "DEVELOPMENT_REVIEW.md",
+    "new": "docs/reviews/DEVELOPMENT_REVIEW.md",
+    "before_sha256": "98501f76602e0838bbc20c336cc9c5d9d70a103c435e7f12fdd601598634169c",
+    "after_sha256": "48a6ca9f1b2cbdf8c263b8b5233bd38c10f33d66c85449603c30bbc7dcf36b34"
+  },
+  {
+    "root": "G:/selftool/MyNet",
+    "old": "HANDOVER.md",
+    "new": "docs/handover/HANDOVER.md",
+    "before_sha256": "694e5af268a4e42956f1b609346547533425dffa60e16c625ff50fc0bcc25d90",
+    "after_sha256": "f099213f2f60f454922d76e16116c6281a049a6975d0b5c7a44db25e9160bc28"
+  }
+]

@@ -1,5 +1,7 @@
 # ResourceNet（MyNet 星图）
 
+> 2026-11-06 当前状态与分类入口：[MyNet 星图文档索引](docs/README.md)。下方旧阶段说明保留历史，已完成/待办以最新状态记录及发布回执为准。
+
 依据 [需求](REQUIREMENTS.md) 与 [原型设计](docs/DESIGN.md) 开发的独立本地应用。保留星图与管理台两个页面、四类应用模板、单一隶属、多关系、属性自动升格和焦点距离探索。
 
 审核入口：[当前开发版本审核说明](DEVELOPMENT_REVIEW.md)。架构、数据库、接口、前后端规则和失败处理见 [开发设计与实现说明](docs/IMPLEMENTATION.md)，当前代码摘要见 [CODE_BASELINE.json](docs/CODE_BASELINE.json)。
